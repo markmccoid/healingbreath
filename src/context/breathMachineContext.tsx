@@ -1,0 +1,63 @@
+import React, { createContext } from "react";
+import { useInterpret } from "@xstate/react";
+import { ActorRefFrom, State } from "xstate";
+import { breathMachine, BreathContext, BreathEvent } from "../machines/breathMachine";
+
+import { isEqual } from "lodash";
+
+interface BreathMachineContextType {
+  breathStateService: ActorRefFrom<typeof breathMachine>;
+}
+
+// Object compare for xstate's useSelectors compare function.
+export const objCompare = (prevObj: any, nextObj: any) => isEqual(prevObj, nextObj);
+
+export const BreathMachineContext = createContext({} as BreathMachineContextType);
+
+//************************
+//*- BreathMachineProvider
+//************************
+// Remove context items that we won't consider session settings
+export type SessionSettingsType = Partial<
+  Omit<BreathContext, "extend" | "sessionStats" | "sessionComplete" | "elapsed">
+>;
+// -- passed sessionSettings prop will allow for individual session settings
+// -- to be applied when the machine provider is used and the machine is instantiated.
+export const BreathMachineProvider = ({
+  children,
+  sessionSettings,
+}: {
+  children: any;
+  sessionSettings?: SessionSettingsType | undefined;
+}) => {
+  const breathStateService = useInterpret(breathMachine, {
+    context: { ...sessionSettings },
+    devTools: true,
+  });
+
+  // console.log("STATE SERVICE", breathStateService, breathMachine);
+  return (
+    <BreathMachineContext.Provider value={{ breathStateService }}>
+      {children}
+    </BreathMachineContext.Provider>
+  );
+};
+
+export const useBreathState = (): BreathMachineContextType => {
+  return React.useContext(BreathMachineContext);
+};
+
+//----
+// Selectors - Playing with these, but most needed
+// functionality can come from "useBreathMachineHooks"
+export const canExtendTimeSelector = (
+  state: State<
+    BreathContext,
+    BreathEvent,
+    any,
+    {
+      value: any;
+      context: BreathContext;
+    }
+  >
+) => state.can("EXTEND_TOGGLE");
