@@ -7,12 +7,12 @@ import { AdjustingInterval } from "../../utils/timerAdjustingInterval";
 
 const sampleMachineSettings = {
   interval: 100,
-  inhaleTime: 10 * 1000,
-  exhaleTime: 5 * 1000,
+  inhaleTime: 2 * 1000,
+  exhaleTime: 2 * 1000,
   pauseTime: 0,
   breathReps: 2,
   breathRounds: 2,
-  holdTime: 10 * 1000,
+  holdTime: 6 * 1000,
   recoveryHoldTime: 5 * 1000,
   actionPauseTimeIn: 2 * 1000,
   actionPauseTimeOut: 3 * 1000,

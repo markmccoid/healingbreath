@@ -44,6 +44,8 @@ export type BreathContext = {
   breathCurrRound: number; // Current round
   // -- session statistics
   sessionStats: { [round: number]: sessionStats };
+  sessionStart: number; // stores unix timestamp (milliseconds) using Date.now()
+  sessionEnd: number; // stores unix timestamp (milliseconds) using Date.now()
   sessionComplete: boolean;
   //-- Timer config
   //-- Interval is in milliseconds
@@ -112,7 +114,15 @@ const incrementBreathRep = assign<BreathContext, BreathEvent>({
   breathCurrRep: (ctx) => ctx.breathCurrRep + 1,
 });
 
-const isElapsedGreaterThan = (checkAgainstTime) => (ctx) => {
+type TimeCheckItems =
+  | "holdTime"
+  | "inhaleTime"
+  | "exhaleTime"
+  | "pauseTime"
+  | "actionPauseTimeIn"
+  | "actionPauseTimeOut";
+
+const isElapsedGreaterThan = (checkAgainstTime: TimeCheckItems) => (ctx: BreathContext) => {
   return ctx.elapsed > ctx[checkAgainstTime];
 };
 
@@ -140,28 +150,43 @@ const sessionComplete = assign<BreathContext, BreathEvent>({
   sessionComplete: true,
 });
 
+const updateSessionHelper = (ctx: BreathContext, updateObj: object) => {
+  const tempState = ctx.sessionStats?.[ctx.breathCurrRep]
+    ? { ...ctx.sessionStats?.[ctx.breathCurrRep] }
+    : {};
+
+  return {
+    ...ctx.sessionStats,
+    [ctx.breathCurrRound]: {
+      ...tempState,
+      ...updateObj,
+    },
+  };
+};
 const updateSessionStats = assign<BreathContext, BreathEvent>({
   sessionStats: (ctx) => {
     if (ctx.breathCurrRound > ctx.breathRounds) {
       return ctx.sessionStats;
     }
-    let newSessionStats = { ...ctx.sessionStats };
-    if (ctx?.sessionStats?.[ctx.breathCurrRound]) {
-      newSessionStats = {
-        [ctx.breathCurrRound]: {
-          breaths: 0,
-          holdTimeSeconds: 0,
-          recoveryHoldTimeSeconds: 0,
-        },
-      };
-    }
-    return {
-      ...newSessionStats,
-      [ctx.breathCurrRound]: {
-        ...newSessionStats[ctx.breathCurrRound],
-        breaths: ctx.breathCurrRep - 1,
-      },
-    };
+
+    return updateSessionHelper(ctx, { breaths: ctx.breathCurrRep - 1 });
+    //   let newSessionStats = { ...ctx.sessionStats };
+    //   if (ctx?.sessionStats?.[ctx.breathCurrRound]) {
+    //     newSessionStats = {
+    //       [ctx.breathCurrRound]: {
+    //         breaths: 0,
+    //         holdTimeSeconds: 0,
+    //         recoveryHoldTimeSeconds: 0,
+    //       },
+    //     };
+    //   }
+    //   return {
+    //     ...newSessionStats,
+    //     [ctx.breathCurrRound]: {
+    //       ...newSessionStats[ctx.breathCurrRound],
+    //       breaths: ctx.breathCurrRep - 1,
+    //     },
+    //   };
   },
 });
 
@@ -174,7 +199,7 @@ const updateLongHoldStats = assign<BreathContext, BreathEvent>({
       ...ctx.sessionStats,
       [ctx.breathCurrRound]: {
         ...ctx.sessionStats[ctx.breathCurrRound],
-        holdTimeSeconds: Math.floor(ctx.elapsed),
+        holdTimeSeconds: Math.floor(ctx.elapsed - ctx.interval),
       },
     };
   },
@@ -189,7 +214,9 @@ const updateRecoveryHoldStats = assign<BreathContext, BreathEvent>({
       ...ctx.sessionStats,
       [ctx.breathCurrRound]: {
         ...ctx.sessionStats[ctx.breathCurrRound],
-        recoveryHoldTimeSeconds: Math.floor(ctx.elapsed),
+        // need to subtract the interval because action is run on exit
+        // AFTER the check is made and we are then over the hold time
+        recoveryHoldTimeSeconds: Math.floor(ctx.elapsed - ctx.interval),
       },
     };
   },
@@ -224,6 +251,8 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
       breathCurrRound: 0, // Current round
       // -- session statistics
       sessionStats: {},
+      sessionEnd: undefined,
+      sessionStart: undefined,
       sessionComplete: false,
       //-- Timer config # intervalms
       interval: 100, // interval will cause TICK to be called every tenth of a sec. If you want more precision use .01
@@ -234,9 +263,12 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
     states: {
       idle: {
         entry: "resetContext",
-        exit: "resetSessionStats",
+        exit: "resetSessionStats", // Add action to set date/time for start
         on: {
-          START: "breathing",
+          START: {
+            target: "breathing",
+            actions: assign({ sessionStart: (ctx, event) => Date.now() }),
+          },
           UPDATE_DEFAULTS: {
             actions: ["updateSessionSettings"],
           },
@@ -261,7 +293,7 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
         },
         states: {
           inhale: {
-            entry: ["resetElapsed", incrementBreathRep],
+            entry: ["resetElapsed", "incrementBreathRep"],
             invoke: {
               id: "ticker", // only used for viz
               src: ticker,
@@ -419,6 +451,7 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
         always: {
           target: "breathing",
           cond: isElapsedGreaterThan("actionPauseTimeOut"),
+          actions: assign({ sessionEnd: (ctx, events) => Date.now() }),
         },
         on: {
           STOP: "idle",
@@ -433,6 +466,7 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
   {
     actions: {
       incrementBreathRound,
+      incrementBreathRep,
       resetElapsed,
       resetBreathCurrRep,
       resetSessionStats,

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { useSelector } from "@xstate/react";
 import { inspect } from "@xstate/inspect";
@@ -10,7 +10,9 @@ import {
   useBreathFlags,
   useBreathMethods,
 } from "../../hooks/useBreathMachineHooks";
+
 import Timer from "./Timer";
+import BreathAnimation from "./BreathAnimation";
 
 import { ActionButton } from "../../components/buttons/Buttons";
 
@@ -61,6 +63,12 @@ const BreathSession = ({ sessionSettings }) => {
       </View>
       <View style={{ padding: 10, justifyContent: "center", alignItems: "center" }}>
         <Text style={{ fontSize: 25, color: "#F1820A" }}> {currStateDesc}</Text>
+      </View>
+      <BreathAnimation />
+      <View>
+        <Text>{`${context.breathCurrRound} - ${context.breathCurrRep}`}</Text>
+        <Text>{`${context.sessionStart} - ${context.sessionEnd}`}</Text>
+        <Text>{`${JSON.stringify(context.sessionStats)}`}</Text>
       </View>
     </View>
   );
