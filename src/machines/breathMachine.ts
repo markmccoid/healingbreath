@@ -150,9 +150,11 @@ const sessionComplete = assign<BreathContext, BreathEvent>({
   sessionComplete: true,
 });
 
+// Session stats helper.  Makes sure the breathCurrRound key exists
+// merges passed updateObj into sessionStats
 const updateSessionHelper = (ctx: BreathContext, updateObj: object) => {
-  const tempState = ctx.sessionStats?.[ctx.breathCurrRep]
-    ? { ...ctx.sessionStats?.[ctx.breathCurrRep] }
+  const tempState = ctx.sessionStats?.[ctx.breathCurrRound]
+    ? { ...ctx.sessionStats?.[ctx.breathCurrRound] }
     : {};
 
   return {
@@ -163,64 +165,7 @@ const updateSessionHelper = (ctx: BreathContext, updateObj: object) => {
     },
   };
 };
-const updateSessionStats = assign<BreathContext, BreathEvent>({
-  sessionStats: (ctx) => {
-    if (ctx.breathCurrRound > ctx.breathRounds) {
-      return ctx.sessionStats;
-    }
-
-    return updateSessionHelper(ctx, { breaths: ctx.breathCurrRep - 1 });
-    //   let newSessionStats = { ...ctx.sessionStats };
-    //   if (ctx?.sessionStats?.[ctx.breathCurrRound]) {
-    //     newSessionStats = {
-    //       [ctx.breathCurrRound]: {
-    //         breaths: 0,
-    //         holdTimeSeconds: 0,
-    //         recoveryHoldTimeSeconds: 0,
-    //       },
-    //     };
-    //   }
-    //   return {
-    //     ...newSessionStats,
-    //     [ctx.breathCurrRound]: {
-    //       ...newSessionStats[ctx.breathCurrRound],
-    //       breaths: ctx.breathCurrRep - 1,
-    //     },
-    //   };
-  },
-});
-
-const updateLongHoldStats = assign<BreathContext, BreathEvent>({
-  sessionStats: (ctx) => {
-    if (!ctx.sessionStats) {
-      return ctx?.sessionStats;
-    }
-    return {
-      ...ctx.sessionStats,
-      [ctx.breathCurrRound]: {
-        ...ctx.sessionStats[ctx.breathCurrRound],
-        holdTimeSeconds: Math.floor(ctx.elapsed - ctx.interval),
-      },
-    };
-  },
-});
-
-const updateRecoveryHoldStats = assign<BreathContext, BreathEvent>({
-  sessionStats: (ctx) => {
-    if (!ctx.sessionStats) {
-      return ctx?.sessionStats;
-    }
-    return {
-      ...ctx.sessionStats,
-      [ctx.breathCurrRound]: {
-        ...ctx.sessionStats[ctx.breathCurrRound],
-        // need to subtract the interval because action is run on exit
-        // AFTER the check is made and we are then over the hold time
-        recoveryHoldTimeSeconds: Math.floor(ctx.elapsed - ctx.interval),
-      },
-    };
-  },
-});
+// Session stats
 // type sessionStats = {
 //   [roundNum: number]: {
 //     breaths: number;
@@ -228,6 +173,33 @@ const updateRecoveryHoldStats = assign<BreathContext, BreathEvent>({
 //     inhaleHoldSeconds: Number;
 //   };
 // }
+
+const updateSessionStats = (type: "breaths" | "longhold" | "recoveryhold") =>
+  assign<BreathContext, BreathEvent>({
+    sessionStats: (ctx) => {
+      if (ctx.breathCurrRound > ctx.breathRounds) {
+        return ctx.sessionStats;
+      }
+      switch (type) {
+        case "breaths":
+          return updateSessionHelper(ctx, { breaths: ctx.breathCurrRep - 1 });
+        case "longhold":
+          return updateSessionHelper(ctx, {
+            holdTimeSeconds: Math.floor(ctx.elapsed - ctx.interval),
+          });
+        case "recoveryhold":
+          return updateSessionHelper(ctx, {
+            recoveryHoldTimeSeconds: Math.floor(ctx.elapsed - ctx.interval),
+          });
+      }
+    },
+  });
+
+// create functions that can be used in XStates options area
+const updateSessionBreathsStats = updateSessionStats("breaths");
+const updateSessionLongHoldStats = updateSessionStats("longhold");
+const updateSessionRecoveryHoldStats = updateSessionStats("recoveryhold");
+
 export const breathMachine = createMachine<BreathContext, BreathEvent>(
   {
     id: "breathmachine",
@@ -251,8 +223,8 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
       breathCurrRound: 0, // Current round
       // -- session statistics
       sessionStats: {},
-      sessionEnd: undefined,
-      sessionStart: undefined,
+      sessionEnd: 0,
+      sessionStart: 0,
       sessionComplete: false,
       //-- Timer config # intervalms
       interval: 100, // interval will cause TICK to be called every tenth of a sec. If you want more precision use .01
@@ -263,7 +235,7 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
     states: {
       idle: {
         entry: "resetContext",
-        exit: "resetSessionStats", // Add action to set date/time for start
+        exit: "resetSessionStats",
         on: {
           START: {
             target: "breathing",
@@ -277,7 +249,7 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
       breathing: {
         id: "breathing",
         entry: ["incrementBreathRound"],
-        exit: ["updateSessionStats"],
+        exit: ["updateSessionBreathsStats"],
         initial: "inhale",
         always: {
           target: "idle",
@@ -353,7 +325,7 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
       holding: {
         initial: "breathhold",
         entry: ["resetElapsed", "resetBreathCurrRep"],
-        exit: ["updateLongHoldStats"],
+        exit: ["updateSessionLongHoldStats"],
         on: {
           STOP: "idle",
           PAUSE: ".paused",
@@ -408,7 +380,7 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
       recoveryhold: {
         entry: ["resetElapsed"],
         initial: "breathhold",
-        exit: ["updateRecoveryHoldStats", "resetBreathCurrRep"],
+        exit: ["updateSessionRecoveryHoldStats", "resetBreathCurrRep"],
         on: {
           STOP: "idle",
           PAUSE: ".paused",
@@ -472,10 +444,12 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
       resetSessionStats,
       resetContext,
       updateSessionSettings,
-      updateSessionStats,
+      updateSessionBreathsStats,
+      updateSessionLongHoldStats,
+      updateSessionRecoveryHoldStats,
       updateElapsedTime,
-      updateLongHoldStats,
-      updateRecoveryHoldStats,
+      //    updateLongHoldStats,
+      //      updateRecoveryHoldStats,
       extendToggle,
       sessionComplete,
     },
