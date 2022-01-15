@@ -6,7 +6,7 @@ import {
 import { useCallback } from "react";
 import { useSelector } from "@xstate/react";
 import { Sender, State, StateValue } from "xstate";
-import { BreathContext, BreathEvent } from "../machines/breathMachine";
+import { BreathContext, BreathEvent, BreathRoundsDetail } from "../machines/breathMachine";
 
 type BreathContextWOElapsed = Omit<BreathContext, "elapsed">;
 
@@ -150,7 +150,7 @@ export const useBreathFlags = () => {
 // update sessionSettings function used in useBreathEvents
 //------------------------------------
 const updateSessionSettings =
-  (send) =>
+  (send: Sender<BreathEvent>) =>
   (sessionSettings: SessionSettingsType, clearSessionStats: boolean = true) => {
     if (clearSessionStats) {
       send({
@@ -164,6 +164,15 @@ const updateSessionSettings =
     } else {
       send({ type: "UPDATE_DEFAULTS", sessionSettings });
     }
+  };
+
+const updateSessionBreathRoundDetails =
+  (send: Sender<BreathEvent>) => (breathRoundsDetail: BreathRoundsDetail) => {
+    // expect { 1: {holdTime: 10000}, 2: {holdTime: 20000}, ...}
+    send({
+      type: "UPDATE_DEFAULTS",
+      sessionSettings: { breathRoundsDetail: breathRoundsDetail },
+    });
   };
 //------------------------------------
 // Hook the encapulates events for easy use.
@@ -179,6 +188,7 @@ export const useBreathEvents = () => {
     goToNext: () => send("NEXT"),
     extendSession: () => send("EXTEND_TOGGLE"),
     updateSessionSettings: updateSessionSettings(send), //(sessionSettings: SessionSettingsType) => send({ type: "UPDATE_DEFAULTS", sessionSettings }),
+    updateSessionBreathRounds: updateSessionBreathRoundDetails(send),
   };
   return breathEvents;
 };

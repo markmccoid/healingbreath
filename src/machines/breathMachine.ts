@@ -1,5 +1,5 @@
 import { createMachine, assign, Sender } from "xstate";
-import { AdjustingInterval, myTicker } from "../utils/timerAdjustingInterval";
+import { myTicker } from "../utils/timerAdjustingInterval";
 
 // const tickerTimer = (ctx, cb) => {
 //   new AdjustingInverval()
@@ -25,19 +25,27 @@ export type sessionStats =
       recoveryHoldTimeSeconds: number;
     }
   | {};
+
+export type BreathRoundsDetail = {
+  [breathRound: number]: {
+    holdTime: number;
+  };
+};
 export type BreathContext = {
   // -- Breathing pattern config
-  inhaleTime: number; // seconds and tenths of a second
-  pauseTime: number;
-  exhaleTime: number;
+  inhaleTime: number; // milliseconds
+  pauseTime: number; // milliseconds
+  exhaleTime: number; // milliseconds
   //-- Breathing round config
   breathReps: number; // How many breaths before hold time.
   breathCurrRep: number; // Current breath in current round
   //-- Long hold config
-  holdTime: number; // hold time in seconds
-  recoveryHoldTime: number; // inhaled holding time in seconds
-  actionPauseTimeIn: number; // seconds to "wait" before inhale holds
-  actionPauseTimeOut: number; // seconds to "wait" after inhale holds
+  holdTime: number; // hold time in milliseconds
+  defaultHoldTime: number; // default hold time
+  breathRoundsDetail: BreathRoundsDetail; // Object that holds the details for each round.
+  recoveryHoldTime: number; // recovery holding time in milliseconds
+  actionPauseTimeIn: number; // milliseconds to "wait" before inhale holds
+  actionPauseTimeOut: number; // milliseconds to "wait" after inhale holds
   extend: boolean; // When true, extend the hold time, don't stop the timer
   //-- Breathing session config
   breathRounds: number; // Number of rounds (breathReps + Long Hold + )
@@ -89,7 +97,10 @@ const updateElapsedTime = assign<BreathContext, BreathEvent>({
   },
 });
 
-const resetElapsed = assign<BreathContext, BreathEvent>({ elapsedInt: 0, elapsed: 0 });
+const resetElapsed = assign<BreathContext, BreathEvent>({
+  elapsedInt: 0,
+  elapsed: 0,
+});
 
 const resetContext = assign<BreathContext, BreathEvent>({
   elapsedInt: 0,
@@ -116,6 +127,7 @@ const incrementBreathRep = assign<BreathContext, BreathEvent>({
 
 type TimeCheckItems =
   | "holdTime"
+  | "recoveryHoldTime"
   | "inhaleTime"
   | "exhaleTime"
   | "pauseTime"
@@ -123,9 +135,16 @@ type TimeCheckItems =
   | "actionPauseTimeOut";
 
 const isElapsedGreaterThan = (checkAgainstTime: TimeCheckItems) => (ctx: BreathContext) => {
+  if (checkAgainstTime === "holdTime") {
+    // main hold breath section can have different hold times for each round
+    // If a round is not set, then it will default to the default hold time.
+    return (
+      ctx.elapsed >
+      (ctx?.breathRoundsDetail?.[ctx.breathCurrRound]?.holdTime || ctx.defaultHoldTime)
+    );
+  }
   return ctx.elapsed > ctx[checkAgainstTime];
 };
-
 const extendToggle = assign<BreathContext, BreathEvent>({
   extend: (ctx) => !ctx.extend,
 });
@@ -136,6 +155,7 @@ const updateSessionSettings = assign<BreathContext, BreathEvent>((ctx, event) =>
     // - decided to just merge the passed sessionSettings object with the context
     // - this way users can send one or more settings, prettty much affect any
     // - part of context that is needed.
+    console.log("EVENT", event.sessionSettings);
     const mergedSettings = { ...ctx, ...event.sessionSettings };
     return mergedSettings;
     // return {
@@ -206,16 +226,18 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
     initial: "idle",
     context: {
       // -- Breathing pattern config
-      inhaleTime: 2, // seconds
+      inhaleTime: 2000, // milliseconds
       pauseTime: 0,
-      exhaleTime: 1.5,
+      exhaleTime: 1500,
       //-- Breathing round config
       breathReps: 3, // How many breaths before hold time.
       breathCurrRep: 0, // Current breath in current round
       //-- Long hold config
-      holdTime: 5, // hold time in seconds
+      holdTime: 5000, // hold time in seconds
+      defaultHoldTime: 5000,
+      breathRoundsDetail: {},
       extend: false, // When true, extend the hold time, don't stop the timer
-      recoveryHoldTime: 5, // inhaled holding time in seconds
+      recoveryHoldTime: 5000, // inhaled holding time in seconds
       actionPauseTimeIn: 3, // seconds to "wait" before inhale holds
       actionPauseTimeOut: 7, // seconds to "wait" after inhale holds
       //-- Breathing session config
@@ -269,12 +291,6 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
             invoke: {
               id: "ticker", // only used for viz
               src: ticker,
-              onDone: {
-                actions: (ctx) => console.log("Breath ticker invoke done"),
-              },
-              onError: {
-                actions: (ctx) => console.log("Breath ticker invoke error"),
-              },
             },
             always: [
               {

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -7,6 +7,10 @@ import Animated, {
   withTiming,
   useAnimatedProps,
   useAnimatedReaction,
+  abs,
+  interpolate,
+  withDecay,
+  withDelay,
 } from "react-native-reanimated";
 import { useBreathMachineMain } from "../../hooks/useBreathMachineHooks";
 import { BreathContext } from "../../machines/breathMachine";
@@ -20,9 +24,10 @@ function Box() {
     },
     send,
   ] = useBreathMachineMain();
-  const offset = useSharedValue(1);
-  const inhaleTime = useSharedValue(context.inhaleTime);
-  const exhaleTime = useSharedValue(context.exhaleTime);
+  const offset = useSharedValue(100);
+  const breathRoundText = useSharedValue(0.5);
+  // const inhaleTime = useSharedValue(context.inhaleTime);
+  // const exhaleTime = useSharedValue(context.exhaleTime);
   const breathTime = useSharedValue(context.inhaleTime);
   const currBreathState = useSharedValue<string>(breathStateString);
 
@@ -38,30 +43,45 @@ function Box() {
 
   const derived = useAnimatedReaction(
     () => {
-      return currBreathState.value;
+      return breathStateString; // currBreathState.value;
     },
     (result, previous) => {
       if (result === "Inhale") {
         console.log("Inhale");
         breathTime.value = context.inhaleTime;
         offset.value = 255;
+        breathRoundText.value = 1;
       } else if (result === "Exhale") {
         console.log("Exhale");
         breathTime.value = context.exhaleTime;
-        offset.value = 0;
+        offset.value = 100;
+        breathRoundText.value = 0.5;
       }
-    }
+    },
+    [breathStateString]
   );
 
-  React.useEffect(() => {
-    // offset.value = withTiming(breath, { duration: 1600 });
-    currBreathState.value = breathStateString;
-  }, [breathStateString]);
-
+  // React.useEffect(() => {
+  //   // offset.value = withTiming(breath, { duration: 1600 });
+  //   currBreathState.value = breathStateString;
+  // }, [breathStateString]);
+  const textStyle = useAnimatedStyle(() => {
+    const opacityVal = interpolate(breathRoundText.value, [0, 0.8, 1], [0, 0, 1]);
+    const scaleVal = interpolate(breathRoundText.value, [0, 1], [0.1, 2]);
+    return {
+      opacity: withTiming(opacityVal, { duration: breathTime.value }),
+      transform: [
+        { scale: withDelay(300, withTiming(scaleVal, { duration: breathTime.value - 300 })) },
+      ],
+    };
+  });
   return (
-    <>
+    <View style={{ justifyContent: "center", alignItems: "center", marginBottom: 10 }}>
       <Animated.View style={[styles.box, animatedStyles]} />
-      <Button
+      <Animated.View style={[textStyle, { position: "absolute" }]}>
+        <Text style={{ fontSize: 40, color: "white" }}>{context.breathCurrRep}</Text>
+      </Animated.View>
+      {/* <Button
         onPress={() => {
           // offset.value = withTiming(breath, { duration: 1600 });
           setBreath(0);
@@ -74,8 +94,8 @@ function Box() {
           setBreath(200);
         }}
         title="in"
-      />
-    </>
+      /> */}
+    </View>
   );
 }
 
@@ -83,7 +103,7 @@ const styles = StyleSheet.create({
   box: {
     width: 100,
     height: 100,
-    borderRadius: 20,
+    borderRadius: 50,
     backgroundColor: "purple",
   },
 });

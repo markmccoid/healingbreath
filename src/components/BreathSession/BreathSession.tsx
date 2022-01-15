@@ -16,7 +16,7 @@ import BreathAnimation from "./BreathAnimation";
 
 import { ActionButton } from "../../components/buttons/Buttons";
 
-const BreathSession = ({ sessionSettings }) => {
+const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsType }) => {
   // console.log("Session", sessionSettings);
   const [{ context, value: currStateValue, breathState }, send] = useBreathMachineMain();
   const [currState, currStateDesc] = breathState;
@@ -33,6 +33,14 @@ const BreathSession = ({ sessionSettings }) => {
   useEffect(() => {
     console.log("in BreathSession useEffect");
     breathEvents.updateSessionSettings(sessionSettings);
+    breathEvents.updateSessionBreathRounds({
+      [1]: {
+        holdTime: 3000,
+      },
+      [2]: {
+        holdTime: 6000,
+      },
+    });
   }, [sessionSettings]);
 
   return (
