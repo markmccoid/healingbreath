@@ -14,7 +14,13 @@ const RootNav = () => {
     <NavigationContainer>
       <RootStack.Navigator>
         <RootStack.Screen name="SessionList" component={SessionList} />
-        <RootStack.Screen name="Session" component={Session} />
+        <RootStack.Screen
+          options={{
+            headerShown: false,
+          }}
+          name="Session"
+          component={Session}
+        />
         <RootStack.Group
           screenOptions={{
             presentation: "modal",

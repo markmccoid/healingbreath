@@ -33,14 +33,7 @@ function Box() {
 
   const [state, setState] = React.useState("in");
   const [breath, setBreath] = React.useState(0);
-
-  const animatedStyles = useAnimatedStyle(() => {
-    return {
-      width: withTiming(offset.value, { duration: breathTime.value }),
-      transform: [{ scale: 1 }],
-    };
-  });
-
+  // console.log("breathstatestring", breathStateString);
   const derived = useAnimatedReaction(
     () => {
       return breathStateString; // currBreathState.value;
@@ -56,15 +49,31 @@ function Box() {
         breathTime.value = context.exhaleTime;
         offset.value = 100;
         breathRoundText.value = 0.5;
+      } else {
+        console.log("Other");
+        breathTime.value = 1000;
+        offset.value = 100;
+        breathRoundText.value = 0.51;
       }
     },
     [breathStateString]
   );
 
-  // React.useEffect(() => {
-  //   // offset.value = withTiming(breath, { duration: 1600 });
-  //   currBreathState.value = breathStateString;
-  // }, [breathStateString]);
+  // Animated Styles
+  //* Inhale/Exhale
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      // width: withTiming(offset.value, { duration: breathTime.value }),
+      transform: [
+        {
+          scale: withTiming(interpolate(breathRoundText.value, [0.5, 1], [0.8, 1.4]), {
+            duration: breathTime.value,
+          }),
+        },
+      ],
+    };
+  });
+  //* TEXT
   const textStyle = useAnimatedStyle(() => {
     const opacityVal = interpolate(breathRoundText.value, [0, 0.8, 1], [0, 0, 1]);
     const scaleVal = interpolate(breathRoundText.value, [0, 1], [0.1, 2]);
@@ -75,26 +84,27 @@ function Box() {
       ],
     };
   });
+  //* Hold Test
+  const holdStyle = useAnimatedStyle(() => {
+    return {
+      opacity: withTiming(1, { duration: 3000 }),
+    };
+  });
   return (
     <View style={{ justifyContent: "center", alignItems: "center", marginBottom: 10 }}>
-      <Animated.View style={[styles.box, animatedStyles]} />
-      <Animated.View style={[textStyle, { position: "absolute" }]}>
-        <Text style={{ fontSize: 40, color: "white" }}>{context.breathCurrRep}</Text>
-      </Animated.View>
-      {/* <Button
-        onPress={() => {
-          // offset.value = withTiming(breath, { duration: 1600 });
-          setBreath(0);
-        }}
-        title="out"
-      />
-      <Button
-        onPress={() => {
-          // offset.value = withTiming(breath, { duration: 1600 });
-          setBreath(200);
-        }}
-        title="in"
-      /> */}
+      {(breathStateString === "Inhale" || breathStateString === "Exhale") && (
+        <>
+          <Animated.View style={[styles.box, animatedStyles]} />
+          <Animated.View style={[textStyle, { position: "absolute" }]}>
+            <Text style={{ fontSize: 40, color: "white" }}>{context.breathCurrRep}</Text>
+          </Animated.View>
+        </>
+      )}
+      {breathStateString === "Hold" && (
+        <View style={[holdStyle, { backgroundColor: "purple" }]}>
+          <Text>HOLDING</Text>
+        </View>
+      )}
     </View>
   );
 }

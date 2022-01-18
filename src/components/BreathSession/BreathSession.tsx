@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { useSelector } from "@xstate/react";
-import { inspect } from "@xstate/inspect";
-
+import { useNavigation } from "@react-navigation/core";
 import { SessionSettingsType, useBreathState } from "../../context/breathMachineContext";
 import {
   useBreathMachineMain,
@@ -22,6 +20,7 @@ const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsTy
   const [currState, currStateDesc] = breathState;
   const breathEvents = useBreathEvents();
   const breathMethods = useBreathMethods();
+  const navigation = useNavigation();
   // const breathState = useBreathState();
   // const [bdata, bsend] = useBreathMachineMain();
   // console.log("CONTEXT", context.breathCurrRep);
@@ -33,20 +32,23 @@ const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsTy
   useEffect(() => {
     console.log("in BreathSession useEffect");
     breathEvents.updateSessionSettings(sessionSettings);
-    breathEvents.updateSessionBreathRounds({
-      [1]: {
-        holdTime: 3000,
-      },
-      [2]: {
-        holdTime: 6000,
-      },
-    });
+    // breathEvents.updateSessionBreathRounds({
+    //   1: {
+    //     holdTime: 10000,
+    //   },
+    //   2: {
+    //     holdTime: 20000,
+    //   },
+    // });
   }, [sessionSettings]);
 
   return (
     <View>
-      <Text>Breath Session Main</Text>
+      <Text>Round - {context.breathCurrRound}</Text>
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+        <ActionButton onPress={() => navigation.navigate("SessionList")}>
+          <Text style={{ fontSize: 20, color: "#fff" }}>Back</Text>
+        </ActionButton>
         <ActionButton onPress={() => breathEvents.startSession()}>
           <Text style={{ fontSize: 20, color: "#fff" }}>Start</Text>
         </ActionButton>
@@ -65,16 +67,20 @@ const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsTy
         <ActionButton onPress={() => breathEvents.extendSession()}>
           <Text style={{ fontSize: 20, color: "#fff" }}>Extend</Text>
         </ActionButton>
+        <ActionButton onPress={() => breathEvents.goToNext()}>
+          <Text style={{ fontSize: 20, color: "#fff" }}>Next</Text>
+        </ActionButton>
       </View>
       <View style={{ borderWidth: 1, padding: 10 }}>
-        <Timer />
+        <Timer type="countup" />
+        <Timer type="countdown" />
       </View>
       <View style={{ padding: 10, justifyContent: "center", alignItems: "center" }}>
         <Text style={{ fontSize: 25, color: "#F1820A" }}> {currStateDesc}</Text>
       </View>
       <BreathAnimation />
       <View>
-        <Text>{`${context.breathCurrRound} - ${context.breathCurrRep}`}</Text>
+        <Text>{`${context.breathCurrRound} - ${context.breathCurrRep} - ${breathState[0]}`}</Text>
         <Text>{`${context.sessionStart} - ${context.sessionEnd}`}</Text>
         <Text>{`${JSON.stringify(context.sessionStats)}`}</Text>
       </View>

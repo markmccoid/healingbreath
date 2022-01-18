@@ -1,5 +1,6 @@
 import * as React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackProps } from "../../types/navTypes";
 import { BreathMachineProvider } from "../../context/breathMachineContext";
 import BreathSession from "../../components/BreathSession/BreathSession";
@@ -7,27 +8,31 @@ import { AdjustingInterval } from "../../utils/timerAdjustingInterval";
 
 const sampleMachineSettings = {
   interval: 100,
-  inhaleTime: 2 * 1000,
-  exhaleTime: 2 * 1000,
+  inhaleTime: 1.6 * 1000,
+  exhaleTime: 1.6 * 1000,
   pauseTime: 0,
-  breathReps: 2,
+  breathReps: 5,
   breathRounds: 3,
-  holdTime: 6 * 1000,
-  recoveryHoldTime: 5 * 1000,
-  actionPauseTimeIn: 1 * 1000,
-  actionPauseTimeOut: 1 * 1000,
+  defaultHoldTime: 10 * 1000,
+  recoveryHoldTime: 15 * 1000,
+  actionPauseTimeIn: 2 * 1000,
+  actionPauseTimeOut: 2 * 1000,
+  breathRoundsDetail: {
+    1: {
+      holdTime: 5000,
+    },
+    2: {
+      holdTime: 8000,
+    },
+  },
 };
 const Session = ({ navigation, route }: RootStackProps<"Session">) => {
   return (
-    <View>
-      <Text>Session Screen</Text>
+    <SafeAreaView>
       <BreathMachineProvider>
         <BreathSession sessionSettings={sampleMachineSettings} />
       </BreathMachineProvider>
-      <TouchableOpacity onPress={() => navigation.navigate("Main Modal")}>
-        <Text>Show Modal</Text>
-      </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 

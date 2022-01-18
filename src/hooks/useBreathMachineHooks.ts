@@ -10,6 +10,35 @@ import { BreathContext, BreathEvent, BreathRoundsDetail } from "../machines/brea
 
 type BreathContextWOElapsed = Omit<BreathContext, "elapsed">;
 
+type BreathStates = [
+  (
+    | "idle"
+    | "breathing.inhale"
+    | "breathing.exhale"
+    | "breathing.hold"
+    | "breathing.paused"
+    | "holding.breathhold"
+    | "holding.pause"
+    | "intropause"
+    | "recoveryhold.breathhold"
+    | "recoveryhold.paused"
+    | "outropause"
+  ),
+  (
+    | "Idle"
+    | "Inhale"
+    | "Exhale"
+    | "Breathing Hold"
+    | "Breathing Paused"
+    | "Hold"
+    | "Hold Paused"
+    | "Intro Pause"
+    | "Recovery Hold"
+    | "Recovery Paused"
+    | "Outro Pause"
+  )
+];
+
 function getBreathState(state) {
   const output = {
     idle: "Idle",
@@ -39,7 +68,7 @@ type BreathData = {
   // current state value of machine
   value: StateValue;
   // string version of current state value using
-  breathState: [string, string];
+  breathState: BreathStates;
 };
 // Selector that excludes elapsed from the context
 const getContextSansElapsed = (
