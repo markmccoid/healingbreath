@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -11,11 +11,14 @@ import Animated, {
   interpolate,
   withDecay,
   withDelay,
+  Extrapolate,
+  withRepeat,
+  withSpring,
 } from "react-native-reanimated";
 import { useBreathMachineMain } from "../../hooks/useBreathMachineHooks";
 import { BreathContext } from "../../machines/breathMachine";
 
-function Box() {
+function BreathAnimation() {
   const [
     {
       context,
@@ -24,15 +27,9 @@ function Box() {
     },
     send,
   ] = useBreathMachineMain();
-  const offset = useSharedValue(100);
-  const breathRoundText = useSharedValue(0.5);
-  // const inhaleTime = useSharedValue(context.inhaleTime);
-  // const exhaleTime = useSharedValue(context.exhaleTime);
+  const forcedBreathAnim = useSharedValue(0);
   const breathTime = useSharedValue(context.inhaleTime);
-  const currBreathState = useSharedValue<string>(breathStateString);
 
-  const [state, setState] = React.useState("in");
-  const [breath, setBreath] = React.useState(0);
   // console.log("breathstatestring", breathStateString);
   const derived = useAnimatedReaction(
     () => {
@@ -42,18 +39,16 @@ function Box() {
       if (result === "Inhale") {
         console.log("Inhale");
         breathTime.value = context.inhaleTime;
-        offset.value = 255;
-        breathRoundText.value = 1;
+        forcedBreathAnim.value = withTiming(1, { duration: breathTime.value });
       } else if (result === "Exhale") {
         console.log("Exhale");
         breathTime.value = context.exhaleTime;
-        offset.value = 100;
-        breathRoundText.value = 0.5;
+        forcedBreathAnim.value = withTiming(0, { duration: breathTime.value });
       } else {
         console.log("Other");
         breathTime.value = 1000;
-        offset.value = 100;
-        breathRoundText.value = 0.51;
+        forcedBreathAnim.value = withTiming(1, { duration: 1000 });
+        // forcedBreathAnim.value = withSpring(0.25, { stiffness: 90, damping: 8 });
       }
     },
     [breathStateString]
@@ -62,37 +57,51 @@ function Box() {
   // Animated Styles
   //* Inhale/Exhale
   const animatedStyles = useAnimatedStyle(() => {
+    const scaleUp = interpolate(forcedBreathAnim.value, [0, 0.8, 1], [0.5, 1.2, 1.4]);
+    const scaleDown = interpolate(forcedBreathAnim.value, [0, 0.2, 1], [0.5, 0.6, 1.4]);
     return {
       // width: withTiming(offset.value, { duration: breathTime.value }),
       transform: [
         {
-          scale: withTiming(interpolate(breathRoundText.value, [0.5, 1], [0.8, 1.4]), {
-            duration: breathTime.value,
-          }),
+          // scale: withTiming(viewScale.value, {
+          //   duration: breathTime.value,
+          // }),
+          scale:
+            breathStateString === "Exhale"
+              ? scaleDown
+              : breathStateString === "Inhale"
+              ? scaleUp
+              : 0.5, //interpolate(forcedBreathAnim.value, [0, 0.9, 1], [0.5, 1.3, 1.4]),
         },
       ],
     };
   });
   //* TEXT
   const textStyle = useAnimatedStyle(() => {
-    const opacityVal = interpolate(breathRoundText.value, [0, 0.8, 1], [0, 0, 1]);
-    const scaleVal = interpolate(breathRoundText.value, [0, 1], [0.1, 2]);
+    const opacity = interpolate(
+      forcedBreathAnim.value,
+      [0, 0.1, 1],
+      [0, 0.8, 1],
+      Extrapolate.CLAMP
+    );
+    const scale = interpolate(forcedBreathAnim.value, [0, 1], [0.5, 2]);
     return {
-      opacity: withTiming(opacityVal, { duration: breathTime.value }),
+      opacity,
       transform: [
-        { scale: withDelay(300, withTiming(scaleVal, { duration: breathTime.value - 300 })) },
+        {
+          scale,
+        },
       ],
     };
   });
+
   //* Hold Test
-  const holdStyle = useAnimatedStyle(() => {
-    return {
-      opacity: withTiming(1, { duration: 3000 }),
-    };
-  });
+
   return (
     <View style={{ justifyContent: "center", alignItems: "center", marginBottom: 10 }}>
-      {(breathStateString === "Inhale" || breathStateString === "Exhale") && (
+      {(breathStateString === "Inhale" ||
+        breathStateString === "Exhale" ||
+        breathStateString === "Breathing Paused") && (
         <>
           <Animated.View style={[styles.box, animatedStyles]} />
           <Animated.View style={[textStyle, { position: "absolute" }]}>
@@ -100,8 +109,15 @@ function Box() {
           </Animated.View>
         </>
       )}
+      {/* <Animated.View
+        style={[scaleStyle, { backgroundColor: "red", width: 100, height: 100 }]}
+      />
+      <Animated.View
+        style={[scaleIntStyle, { backgroundColor: "blue", width: 100, height: 100 }]}
+      /> */}
+
       {breathStateString === "Hold" && (
-        <View style={[holdStyle, { backgroundColor: "purple" }]}>
+        <View style={[{ backgroundColor: "purple", width: 100 }]}>
           <Text>HOLDING</Text>
         </View>
       )}
@@ -117,4 +133,4 @@ const styles = StyleSheet.create({
     backgroundColor: "purple",
   },
 });
-export default Box;
+export default BreathAnimation;
