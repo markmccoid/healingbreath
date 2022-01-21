@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 // import { useTimer } from "../../hooks/useBreathMachineHooks";
 import { useBreathState } from "../../context/breathMachineContext";
 
-const Timer = ({ type = "countup" }: { type: "countdown" | "countup" }) => {
+const Timer = ({ type = "countup" }: { type?: "countdown" | "countup" }) => {
   const [timerWidth, setTimerWidth] = React.useState<number>();
   const breathStateServices = useBreathState();
   const [state] = useActor(breathStateServices.breathStateService);
@@ -49,7 +49,7 @@ const Timer = ({ type = "countup" }: { type: "countdown" | "countup" }) => {
             paddingLeft: 5,
           }}
         >
-          <Text style={{ fontSize: 20, color: "#8B4B07" }}>{timeString}</Text>
+          <Text style={{ fontSize: 25, color: "#8B4B07" }}>{timeString}</Text>
         </View>
       </View>
     </View>

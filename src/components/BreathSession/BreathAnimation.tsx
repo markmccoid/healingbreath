@@ -15,7 +15,7 @@ import Animated, {
   withRepeat,
   withSpring,
 } from "react-native-reanimated";
-import { useBreathMachineMain } from "../../hooks/useBreathMachineHooks";
+import { useBreathMachineInfo } from "../../hooks/useBreathMachineHooks";
 import { BreathContext } from "../../machines/breathMachine";
 
 function BreathAnimation() {
@@ -23,10 +23,11 @@ function BreathAnimation() {
     {
       context,
       value: currStateValue,
+      tags,
       breathState: [_, breathStateString],
     },
     send,
-  ] = useBreathMachineMain();
+  ] = useBreathMachineInfo();
   const forcedBreathAnim = useSharedValue(0);
   const breathTime = useSharedValue(context.inhaleTime);
 

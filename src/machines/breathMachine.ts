@@ -306,6 +306,7 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
       },
       breathing: {
         id: "breathing",
+        tags: "next.holding",
         entry: ["incrementBreathRound", updateHoldingTimeLeft("breathing")],
         exit: ["updateSessionBreathsStats"],
         initial: "inhale",
@@ -408,6 +409,7 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
       },
       holding: {
         initial: "breathhold",
+        tags: "next.recoveryhold",
         entry: [
           "resetElapsed",
           "resetTimeLeft",
@@ -466,8 +468,9 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
         },
       },
       recoveryhold: {
-        entry: ["resetElapsed", "resetTimeLeft", updateHoldingTimeLeft("recoveryhold")],
         initial: "breathhold",
+        tags: "next.breathingreps",
+        entry: ["resetElapsed", "resetTimeLeft", updateHoldingTimeLeft("recoveryhold")],
         exit: ["updateSessionRecoveryHoldStats", "resetBreathCurrRep"],
         on: {
           STOP: "idle",

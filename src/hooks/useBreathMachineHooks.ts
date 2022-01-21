@@ -3,7 +3,7 @@ import {
   objCompare,
   SessionSettingsType,
 } from "../context/breathMachineContext";
-import { useCallback } from "react";
+// import { useCallback } from "react";
 import { useSelector } from "@xstate/react";
 import { Sender, State, StateValue } from "xstate";
 import { BreathContext, BreathEvent, BreathRoundsDetail } from "../machines/breathMachine";
@@ -39,7 +39,17 @@ type BreathStates = [
   )
 ];
 
-function getBreathState(state) {
+function getBreathState(
+  state: State<
+    BreathContext,
+    BreathEvent,
+    any,
+    {
+      value: any;
+      context: BreathContext;
+    }
+  >
+) {
   const output = {
     idle: "Idle",
     "breathing.inhale": "Inhale",
@@ -58,7 +68,7 @@ function getBreathState(state) {
       return [key, value];
     }
   }
-  return "not Found";
+  return ["unknown", "unknown"];
   // state.matches("breathing.inhale")
 }
 
@@ -67,6 +77,7 @@ type BreathData = {
   context: BreathContextWOElapsed;
   // current state value of machine
   value: StateValue;
+  tags: Set<string> | undefined;
   // string version of current state value using
   breathState: BreathStates;
 };
@@ -82,12 +93,15 @@ const getContextSansElapsed = (
     }
   >
 ) => {
-  const context: BreathContextWOElapsed = { ...state.context };
-  delete context.elapsedInt;
-  delete context.elapsed;
+  // removing fields elapsed and timeLEft, so they don't cause extra rerenders
+  const { elapsed, timeLeft, ...context } = state.context;
+  // const context: BreathContextWOElapsed = { ...state.context };
+  // delete context.timeLeft;
+  // delete context.elapsed;
   const newData = {
     context,
     value: state.value,
+    tags: state.tags,
     breathState: getBreathState(state),
   } as BreathData;
   return newData;
@@ -98,7 +112,7 @@ const getContextSansElapsed = (
 // AND returns the send function to send events
 // -- opt for useBreathEvents instead of send --
 //------------------------------------
-export const useBreathMachineMain = (): [BreathData, Sender<BreathEvent>] => {
+export const useBreathMachineInfo = (): [BreathData, Sender<BreathEvent>] => {
   const breathStateServices = useBreathState();
   const send = breathStateServices.breathStateService.send;
   const breathData = useSelector(

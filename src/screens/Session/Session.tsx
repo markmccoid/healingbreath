@@ -11,15 +11,15 @@ const sampleMachineSettings = {
   inhaleTime: 1.6 * 1000,
   exhaleTime: 1.6 * 1000,
   pauseTime: 0,
-  breathReps: 5,
+  breathReps: 3,
   breathRounds: 3,
-  defaultHoldTime: 10 * 1000,
+  defaultHoldTime: 5 * 1000,
   recoveryHoldTime: 15 * 1000,
-  actionPauseTimeIn: 2 * 1000,
-  actionPauseTimeOut: 2 * 1000,
+  actionPauseTimeIn: 3 * 1000,
+  actionPauseTimeOut: 3 * 1000,
   breathRoundsDetail: {
     1: {
-      holdTime: 5000,
+      holdTime: 10000,
     },
     2: {
       holdTime: 8000,
@@ -28,7 +28,7 @@ const sampleMachineSettings = {
 };
 const Session = ({ navigation, route }: RootStackProps<"Session">) => {
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <BreathMachineProvider>
         <BreathSession sessionSettings={sampleMachineSettings} />
       </BreathMachineProvider>

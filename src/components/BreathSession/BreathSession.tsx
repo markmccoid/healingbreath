@@ -3,26 +3,27 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { SessionSettingsType, useBreathState } from "../../context/breathMachineContext";
 import {
-  useBreathMachineMain,
+  useBreathMachineInfo,
   useBreathEvents,
   useBreathFlags,
   useBreathMethods,
 } from "../../hooks/useBreathMachineHooks";
 
 import Timer from "./Timer";
-import BreathAnimation from "./BreathAnimation";
+// import BreathAnimation from "./BreathAnimation";
+import BreathAnimation from "./MotiAnimation";
 
 import { ActionButton } from "../../components/buttons/Buttons";
 
 const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsType }) => {
   // console.log("Session", sessionSettings);
-  const [{ context, value: currStateValue, breathState }, send] = useBreathMachineMain();
+  const [{ context, value: currStateValue, breathState }, send] = useBreathMachineInfo();
   const [currState, currStateDesc] = breathState;
   const breathEvents = useBreathEvents();
   const breathMethods = useBreathMethods();
   const navigation = useNavigation();
   // const breathState = useBreathState();
-  // const [bdata, bsend] = useBreathMachineMain();
+  // const [bdata, bsend] = useBreathMachineInfo();
   // console.log("CONTEXT", context.breathCurrRep);
   // console.log("BSTATE", currState);
 
@@ -43,7 +44,7 @@ const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsTy
   }, [sessionSettings]);
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <Text>Round - {context.breathCurrRound}</Text>
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
         <ActionButton onPress={() => navigation.navigate("SessionList")}>
@@ -78,12 +79,14 @@ const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsTy
       <View style={{ padding: 10, justifyContent: "center", alignItems: "center" }}>
         <Text style={{ fontSize: 25, color: "#F1820A" }}> {currStateDesc}</Text>
       </View>
+
       <BreathAnimation />
-      <View>
+
+      {/* <View>
         <Text>{`${context.breathCurrRound} - ${context.breathCurrRep} - ${breathState[0]}`}</Text>
         <Text>{`${context.sessionStart} - ${context.sessionEnd}`}</Text>
         <Text>{`${JSON.stringify(context.sessionStats)}`}</Text>
-      </View>
+      </View> */}
     </View>
   );
 };
