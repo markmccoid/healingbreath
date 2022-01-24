@@ -19,6 +19,8 @@ import Animated, {
 } from "react-native-reanimated";
 import HoldAnimation from "./HoldAnimation";
 import { useBreathMachineInfo } from "../../hooks/useBreathMachineHooks";
+import RecoveryAnimation from "./RecoveryAnimation";
+import TextAnimation from "./TextAnimation";
 
 function BreathAnimation() {
   const [
@@ -169,7 +171,7 @@ function BreathAnimation() {
   return (
     <View style={{ flexGrow: 1, borderWidth: 1 }}>
       <AnimatePresence exitBeforeEnter>
-        {breathState.includes("breathing") ? (
+        {breathState.includes("breathing") && (
           <View style={{ flexGrow: 1, justifyContent: "center", alignItems: "center" }}>
             <MotiView
               key="breathing"
@@ -186,9 +188,9 @@ function BreathAnimation() {
                 justifyContent: "center",
                 alignItems: "center",
                 backgroundColor: "purple",
-                width: 100,
-                height: 100,
-                borderRadius: 50,
+                width: 200,
+                height: 200,
+                borderRadius: 100,
               }}
             />
             <MotiText
@@ -205,9 +207,17 @@ function BreathAnimation() {
               {context.breathCurrRep}
             </MotiText>
           </View>
-        ) : null}
+        )}
+        {breathStateString === "Hold" && <HoldAnimation key="hold" />}
+        {breathStateString === "Recovery Hold" && <RecoveryAnimation key="recovery" />}
+        {breathStateString === "Intro Pause" && (
+          <TextAnimation key="intro" text="Breath In and Hold" type="in" />
+        )}
+        {breathStateString === "Outro Pause" && (
+          <TextAnimation key="outro" text="Breath Out" type="out" />
+        )}
       </AnimatePresence>
-      {breathStateString === "Hold" && <HoldAnimation key="hold" />}
+      {/* {breathStateString === "Hold" && <HoldAnimation key="hold" />} */}
     </View>
   );
 }

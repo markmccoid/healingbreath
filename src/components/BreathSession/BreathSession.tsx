@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { SessionSettingsType, useBreathState } from "../../context/breathMachineContext";
@@ -14,25 +14,40 @@ import Timer from "./Timer";
 import BreathAnimation from "./MotiAnimation";
 
 import { ActionButton } from "../../components/buttons/Buttons";
+import { useTimingAlerts } from "../../hooks/useTimingAlerts";
+import { DefaultPubSubContext } from "usepubsub";
 
 const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsType }) => {
   // console.log("Session", sessionSettings);
+  // const breathStateServices = useBreathState();
+  const { subscribe, publish } = useContext(DefaultPubSubContext);
   const [{ context, value: currStateValue, breathState }, send] = useBreathMachineInfo();
   const [currState, currStateDesc] = breathState;
   const breathEvents = useBreathEvents();
   const breathMethods = useBreathMethods();
   const navigation = useNavigation();
+  const x = useTimingAlerts();
+
   // const breathState = useBreathState();
   // const [bdata, bsend] = useBreathMachineInfo();
   // console.log("CONTEXT", context.breathCurrRep);
   // console.log("BSTATE", currState);
 
+  // console.log("BREATHSESSION BEFORE ", subscribe.toString());
   if (context.sessionComplete) {
     console.log("SESSION", context.sessionStats);
   }
+  // console.log("x", x);
+  useEffect(() => {
+    if (x) {
+      console.log("alert has been alerted", x.message);
+    }
+  }, [x]);
+
   useEffect(() => {
     console.log("in BreathSession useEffect");
     breathEvents.updateSessionSettings(sessionSettings);
+
     // breathEvents.updateSessionBreathRounds({
     //   1: {
     //     holdTime: 10000,
@@ -41,6 +56,8 @@ const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsTy
     //     holdTime: 20000,
     //   },
     // });
+    // breathStateServices.breathStateService.send("FINISHED");
+    // breathStateServices.breathStateService.stop();
   }, [sessionSettings]);
 
   return (
@@ -79,7 +96,9 @@ const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsTy
       <View style={{ padding: 10, justifyContent: "center", alignItems: "center" }}>
         <Text style={{ fontSize: 25, color: "#F1820A" }}> {currStateDesc}</Text>
       </View>
-
+      <TouchableOpacity onPress={() => publish("breathing", 2)}>
+        <Text>Publish</Text>
+      </TouchableOpacity>
       <BreathAnimation />
 
       {/* <View>

@@ -13,6 +13,7 @@ export type BreathEvent =
   | { type: "UNPAUSE" }
   | { type: "EXTEND_TOGGLE" }
   | { type: "NEXT" }
+  | { type: "FINISHED" }
   | {
       type: "UPDATE_DEFAULTS";
       sessionSettings: Partial<Omit<BreathContext, "extend" | "interval" | "elapsed">>;
@@ -110,7 +111,9 @@ const resetContext = assign<BreathContext, BreathEvent>({
   breathCurrRound: 0,
 });
 
-const updateHoldingTimeLeft = (source: "holding" | "recoveryhold" | "breathing") =>
+const updateHoldingTimeLeft = (
+  source: "holding" | "recoveryhold" | "breathing" | "intropause" | "outropause"
+) =>
   assign<BreathContext, BreathEvent>((ctx, event) => {
     let timeLeft = 0;
     switch (source) {
@@ -125,6 +128,14 @@ const updateHoldingTimeLeft = (source: "holding" | "recoveryhold" | "breathing")
       case "breathing":
         return {
           timeLeft: ctx.breathReps * (ctx.inhaleTime + ctx.exhaleTime + ctx.pauseTime + 200),
+        };
+      case "intropause":
+        return {
+          timeLeft: ctx.actionPauseTimeIn,
+        };
+      case "outropause":
+        return {
+          timeLeft: ctx.actionPauseTimeOut,
         };
       default:
         return {
@@ -302,6 +313,9 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
           UPDATE_DEFAULTS: {
             actions: ["updateSessionSettings"],
           },
+          FINISHED: {
+            target: "finished",
+          },
         },
       },
       breathing: {
@@ -451,7 +465,7 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
         },
       },
       intropause: {
-        entry: ["resetElapsed"],
+        entry: ["resetElapsed", updateHoldingTimeLeft("intropause")],
         invoke: {
           id: "ticker-pause", // only used for viz
           src: ticker,
@@ -506,7 +520,7 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
         },
       },
       outropause: {
-        entry: ["resetElapsed"],
+        entry: ["resetElapsed", updateHoldingTimeLeft("outropause")],
         invoke: {
           id: "ticker-outropause", // only used for viz
           src: ticker,

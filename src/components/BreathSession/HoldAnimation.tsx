@@ -3,6 +3,7 @@ import React from "react";
 import { Dimensions, View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useBreathMachineInfo } from "../../hooks/useBreathMachineHooks";
 import { useLayout } from "../../hooks/useLayout";
+import { getCurrentRoundHoldTime } from "../../utils/machineHelpers";
 import Timer from "./Timer";
 
 const { width, height } = Dimensions.get("window");
@@ -18,7 +19,7 @@ function HoldAnimation() {
     send,
   ] = useBreathMachineInfo();
   const [{ height: animHeight }, onLayout] = useLayout();
-
+  const currHoldTime = getCurrentRoundHoldTime(context);
   //* Hold Test
   const animationState = useAnimationState({
     inhale: {
@@ -42,25 +43,27 @@ function HoldAnimation() {
       }}
       onLayout={animHeight ? undefined : onLayout}
     >
-      <Timer type="countdown" />
       <MotiView
         key="hold"
-        from={{ opacity: 0, height: 10, backgroundColor: "purple" }}
+        from={{ opacity: 0, height: 50, backgroundColor: "purple" }}
         animate={{
           opacity: 1,
-          height: animHeight - 25,
+          height: animHeight,
         }}
         transition={{
-          height: { type: "timing", duration: 5000 },
+          height: { type: "timing", duration: currHoldTime },
           type: "timing",
           duration: 500,
         }}
         style={{
           backgroundColor: "#ccc",
           width,
+          justifyContent: "center",
           // height: 100,
         }}
-      ></MotiView>
+      >
+        <Timer type="countdown" size={50} color="white" />
+      </MotiView>
     </View>
   );
 }

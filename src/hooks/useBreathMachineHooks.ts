@@ -124,6 +124,8 @@ export const useBreathMachineInfo = (): [BreathData, Sender<BreathEvent>] => {
   return [breathData, send];
 };
 
+// nextEvents was only thing I could return that didn't cause
+// a bunch of rerenders.
 export const useBreathMethods = () => {
   const breathStateServices = useBreathState();
   const nextEvents = useSelector(
@@ -141,17 +143,17 @@ export const useBreathMethods = () => {
 };
 
 //------------------------------------
-// just returns the elapsed number
+// just returns the elapsed and timeLeft numbers
 //------------------------------------
-export const useTimer = (): number => {
+export const useTimer = (): [number, number] => {
   const breathStateServices = useBreathState();
   // const [state] = useActor(breathStateServices.breathStateService);
-  const elapsed = useSelector(
-    breathStateServices.breathStateService,
-    (state) => state.context.elapsed
-  );
+  const [elapsed, timeLeft] = useSelector(breathStateServices.breathStateService, (state) => [
+    state.context.elapsed,
+    state.context.timeLeft,
+  ]);
   //return Math.round(elapsed * 100) / 100;
-  return Math.round(elapsed);
+  return [elapsed, timeLeft];
 };
 //------------------------------------
 // Useful flags helpful in indicating

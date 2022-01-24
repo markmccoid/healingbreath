@@ -1,10 +1,18 @@
 import React from "react";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { useFonts, FiraSans_500Medium } from "@expo-google-fonts/fira-sans";
 import { StyleSheet, Text, View } from "react-native";
+import AppLoading from "expo-app-loading";
 import RootNav from "./src/navigation/RootNav";
 
 export default function App() {
+  let [fontsLoaded] = useFonts({
+    FiraSans_500Medium,
+  });
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
   return (
     <SafeAreaProvider>
       <View style={styles.container}>

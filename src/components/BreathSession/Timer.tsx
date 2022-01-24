@@ -3,13 +3,18 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 // import { useTimer } from "../../hooks/useBreathMachineHooks";
 import { useBreathState } from "../../context/breathMachineContext";
-
-const Timer = ({ type = "countup" }: { type?: "countdown" | "countup" }) => {
+type timerProps = {
+  type?: "countdown" | "countup";
+  size?: number;
+  color?: string;
+};
+const Timer = ({ type = "countup", size = 25, color = "black" }: timerProps) => {
   const [timerWidth, setTimerWidth] = React.useState<number>();
   const breathStateServices = useBreathState();
   const [state] = useActor(breathStateServices.breathStateService);
   const elapsed = state.context.elapsed;
   const timeLeft = state.context.timeLeft;
+
   // console.log("Time Left", timeLeft);
   // Need to know which round we are in for getting correct holdTime
   // maybe create a function that gets the correct hold time
@@ -20,16 +25,18 @@ const Timer = ({ type = "countup" }: { type?: "countdown" | "countup" }) => {
   // alertFunction: // function to call when alert happens.  Not sure if we need these two.
   //
 
-  const timeChanging = type === "countup" ? elapsed : timeLeft;
+  const timeChanging = type === "countup" || timeLeft < 0 ? elapsed : timeLeft;
   const timeNegative = type === "countup" ? elapsed < 0 : timeLeft < 0;
-  const tensOfSecond = Math.abs(Math.trunc(((timeChanging / 1000) % 1) * 10)).toString();
+  // const tensOfSecond = Math.abs(Math.trunc(((timeChanging / 1000) % 1) * 10)).toString();
   const seconds = Math.abs(Math.trunc(timeChanging / 1000) % 60)
     .toString()
     .padStart(2, "0");
   const minutes = Math.abs(Math.trunc(timeChanging / 60000))
     .toString()
-    .padStart(2, "0");
-  const timeString = `${timeNegative ? "-" : ""}${minutes}:${seconds}.${tensOfSecond}`;
+    .padStart(2, " ");
+  // const timeString = `${timeNegative ? "-" : ""}${minutes}:${seconds}.${tensOfSecond}`;
+  // const timeString = `${timeNegative ? "-" : ""}${minutes}:${seconds}`;
+  const timeString = `${minutes} : ${seconds}`;
 
   // Need to use a callback + conditional call onLayout since
   // we are modifying the underlying view.
@@ -49,7 +56,9 @@ const Timer = ({ type = "countup" }: { type?: "countdown" | "countup" }) => {
             paddingLeft: 5,
           }}
         >
-          <Text style={{ fontSize: 25, color: "#8B4B07" }}>{timeString}</Text>
+          <Text style={{ fontFamily: "FiraSans_500Medium", fontSize: size, color }}>
+            {timeString}
+          </Text>
         </View>
       </View>
     </View>
