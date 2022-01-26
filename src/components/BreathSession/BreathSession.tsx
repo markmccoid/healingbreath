@@ -15,18 +15,58 @@ import BreathAnimation from "./MotiAnimation";
 
 import { ActionButton } from "../../components/buttons/Buttons";
 import { useTimingAlerts } from "../../hooks/useTimingAlerts";
-import { DefaultPubSubContext } from "usepubsub";
+import { Audio } from "expo-av";
 
 const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsType }) => {
   // console.log("Session", sessionSettings);
   // const breathStateServices = useBreathState();
-  const { subscribe, publish } = useContext(DefaultPubSubContext);
-  const [{ context, value: currStateValue, breathState }, send] = useBreathMachineInfo();
+  const [{ context, alert, value: currStateValue, breathState }, send] =
+    useBreathMachineInfo();
   const [currState, currStateDesc] = breathState;
   const breathEvents = useBreathEvents();
   const breathMethods = useBreathMethods();
   const navigation = useNavigation();
-  const x = useTimingAlerts();
+  //************************ */
+  //* SOUND * */
+  const [sound, setSound] = React.useState<Audio.Sound>();
+  const [bgSound, setBgSound] = React.useState<Audio.Sound>();
+
+  // async function playSound() {
+  //   console.log("Loading Sound");
+  //   const { sound } = await Audio.Sound.createAsync(
+  //     require("../../../assets/ChurchBell001.mp3")
+  //   );
+  //   setSound(sound);
+
+  //   console.log("Playing Sound");
+  //   await sound.playAsync();
+  // }
+  // async function loadSounds() {
+  //   const { sound: bgSound } = await Audio.Sound.createAsync(
+  //     require("../../../assets/chant.wav")
+  //   );
+  //   //setBgSound(sound);
+  //   bgSound.playAsync();
+  // }
+  // React.useEffect(() => {
+  //   loadSounds();
+  // }, []);
+  // //--- Unload sound
+  // React.useEffect(() => {
+  //   return sound
+  //     ? () => {
+  //         console.log("Unloading Sound");
+  //         sound.unloadAsync();
+  //       }
+  //     : undefined;
+  // }, []);
+  // React.useEffect(() => {
+  //   if (alert) {
+  //     playSound();
+  //   }
+  // }, [alert]);
+  //************************ */
+  // const x = useTimingAlerts();
 
   // const breathState = useBreathState();
   // const [bdata, bsend] = useBreathMachineInfo();
@@ -39,10 +79,8 @@ const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsTy
   }
   // console.log("x", x);
   useEffect(() => {
-    if (x) {
-      console.log("alert has been alerted", x.message);
-    }
-  }, [x]);
+    console.log("alert has been alerted", alert);
+  }, [alert]);
 
   useEffect(() => {
     console.log("in BreathSession useEffect");
@@ -96,9 +134,7 @@ const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsTy
       <View style={{ padding: 10, justifyContent: "center", alignItems: "center" }}>
         <Text style={{ fontSize: 25, color: "#F1820A" }}> {currStateDesc}</Text>
       </View>
-      <TouchableOpacity onPress={() => publish("breathing", 2)}>
-        <Text>Publish</Text>
-      </TouchableOpacity>
+
       <BreathAnimation />
 
       {/* <View>

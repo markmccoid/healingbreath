@@ -80,6 +80,7 @@ type BreathData = {
   tags: Set<string> | undefined;
   // string version of current state value using
   breathState: BreathStates;
+  alert: string | undefined;
 };
 // Selector that excludes elapsed from the context
 const getContextSansElapsed = (
@@ -121,7 +122,8 @@ export const useBreathMachineInfo = (): [BreathData, Sender<BreathEvent>] => {
     objCompare
   );
 
-  return [breathData, send];
+  const breathDataWithAlert = { ...breathData, alert: breathStateServices.alert };
+  return [breathDataWithAlert, send];
 };
 
 // nextEvents was only thing I could return that didn't cause

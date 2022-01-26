@@ -1,12 +1,15 @@
-import React, { createContext } from "react";
+import React, { createContext, useState } from "react";
 import { useInterpret } from "@xstate/react";
 import { ActorRefFrom, State } from "xstate";
 import { breathMachine, BreathContext, BreathEvent } from "../machines/breathMachine";
 
 import { isEqual } from "lodash";
 
+import { myListener, configureSounds } from "../utils/alertListener";
+
 interface BreathMachineContextType {
   breathStateService: ActorRefFrom<typeof breathMachine>;
+  alert: string | undefined;
 }
 
 // Object compare for xstate's useSelectors compare function.
@@ -30,14 +33,21 @@ export const BreathMachineProvider = ({
   children: any;
   sessionSettings?: SessionSettingsType | undefined;
 }) => {
-  const breathStateService = useInterpret(breathMachine, {
-    context: { ...sessionSettings },
-    devTools: true,
-  });
-
+  const [alert, setAlert] = useState<string>();
+  const breathStateService = useInterpret(
+    breathMachine,
+    {
+      context: { ...sessionSettings },
+      devTools: true,
+    },
+    (state) => myListener(state, setAlert)
+  );
+  React.useEffect(() => {
+    configureSounds();
+  }, []);
   // console.log("STATE SERVICE", breathStateService, breathMachine);
   return (
-    <BreathMachineContext.Provider value={{ breathStateService }}>
+    <BreathMachineContext.Provider value={{ breathStateService, alert }}>
       {children}
     </BreathMachineContext.Provider>
   );

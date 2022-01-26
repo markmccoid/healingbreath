@@ -50,7 +50,7 @@ function BreathAnimation() {
         breathTime.value = context.exhaleTime;
         forcedBreathAnim.value = withTiming(0, { duration: breathTime.value });
       } else {
-        console.log("Other");
+        console.log("Other", currStateValue);
         breathTime.value = 1000;
         forcedBreathAnim.value = withTiming(1, { duration: 1000 });
         // forcedBreathAnim.value = withSpring(0.25, { stiffness: 90, damping: 8 });

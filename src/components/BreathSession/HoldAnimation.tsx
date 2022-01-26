@@ -32,7 +32,7 @@ function HoldAnimation() {
       scale: 0.5,
     },
   });
-  console.log("height", animHeight);
+
   return (
     <View
       style={{
