@@ -57,21 +57,12 @@ export const myListener = async (
     if (prevBreathNum !== state.context.breathCurrRep) {
       prevBreathNum = state.context.breathCurrRep;
       const myAlert = breathAlerts(state.context.breathCurrRep, state.context.breathCurrRep);
-      setAlert(myAlert?.alertMessage);
+      setAlert(myAlert?.alertMessage); // Will be null if we didn't get a "hit" for an alert
       if (myAlert?.alertSound) {
         console.log("playing sound");
         // await myAlert.alertSound.playAsync();
         await playSound();
       }
-      // if (state.context.breathCurrRep % 2 === 0 && state.context.breathCurrRep !== 0) {
-      //   setAlert("CB is in 2");
-      //   // console.log("playing sound");
-      //   await playSound();
-      // } else {
-      //   // console.log("clear alert");
-      //   setAlert(undefined);
-      //   // soundPlayed = false;
-      // }
     }
     return;
   }

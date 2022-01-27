@@ -8,14 +8,22 @@ import {
   useBreathFlags,
   useBreathMethods,
 } from "../../hooks/useBreathMachineHooks";
-
+import {
+  AntDesign,
+  Feather,
+  FontAwesome,
+  FontAwesome5,
+  Fontisto,
+  MaterialIcons,
+  MaterialCommunityIcons,
+  Ionicons,
+  Entypo,
+} from "@expo/vector-icons";
 import Timer from "./Timer";
 // import BreathAnimation from "./BreathAnimation";
 import BreathAnimation from "./MotiAnimation";
 
 import { ActionButton } from "../../components/buttons/Buttons";
-import { useTimingAlerts } from "../../hooks/useTimingAlerts";
-import { Audio } from "expo-av";
 
 const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsType }) => {
   // console.log("Session", sessionSettings);
@@ -24,49 +32,9 @@ const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsTy
     useBreathMachineInfo();
   const [currState, currStateDesc] = breathState;
   const breathEvents = useBreathEvents();
-  const breathMethods = useBreathMethods();
+  const breathFlags = useBreathFlags();
   const navigation = useNavigation();
   //************************ */
-  //* SOUND * */
-  const [sound, setSound] = React.useState<Audio.Sound>();
-  const [bgSound, setBgSound] = React.useState<Audio.Sound>();
-
-  // async function playSound() {
-  //   console.log("Loading Sound");
-  //   const { sound } = await Audio.Sound.createAsync(
-  //     require("../../../assets/ChurchBell001.mp3")
-  //   );
-  //   setSound(sound);
-
-  //   console.log("Playing Sound");
-  //   await sound.playAsync();
-  // }
-  // async function loadSounds() {
-  //   const { sound: bgSound } = await Audio.Sound.createAsync(
-  //     require("../../../assets/chant.wav")
-  //   );
-  //   //setBgSound(sound);
-  //   bgSound.playAsync();
-  // }
-  // React.useEffect(() => {
-  //   loadSounds();
-  // }, []);
-  // //--- Unload sound
-  // React.useEffect(() => {
-  //   return sound
-  //     ? () => {
-  //         console.log("Unloading Sound");
-  //         sound.unloadAsync();
-  //       }
-  //     : undefined;
-  // }, []);
-  // React.useEffect(() => {
-  //   if (alert) {
-  //     playSound();
-  //   }
-  // }, [alert]);
-  //************************ */
-  // const x = useTimingAlerts();
 
   // const breathState = useBreathState();
   // const [bdata, bsend] = useBreathMachineInfo();
@@ -100,32 +68,63 @@ const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsTy
 
   return (
     <View style={{ flex: 1 }}>
-      <Text>Round - {context.breathCurrRound}</Text>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <TouchableOpacity onPress={() => navigation.navigate("SessionList")}>
+          <AntDesign name="back" size={25} style={{ marginTop: -5 }} />
+          {/* <Text style={{ fontSize: 20 }}>Back</Text> */}
+        </TouchableOpacity>
+        <View
+          style={{
+            marginLeft: 10,
+            flexDirection: "row",
+            justifyContent: "space-evenly",
+            flex: 1,
+          }}
+        >
+          <Text>Round - {context.breathCurrRound}</Text>
+
+          {currState.includes("breathing") && <Text>Rep - {context.breathCurrRep}</Text>}
+        </View>
+      </View>
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-        <ActionButton onPress={() => navigation.navigate("SessionList")}>
-          <Text style={{ fontSize: 20, color: "#fff" }}>Back</Text>
-        </ActionButton>
-        <ActionButton onPress={() => breathEvents.startSession()}>
-          <Text style={{ fontSize: 20, color: "#fff" }}>Start</Text>
-        </ActionButton>
+        {breathFlags.canStart && (
+          <>
+            <ActionButton onPress={() => breathEvents.startSession()}>
+              <Text style={{ fontSize: 20, color: "#fff" }}>Start</Text>
+            </ActionButton>
+            <View style={{ width: 10 }} />
+          </>
+        )}
+        {breathFlags.canStop && (
+          <>
+            <ActionButton onPress={() => breathEvents.stopSession()}>
+              <Text style={{ fontSize: 20, color: "#fff" }}>Stop</Text>
+            </ActionButton>
+            <View style={{ width: 10 }} />
+          </>
+        )}
+        {breathFlags.canPause && (
+          <ActionButton onPress={() => breathEvents.pauseSession()}>
+            <Text style={{ fontSize: 20, color: "#fff" }}>Pause</Text>
+          </ActionButton>
+        )}
+        {breathFlags.canUnPause && (
+          <ActionButton onPress={() => breathEvents.unpauseSession()}>
+            <Text style={{ fontSize: 20, color: "#fff" }}>Unpause</Text>
+          </ActionButton>
+        )}
         <View style={{ width: 10 }} />
-        <ActionButton onPress={() => breathEvents.stopSession()}>
-          <Text style={{ fontSize: 20, color: "#fff" }}>Stop</Text>
-        </ActionButton>
-        <View style={{ width: 10 }} />
-        <ActionButton onPress={() => breathEvents.pauseSession()}>
-          <Text style={{ fontSize: 20, color: "#fff" }}>Pause</Text>
-        </ActionButton>
-        <ActionButton onPress={() => breathEvents.unpauseSession()}>
-          <Text style={{ fontSize: 20, color: "#fff" }}>Unpause</Text>
-        </ActionButton>
-        <View style={{ width: 10 }} />
-        <ActionButton onPress={() => breathEvents.extendSession()}>
-          <Text style={{ fontSize: 20, color: "#fff" }}>Extend</Text>
-        </ActionButton>
-        <ActionButton onPress={() => breathEvents.goToNext()}>
-          <Text style={{ fontSize: 20, color: "#fff" }}>Next</Text>
-        </ActionButton>
+        {breathFlags.canExtend && (
+          <ActionButton onPress={() => breathEvents.extendSession()}>
+            <Text style={{ fontSize: 20, color: "#fff" }}>Extend</Text>
+          </ActionButton>
+        )}
+
+        {breathFlags.canStop && (
+          <ActionButton onPress={() => breathEvents.goToNext()}>
+            <Text style={{ fontSize: 20, color: "#fff" }}>Next</Text>
+          </ActionButton>
+        )}
       </View>
       <View style={{ borderWidth: 1, padding: 10 }}>
         <Timer type="countup" />
