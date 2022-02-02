@@ -39,7 +39,7 @@ export const BreathMachineProvider = ({
     breathMachine,
     {
       context: { ...sessionSettings },
-      devTools: true,
+      // devTools: true,
     },
     (state) => myListener(state, setAlert)
   );

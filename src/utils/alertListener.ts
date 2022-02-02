@@ -7,6 +7,7 @@ import { Asset } from "expo-asset";
 
 import { AlertSettings, AlertSounds, AssetNames } from "./alertTypes";
 
+let prevElapsed = 0;
 let prevState = "idle";
 let prevBreathNum = 0;
 let soundToPlay: Audio.Sound;
@@ -26,22 +27,42 @@ const alertSounds: AlertSounds = {
   airplaneDing,
   elevatorDing,
 };
+type AudioSounds = {
+  [key in AssetNames]: Audio.Sound;
+};
+let audioSounds: AudioSounds = {};
 
 async function playSound(whichSoundtoPlay: AssetNames) {
-  console.log("Loading Sound", whichSoundtoPlay);
-  if (soundToPlay) {
-    soundToPlay.unloadAsync();
+  // const sound = audioSounds[whichSoundtoPlay];
+  // await sound.setPositionAsync(0);
+  try {
+    console.log("play sound, replayasync", whichSoundtoPlay);
+    await audioSounds[whichSoundtoPlay].replayAsync();
+  } catch (err) {
+    console.warn(`Error playing ${whichSoundtoPlay} causing ${err}`);
   }
-  const { sound } = await Audio.Sound.createAsync(alertSounds[whichSoundtoPlay]);
-  // await sound.unloadAsync();
-  soundToPlay = sound;
 
-  console.log("Playing Sound");
-  await soundToPlay.playAsync();
+  // console.log("Loading Sound", whichSoundtoPlay);
+  // if (soundToPlay) {
+  //   soundToPlay.unloadAsync();
+  // }
+  // const { sound } = await Audio.Sound.createAsync(alertSounds[whichSoundtoPlay]);
+  // // await sound.unloadAsync();
+  // soundToPlay = sound;
+
+  // console.log("Playing Sound");
+  // await soundToPlay.playAsync();
 }
 
-export const configureAlertListener = (userAlertSettings: AlertSettings) => {
+export const configureAlertListener = async (userAlertSettings: AlertSettings) => {
+  console.log("Configuring Alert Listener");
   alertSettings = userAlertSettings;
+
+  Object.keys(alertSounds).forEach(async (key) => {
+    console.log("key", key);
+    const { sound } = await Audio.Sound.createAsync(alertSounds[key]);
+    audioSounds[key] = sound;
+  });
 };
 
 type Alert =
@@ -97,7 +118,7 @@ const BreathRetentionAlerts = (elapsed: number, currRoundHoldTime: number): Aler
       alertXSecondsBeforeEnd: {
         value: secondsBeforeEndValue,
         sound: secondsBeforeEndSound,
-        // countDown,
+        countDown,
         countDownSound,
       },
     },
@@ -105,17 +126,17 @@ const BreathRetentionAlerts = (elapsed: number, currRoundHoldTime: number): Aler
   // convert values to milliseconds
   const everyXMilliseconds = everyXValue * 1000;
   const millisecondsBeforeEnd = secondsBeforeEndValue * 1000;
-  const countDown = true;
   // console.log("in BreathRetention alerts", countDown, secondsBeforeEndValue);
   if (elapsed === 0) return;
   // alertXSecondsBeforeEnd
-  // This needs to come before alertEveryXSeconds as only one alert will be sent and
-  // this one should get priority
+  // This needs to come before alertEveryXSeconds as only one alert will be sent on each
+  // check and this one should get priority
   if (countDown) {
-    //   // Want to play a sound every second starting with the secondsBeforeEndValue
-    console.log("X Seconds before", currRoundHoldTime, elapsed, millisecondsBeforeEnd);
+    // Want to play a sound every second starting with the secondsBeforeEndValue
+    // console.log("X Seconds before", currRoundHoldTime, elapsed, millisecondsBeforeEnd);
     for (let x = 0; x <= millisecondsBeforeEnd; x = x + 1000) {
       if (currRoundHoldTime - x === elapsed) {
+        console.log("in for loop, if true", elapsed, x);
         return {
           alertMessage: `Ending in ${secondsBeforeEndValue} or ${x} seconds`,
           alertSound: countDownSound,
@@ -170,6 +191,11 @@ export const myListener = async (
   >,
   setAlert: (val: string | undefined) => void
 ) => {
+  // Needed to make sure we don't execute twice for same elapsed time
+  // Not sure why it was calling function multiple times for certain elapsed times, but this fixed.
+  if (prevElapsed === state.context.elapsed) return;
+  prevElapsed = state.context.elapsed;
+
   // state.value could be a string or an object (if state and sub states)
   // probably a better way to get at this, but
   const currState =
