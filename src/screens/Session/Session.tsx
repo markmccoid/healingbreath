@@ -12,7 +12,7 @@ const sampleMachineSettings = {
   inhaleTime: 1.6 * 1000,
   exhaleTime: 1.6 * 1000,
   pauseTime: 0,
-  breathReps: 4,
+  breathReps: 5,
   breathRounds: 3,
   defaultHoldTime: 5 * 1000,
   recoveryHoldTime: 15 * 1000,

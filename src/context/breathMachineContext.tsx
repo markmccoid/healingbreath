@@ -5,7 +5,8 @@ import { breathMachine, BreathContext, BreathEvent } from "../machines/breathMac
 
 import { isEqual } from "lodash";
 
-import { myListener, configureSounds } from "../utils/alertListener";
+import { myListener, configureAlertListener } from "../utils/alertListener";
+import { defaultAlertSettings } from "../state/defaultSettings";
 
 interface BreathMachineContextType {
   breathStateService: ActorRefFrom<typeof breathMachine>;
@@ -43,7 +44,7 @@ export const BreathMachineProvider = ({
     (state) => myListener(state, setAlert)
   );
   React.useEffect(() => {
-    configureSounds();
+    configureAlertListener(defaultAlertSettings);
   }, []);
   // console.log("STATE SERVICE", breathStateService, breathMachine);
   return (
