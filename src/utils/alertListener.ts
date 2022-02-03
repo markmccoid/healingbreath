@@ -5,7 +5,9 @@ import { BreathContext, BreathEvent } from "../machines/breathMachine";
 import { Audio } from "expo-av";
 import { Asset } from "expo-asset";
 
-import { AlertSettings, AlertSounds, AssetNames } from "./alertTypes";
+import { AlertSettings } from "./alertTypes";
+import { AssetNames } from "../utils/sounds/soundTypes";
+import { alertSounds, playSound } from "../utils/sounds/soundLibrary";
 
 let prevElapsed = 0;
 let prevState = "idle";
@@ -13,56 +15,43 @@ let prevBreathNum = 0;
 let soundToPlay: Audio.Sound;
 
 let alertSettings: AlertSettings;
-const gong = require("../../assets/sounds/gong01.wav");
-const churchBell = require("../../assets/sounds/ChurchBell001.mp3");
-const breathInMark = require("../../assets/sounds/BreathInMark.mp3");
-const breathOutMark = require("../../assets/sounds/BreathOutMark.mp3");
-const airplaneDing = require("../../assets/sounds/AirplaneDing.mp3");
-const elevatorDing = require("../../assets/sounds/ElevatorDing.mp3");
-const alertSounds: AlertSounds = {
-  churchBell,
-  gong,
-  breathInMark,
-  breathOutMark,
-  airplaneDing,
-  elevatorDing,
-};
+
 type AudioSounds = {
   [key in AssetNames]: Audio.Sound;
 };
 let audioSounds: AudioSounds = {};
 
-async function playSound(whichSoundtoPlay: AssetNames) {
-  // const sound = audioSounds[whichSoundtoPlay];
-  // await sound.setPositionAsync(0);
-  try {
-    console.log("play sound, replayasync", whichSoundtoPlay);
-    await audioSounds[whichSoundtoPlay].replayAsync();
-  } catch (err) {
-    console.warn(`Error playing ${whichSoundtoPlay} causing ${err}`);
-  }
+// async function playSound(whichSoundtoPlay: AssetNames) {
+//   // const sound = audioSounds[whichSoundtoPlay];
+//   // await sound.setPositionAsync(0);
+//   try {
+//     console.log("play sound, replayasync", whichSoundtoPlay);
+//     await audioSounds[whichSoundtoPlay].replayAsync();
+//   } catch (err) {
+//     console.warn(`Error playing ${whichSoundtoPlay} causing ${err}`);
+//   }
 
-  // console.log("Loading Sound", whichSoundtoPlay);
-  // if (soundToPlay) {
-  //   soundToPlay.unloadAsync();
-  // }
-  // const { sound } = await Audio.Sound.createAsync(alertSounds[whichSoundtoPlay]);
-  // // await sound.unloadAsync();
-  // soundToPlay = sound;
+//   // console.log("Loading Sound", whichSoundtoPlay);
+//   // if (soundToPlay) {
+//   //   soundToPlay.unloadAsync();
+//   // }
+//   // const { sound } = await Audio.Sound.createAsync(alertSounds[whichSoundtoPlay]);
+//   // // await sound.unloadAsync();
+//   // soundToPlay = sound;
 
-  // console.log("Playing Sound");
-  // await soundToPlay.playAsync();
-}
+//   // console.log("Playing Sound");
+//   // await soundToPlay.playAsync();
+// }
 
 export const configureAlertListener = async (userAlertSettings: AlertSettings) => {
   console.log("Configuring Alert Listener");
   alertSettings = userAlertSettings;
 
-  Object.keys(alertSounds).forEach(async (key) => {
-    console.log("key", key);
-    const { sound } = await Audio.Sound.createAsync(alertSounds[key]);
-    audioSounds[key] = sound;
-  });
+  // Object.keys(alertSounds).forEach(async (key) => {
+  //   console.log("key", key);
+  //   const { sound } = await Audio.Sound.createAsync(alertSounds[key]);
+  //   audioSounds[key] = sound;
+  // });
 };
 
 type Alert =
@@ -134,7 +123,7 @@ const BreathRetentionAlerts = (elapsed: number, currRoundHoldTime: number): Aler
   if (countDown) {
     // Want to play a sound every second starting with the secondsBeforeEndValue
     // console.log("X Seconds before", currRoundHoldTime, elapsed, millisecondsBeforeEnd);
-    for (let x = 0; x <= millisecondsBeforeEnd; x = x + 1000) {
+    for (let x = 1000; x <= millisecondsBeforeEnd; x = x + 1000) {
       if (currRoundHoldTime - x === elapsed) {
         console.log("in for loop, if true", elapsed, x);
         return {

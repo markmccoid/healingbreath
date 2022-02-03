@@ -1,4 +1,5 @@
 import { Asset } from "expo-asset";
+import { AssetNames } from "./sounds/soundTypes";
 
 export type AlertSettings = {
   ConsciousForcedBreathing: {
@@ -45,14 +46,14 @@ export type AlertSettings = {
   };
 };
 
-export type AssetNames =
-  | "gong"
-  | "churchBell"
-  | "breathInMark"
-  | "breathOutMark"
-  | "airplaneDing"
-  | "elevatorDing";
+// export type AssetNames =
+//   | "gong"
+//   | "churchBell"
+//   | "breathInMark"
+//   | "breathOutMark"
+//   | "airplaneDing"
+//   | "elevatorDing";
 
-export type AlertSounds = {
-  [assetName in AssetNames]: Asset;
-};
+// export type AlertSounds = {
+//   [assetName in AssetNames]: Asset;
+// };
