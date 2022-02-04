@@ -35,7 +35,8 @@
     "react-native-screens": "~3.10.1",
     "react-native-web": "0.17.1",
     "usepubsub": "^1.0.2",
-    "xstate": "^4.27.0"
+    "xstate": "^4.27.0",
+    "zustand": "^3.6.9"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

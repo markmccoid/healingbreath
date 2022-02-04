@@ -5,7 +5,6 @@ import { RootStackProps } from "../../types/navTypes";
 import { BreathMachineProvider } from "../../context/breathMachineContext";
 import BreathSession from "../../components/BreathSession/BreathSession";
 import { AdjustingInterval } from "../../utils/timerAdjustingInterval";
-import { usePubSub, DefaultPubSubContext } from "usepubsub";
 
 const sampleMachineSettings = {
   interval: 100,
@@ -27,15 +26,12 @@ const sampleMachineSettings = {
     },
   },
 };
-const Session = ({ navigation, route }: RootStackProps<"Session">) => {
-  let { PubSubContext, publish, subscribe, unsubscribe } = usePubSub();
 
+const Session = ({ navigation, route }: RootStackProps<"Session">) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <BreathMachineProvider>
-        <PubSubContext.Provider value={{ publish, subscribe, unsubscribe }}>
-          <BreathSession sessionSettings={sampleMachineSettings} />
-        </PubSubContext.Provider>
+        <BreathSession sessionSettings={sampleMachineSettings} />
       </BreathMachineProvider>
     </SafeAreaView>
   );

@@ -2,6 +2,8 @@ import { Audio } from "expo-av";
 import { Asset } from "expo-asset";
 
 export type AssetNames =
+  | "tick"
+  | "ding"
   | "gong"
   | "churchBell"
   | "breathInMark"

@@ -53,7 +53,7 @@ const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsTy
   useEffect(() => {
     console.log("in BreathSession useEffect");
     breathEvents.updateSessionSettings(sessionSettings);
-
+    () => console.log("EXIT BreathSession.tsx");
     // breathEvents.updateSessionBreathRounds({
     //   1: {
     //     holdTime: 10000,

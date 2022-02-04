@@ -43,10 +43,13 @@ export const BreathMachineProvider = ({
     },
     (state) => myListener(state, setAlert)
   );
+  //* Probably a better way to get Alert settings configured.
+  //* maybe when get global state provider implemented
   React.useEffect(() => {
     configureAlertListener(defaultAlertSettings);
+    () => console.log("Exit BREATH PROVIDER");
   }, []);
-  // console.log("STATE SERVICE", breathStateService, breathMachine);
+
   return (
     <BreathMachineContext.Provider value={{ breathStateService, alert }}>
       {children}

@@ -16,13 +16,13 @@ export const defaultAlertSettings: AlertSettings = {
   BreathRetention: {
     alertEveryXSeconds: {
       value: 5,
-      sound: "gong",
+      sound: "ding",
     },
     alertXSecondsBeforeEnd: {
-      value: 2,
+      value: 5,
       sound: "airplaneDing",
       countDown: true,
-      countDownSound: "elevatorDing",
+      countDownSound: "tick",
     },
   },
   RecoveryBreath: {
@@ -30,12 +30,12 @@ export const defaultAlertSettings: AlertSettings = {
       sound: "breathInMark",
     },
     alertEveryXSeconds: {
-      value: 0,
-      sound: "gong",
+      value: 5,
+      sound: "ding",
     },
     alertXSecondsBeforeEnd: {
       value: 4,
-      sound: "gong",
+      sound: "ding",
       countDown: false,
       countDownSound: "gong",
     },

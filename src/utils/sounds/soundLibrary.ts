@@ -1,6 +1,6 @@
 import { AssetNames, AlertSounds, AlertPlayableSounds } from "./soundTypes";
 import { Audio } from "expo-av";
-import { AVPlaybackStatus } from "expo-av/build/AV.types";
+import React from "react";
 
 let alertPlayableSounds: AlertPlayableSounds;
 
@@ -11,6 +11,8 @@ export const alertSounds: AlertSounds = {
   breathOutMark: require("../../../assets/sounds/BreathOutMark.mp3"),
   airplaneDing: require("../../../assets/sounds/AirplaneDing.mp3"),
   elevatorDing: require("../../../assets/sounds/ElevatorDing.mp3"),
+  tick: require("../../../assets/sounds/tick.mp3"),
+  ding: require("../../../assets/sounds/ding.mp3"),
 };
 
 export const loadSounds = async () => {
@@ -26,6 +28,20 @@ export const loadSounds = async () => {
   );
 };
 
+// Could call loadSounds from App.tsx, but using a hook is similar to how
+// expo loads fonts
+export const useLoadSounds = () => {
+  const [soundsLoaded, setSoundsLoaded] = React.useState(false);
+  React.useEffect(() => {
+    const effectLoadSounds = async () => {
+      await loadSounds();
+      setSoundsLoaded(true);
+    };
+    effectLoadSounds();
+  }, []);
+  return [soundsLoaded];
+};
+
 // Will play the passed asset names sound
 export const playSound = async (name: AssetNames) => {
   console.log(`plaing sound --> ${name}`);
@@ -37,9 +53,3 @@ export const playSound = async (name: AssetNames) => {
     console.warn(error);
   }
 };
-
-// type AudioSounds = {
-//   [key in AssetNames]: Audio.Sound;
-// };
-
-// let audioSounds: AudioSounds = {};
