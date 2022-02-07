@@ -304,7 +304,6 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
     states: {
       idle: {
         entry: "resetContext",
-        exit: "resetSessionStats",
         on: {
           START: {
             target: "breathing",

@@ -1,6 +1,7 @@
 import { AnimatePresence, MotiText, MotiView, useAnimationState } from "moti";
 import React from "react";
 import { Dimensions, View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useBreathState } from "../../context/breathMachineContext";
 import { useBreathMachineInfo } from "../../hooks/useBreathMachineHooks";
 import { useLayout } from "../../hooks/useLayout";
 import { getCurrentRoundHoldTime } from "../../utils/machineHelpers";
@@ -14,11 +15,15 @@ function HoldAnimation() {
       context,
       value: currStateValue,
       tags,
+      alert,
       breathState: [_, breathStateString],
     },
     send,
   ] = useBreathMachineInfo();
   const [{ height: animHeight }, onLayout] = useLayout();
+
+  // const { alert } = useBreathState();
+
   const currHoldTime = getCurrentRoundHoldTime(context);
   //* Hold Test
   const animationState = useAnimationState({
@@ -33,6 +38,9 @@ function HoldAnimation() {
     },
   });
 
+  React.useEffect(() => {
+    console.log("Hold Animation Alert", alert);
+  }, [alert]);
   return (
     <View
       style={{
@@ -62,7 +70,7 @@ function HoldAnimation() {
           // height: 100,
         }}
       >
-        <Timer type="countdown" size={50} color="white" />
+        <Timer type="countup" size={50} color="white" />
       </MotiView>
     </View>
   );

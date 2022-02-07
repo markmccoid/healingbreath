@@ -8,6 +8,8 @@ import { Asset } from "expo-asset";
 import { AlertSettings } from "./alertTypes";
 import { AssetNames } from "../utils/sounds/soundTypes";
 import { alertSounds, playSound } from "../utils/sounds/soundLibrary";
+import { alertNoAlertSettings } from "../store/defaultSettings";
+import { useStore } from "../store/useStore";
 
 let prevElapsed = 0;
 let prevState = "idle";
@@ -22,8 +24,9 @@ let alertSettings: AlertSettings;
 // let audioSounds: AudioSounds = {};
 
 export const configureAlertListener = async (userAlertSettings: AlertSettings) => {
-  console.log("Configuring Alert Listener");
+  console.log("Configuring Alert Listener", userAlertSettings);
   alertSettings = userAlertSettings;
+  // alertSettings = { ...alertNoAlertSettings, ...userAlertSettings };
 };
 
 type Alert =
@@ -42,21 +45,26 @@ type Alert =
 function breathAlerts(currentBreath: number, totalBreaths: number): Alert {
   // Pull out alert settings to check for from global alertSettings
   // NOTE: maybe this will be in actual state??
-  const {
-    ConsciousForcedBreathing: {
-      alertEveryXBreaths: { value: everyXValue, sound: everyXSound },
-      alertXBreathsBeforeEnd: { value: breathsBeforeEndValue, sound: breathsBeforeEndSound },
-    },
-  } = alertSettings;
+  // const {
+  //   ConsciousForcedBreathing: {
+  //     alertEveryXBreaths: { value: everyXValue, sound: everyXSound },
+  //     alertXBreathsBeforeEnd: { value: breathsBeforeEndValue, sound: breathsBeforeEndSound },
+  //   },
+  // } = alertSettings;
+  const { value: everyXValue, sound: everyXSound } =
+    alertSettings?.ConsciousForcedBreathing?.alertEveryXBreaths || {};
+  const { value: breathsBeforeEndValue, sound: breathsBeforeEndSound } =
+    alertSettings?.ConsciousForcedBreathing?.alertXBreathsBeforeEnd || {};
+
   //-- alertEveryXBreaths alert check
-  if (currentBreath % everyXValue === 0 && currentBreath !== 0) {
+  if (everyXValue && currentBreath % everyXValue === 0 && currentBreath !== 0) {
     return {
       alertMessage: `factor of ${everyXValue} breaths`,
       alertSound: everyXSound,
     };
   }
   //-- alertXBreathsBeforeEnd alert check
-  if (currentBreath + breathsBeforeEndValue === totalBreaths) {
+  if (breathsBeforeEndValue && currentBreath + breathsBeforeEndValue === totalBreaths) {
     return {
       alertMessage: `Last breath in ${breathsBeforeEndValue} breaths`,
       alertSound: breathsBeforeEndSound,
@@ -73,51 +81,64 @@ function breathAlerts(currentBreath: number, totalBreaths: number): Alert {
 const BreathRetentionAlerts = (elapsed: number, currRoundHoldTime: number): Alert => {
   // Pull out alert settings to check for from global alertSettings
   // NOTE: maybe this will be in actual state??
+  // const {
+  //   BreathRetention: {
+  //     alertEveryXSeconds: { value: everyXValue, sound: everyXSound },
+  //     alertXSecondsBeforeEnd: {
+  //       value: secondsBeforeEndValue,
+  //       sound: secondsBeforeEndSound,
+  //       countDown,
+  //       countDownSound,
+  //     },
+  //   },
+  // } = alertSettings;
+
+  const { value: everyXValue, sound: everyXSound } =
+    alertSettings?.BreathRetention?.alertEveryXSeconds || {};
   const {
-    BreathRetention: {
-      alertEveryXSeconds: { value: everyXValue, sound: everyXSound },
-      alertXSecondsBeforeEnd: {
-        value: secondsBeforeEndValue,
-        sound: secondsBeforeEndSound,
-        countDown,
-        countDownSound,
-      },
-    },
-  } = alertSettings;
-  // convert values to milliseconds
-  const everyXMilliseconds = everyXValue * 1000;
-  const millisecondsBeforeEnd = secondsBeforeEndValue * 1000;
-  // console.log("in BreathRetention alerts", countDown, secondsBeforeEndValue);
+    value: secondsBeforeEndValue,
+    sound: secondsBeforeEndSound,
+    countDown,
+    countDownSound,
+  } = alertSettings?.BreathRetention?.alertXSecondsBeforeEnd || {};
+
   if (elapsed === 0) return;
   //-- alertXSecondsBeforeEnd
   // This needs to come before alertEveryXSeconds as only one alert will be sent on each
   // check and this one should get priority
-  if (countDown) {
-    // Want to play a sound every second starting with the secondsBeforeEndValue
-    // console.log("X Seconds before", currRoundHoldTime, elapsed, millisecondsBeforeEnd);
-    for (let x = 1000; x <= millisecondsBeforeEnd; x = x + 1000) {
-      if (currRoundHoldTime - x === elapsed) {
-        console.log("in for loop, if true", elapsed, x);
-        return {
-          alertMessage: `Ending in ${secondsBeforeEndValue} or ${x} seconds`,
-          alertSound: countDownSound,
-        };
+  if (secondsBeforeEndValue) {
+    //if no value set or zero, then skip
+    // convert values to milliseconds
+    const millisecondsBeforeEnd = secondsBeforeEndValue * 1000;
+    if (countDown) {
+      // Want to play a sound every second starting with the secondsBeforeEndValue
+      // console.log("X Seconds before", currRoundHoldTime, elapsed, millisecondsBeforeEnd);
+      for (let x = 1000; x <= millisecondsBeforeEnd; x = x + 1000) {
+        if (currRoundHoldTime - x === elapsed) {
+          return {
+            alertMessage: `Ending in ${secondsBeforeEndValue} or ${x} seconds`,
+            alertSound: countDownSound,
+          };
+        }
       }
+    } else if (currRoundHoldTime - millisecondsBeforeEnd === elapsed) {
+      return {
+        alertMessage: `Ending in ${secondsBeforeEndValue} seconds`,
+        alertSound: secondsBeforeEndSound,
+      };
     }
-  } else if (currRoundHoldTime - millisecondsBeforeEnd === elapsed) {
-    console.log("setting ALERT Holding Ending in X Seconds", elapsed);
-    return {
-      alertMessage: `Ending in ${secondsBeforeEndValue} seconds`,
-      alertSound: secondsBeforeEndSound,
-    };
   }
 
   //-- alertEveryXSeconds
-  if (elapsed % everyXMilliseconds === 0) {
-    return {
-      alertMessage: `factor of ${everyXValue} seconds`,
-      alertSound: everyXSound,
-    };
+  if (everyXValue) {
+    // convert values to milliseconds
+    const everyXMilliseconds = everyXValue * 1000;
+    if (elapsed % everyXMilliseconds === 0) {
+      return {
+        alertMessage: `factor of ${everyXValue} seconds`,
+        alertSound: everyXSound,
+      };
+    }
   }
   return undefined;
 };
@@ -125,17 +146,27 @@ const BreathRetentionAlerts = (elapsed: number, currRoundHoldTime: number): Aler
 const BreathRecoveryAlerts = (elapsed: number, currRecoveryTime: number): Alert => {
   // Pull out alert settings to check for from global alertSettings
   // NOTE: maybe this will be in actual state??
+  // const {
+  //   RecoveryBreath: {
+  //     alertEveryXSeconds: { value: everyXValue, sound: everyXSound },
+  //     alertXSecondsBeforeEnd: {
+  //       value: secondsBeforeEndValue,
+  //       sound: secondsBeforeEndSound,
+  //       countDown,
+  //       countDownSound,
+  //     },
+  //   },
+  // } = alertSettings;
+
+  const { value: everyXValue, sound: everyXSound } =
+    alertSettings?.RecoveryBreath?.alertEveryXSeconds || {};
   const {
-    RecoveryBreath: {
-      alertEveryXSeconds: { value: everyXValue, sound: everyXSound },
-      alertXSecondsBeforeEnd: {
-        value: secondsBeforeEndValue,
-        sound: secondsBeforeEndSound,
-        countDown,
-        countDownSound,
-      },
-    },
-  } = alertSettings;
+    value: secondsBeforeEndValue,
+    sound: secondsBeforeEndSound,
+    countDown,
+    countDownSound,
+  } = alertSettings?.RecoveryBreath?.alertXSecondsBeforeEnd || {};
+
   // convert values to milliseconds
   const everyXMilliseconds = everyXValue * 1000;
   const millisecondsBeforeEnd = secondsBeforeEndValue * 1000;
@@ -149,7 +180,6 @@ const BreathRecoveryAlerts = (elapsed: number, currRecoveryTime: number): Alert 
     // console.log("X Seconds before", currRecoveryTime, elapsed, millisecondsBeforeEnd);
     for (let x = 1000; x <= millisecondsBeforeEnd; x = x + 1000) {
       if (currRecoveryTime - x === elapsed) {
-        console.log("in for loop, if true", elapsed, x);
         return {
           alertMessage: `Ending in ${secondsBeforeEndValue} or ${x} seconds`,
           alertSound: countDownSound,
@@ -157,7 +187,6 @@ const BreathRecoveryAlerts = (elapsed: number, currRecoveryTime: number): Alert 
       }
     }
   } else if (currRecoveryTime - millisecondsBeforeEnd === elapsed) {
-    console.log("setting ALERT Holding Ending in X Seconds", elapsed);
     return {
       alertMessage: `Ending in ${secondsBeforeEndValue} seconds`,
       alertSound: secondsBeforeEndSound,
@@ -182,12 +211,16 @@ const BreathRecoveryAlerts = (elapsed: number, currRecoveryTime: number): Alert 
  */
 function getAlertSound(type: "intropause" | "outropause"): AssetNames {
   // Get info needed from alertSettings
-  const {
-    RecoveryBreath: {
-      alertBreathInPause: { sound: alertBreathInSound },
-      alertBreathOutPause: { sound: alertBreathOutSound },
-    },
-  } = alertSettings;
+  // const {
+  //   RecoveryBreath: {
+  //     alertBreathInPause: { sound: alertBreathInSound },
+  //     alertBreathOutPause: { sound: alertBreathOutSound },
+  //   },
+  // } = alertSettings;
+  const { sound: alertBreathInSound } =
+    alertSettings?.RecoveryBreath?.alertBreathInPause || {};
+  const { sound: alertBreathOutSound } =
+    alertSettings?.RecoveryBreath?.alertBreathInPause || {};
 
   return type === "intropause" ? alertBreathInSound : alertBreathOutSound;
 }
@@ -204,6 +237,7 @@ export const myListener = async (
   >,
   setAlert: (val: string | undefined) => void
 ) => {
+  // const test = useStore.getState().activeSessionSettings;
   // Needed to make sure we don't execute twice for same elapsed time
   // Not sure why it was calling function multiple times for certain elapsed times, but this fixed.
   if (prevElapsed === state.context.elapsed) return;
@@ -262,10 +296,11 @@ export const myListener = async (
   //-==================================
   // the check of prevState makes it so we only call this once
   if (state.matches("intropause") && !prevState.includes("intropause")) {
-    console.log("IntroPause Match", state.context.elapsed);
     const alertBreathInSound = getAlertSound("intropause");
     prevState = currState; // Important that this comes before async call since being used in if
-    await playSound(alertBreathInSound);
+    if (alertBreathInSound) {
+      await playSound(alertBreathInSound);
+    }
     return;
   }
 
@@ -273,8 +308,6 @@ export const myListener = async (
   //-- Recovery Breath Alerts
   //-==================================
   if (state.matches("recoveryhold") && state.context.elapsed % 1000 === 0) {
-    console.log("recoveryhold Match", state.context.elapsed);
-
     const currRoundHoldTime = state.context.recoveryHoldTime;
 
     const recoveryAlert = BreathRecoveryAlerts(state.context.elapsed, currRoundHoldTime);
@@ -292,7 +325,9 @@ export const myListener = async (
   if (state.matches("outropause") && !prevState.includes("outropause")) {
     const alertBreathOutSound = getAlertSound("outropause");
     prevState = currState;
-    await playSound(alertBreathOutSound);
+    if (alertBreathOutSound) {
+      await playSound(alertBreathOutSound);
+    }
     return;
   }
 };

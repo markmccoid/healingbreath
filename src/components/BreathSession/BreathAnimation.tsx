@@ -24,13 +24,14 @@ function BreathAnimation() {
       context,
       value: currStateValue,
       tags,
+      alert,
       breathState: [_, breathStateString],
     },
     send,
   ] = useBreathMachineInfo();
   const forcedBreathAnim = useSharedValue(0);
   const breathTime = useSharedValue(context.inhaleTime);
-
+  console.log("breath", alert);
   // console.log("breathstatestring", breathStateString);
   const derived = useAnimatedReaction(
     () => {
@@ -54,6 +55,9 @@ function BreathAnimation() {
     },
     [breathStateString]
   );
+  React.useEffect(() => {
+    console.log("Breath Animation Alert", alert);
+  }, [alert]);
 
   // Animated Styles
   //* Inhale/Exhale

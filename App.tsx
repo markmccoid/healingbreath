@@ -5,7 +5,7 @@ import { useFonts, FiraSans_500Medium } from "@expo-google-fonts/fira-sans";
 import { StyleSheet, Text, View } from "react-native";
 import AppLoading from "expo-app-loading";
 import RootNav from "./src/navigation/RootNav";
-import { loadSounds, useLoadSounds } from "./src/utils/sounds/soundLibrary";
+import { useLoadSounds } from "./src/utils/sounds/soundLibrary";
 
 export default function App() {
   let [soundsLoaded] = useLoadSounds();
@@ -19,10 +19,10 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <View style={styles.container}>
-        <RootNav />
-        <StatusBar style="auto" />
-      </View>
+      {/* <View style={styles.container}> */}
+      <RootNav />
+      <StatusBar style="auto" />
+      {/* </View> */}
     </SafeAreaProvider>
   );
 }

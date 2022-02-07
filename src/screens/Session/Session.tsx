@@ -5,6 +5,7 @@ import { RootStackProps } from "../../types/navTypes";
 import { BreathMachineProvider } from "../../context/breathMachineContext";
 import BreathSession from "../../components/BreathSession/BreathSession";
 import { AdjustingInterval } from "../../utils/timerAdjustingInterval";
+import { useStore } from "../../store/useStore";
 
 const sampleMachineSettings = {
   interval: 100,
@@ -26,12 +27,13 @@ const sampleMachineSettings = {
     },
   },
 };
-
 const Session = ({ navigation, route }: RootStackProps<"Session">) => {
+  // retrieve the active session
+  const activeSession = useStore((state) => state.getActiveSessionSettings());
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <BreathMachineProvider>
-        <BreathSession sessionSettings={sampleMachineSettings} />
+        <BreathSession sessionSettings={activeSession} />
       </BreathMachineProvider>
     </SafeAreaView>
   );

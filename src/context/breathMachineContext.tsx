@@ -3,10 +3,11 @@ import { useInterpret } from "@xstate/react";
 import { ActorRefFrom, State } from "xstate";
 import { breathMachine, BreathContext, BreathEvent } from "../machines/breathMachine";
 
-import { isEqual } from "lodash";
+import _, { isEqual } from "lodash";
 
 import { myListener, configureAlertListener } from "../utils/alertListener";
-import { defaultAlertSettings } from "../state/defaultSettings";
+import { defaultAlertSettings } from "../store/defaultSettings";
+import { useStore } from "../store/useStore";
 
 interface BreathMachineContextType {
   breathStateService: ActorRefFrom<typeof breathMachine>;
@@ -22,9 +23,9 @@ export const BreathMachineContext = createContext({} as BreathMachineContextType
 //*- BreathMachineProvider
 //************************
 // Remove context items that we won't consider session settings
-export type SessionSettingsType = Partial<
-  Omit<BreathContext, "extend" | "sessionStats" | "sessionComplete" | "elapsed">
->;
+export type SessionSettingsType =
+  | Partial<Omit<BreathContext, "extend" | "sessionStats" | "sessionComplete" | "elapsed">>
+  | undefined;
 // -- passed sessionSettings prop will allow for individual session settings
 // -- to be applied when the machine provider is used and the machine is instantiated.
 export const BreathMachineProvider = ({
@@ -34,6 +35,7 @@ export const BreathMachineProvider = ({
   children: any;
   sessionSettings?: SessionSettingsType | undefined;
 }) => {
+  const alertSettings = useStore((state) => state.getActiveAlertSettings());
   const [alert, setAlert] = useState<string>();
   const breathStateService = useInterpret(
     breathMachine,
@@ -46,10 +48,14 @@ export const BreathMachineProvider = ({
   //* Probably a better way to get Alert settings configured.
   //* maybe when get global state provider implemented
   React.useEffect(() => {
-    configureAlertListener(defaultAlertSettings);
+    configureAlertListener(alertSettings);
     () => console.log("Exit BREATH PROVIDER");
   }, []);
-
+  // const updateAlert = (newAlert) => {
+  //   if (!_.isEqual(alert, newAlert)) {
+  //     setAlert(newAlert);
+  //   }
+  // };
   return (
     <BreathMachineContext.Provider value={{ breathStateService, alert }}>
       {children}
@@ -61,17 +67,17 @@ export const useBreathState = (): BreathMachineContextType => {
   return React.useContext(BreathMachineContext);
 };
 
-//----
-// Selectors - Playing with these, but most needed
-// functionality can come from "useBreathMachineHooks"
-export const canExtendTimeSelector = (
-  state: State<
-    BreathContext,
-    BreathEvent,
-    any,
-    {
-      value: any;
-      context: BreathContext;
-    }
-  >
-) => state.can("EXTEND_TOGGLE");
+// //----
+// // Selectors - Playing with these, but most needed
+// // functionality can come from "useBreathMachineHooks"
+// export const canExtendTimeSelector = (
+//   state: State<
+//     BreathContext,
+//     BreathEvent,
+//     any,
+//     {
+//       value: any;
+//       context: BreathContext;
+//     }
+//   >
+// ) => state.can("EXTEND_TOGGLE");

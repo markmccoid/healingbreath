@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
+  useAnimatedRef,
   useDerivedValue,
   withTiming,
   useAnimatedProps,
@@ -16,6 +17,7 @@ import Animated, {
   withRepeat,
   withSpring,
   timing,
+  interpolateColor,
 } from "react-native-reanimated";
 import HoldAnimation from "./HoldAnimation";
 import { useBreathMachineInfo } from "../../hooks/useBreathMachineHooks";
@@ -28,13 +30,21 @@ function BreathAnimation() {
       context,
       value: currStateValue,
       tags,
+      alert,
       breathState: [breathState, breathStateString],
     },
     send,
   ] = useBreathMachineInfo();
   const forcedBreathAnim = useSharedValue(0);
   const breathTime = useSharedValue(context.inhaleTime);
+  const progress = useSharedValue(0);
 
+  React.useEffect(() => {
+    if (alert) {
+      progress.value = withRepeat(withTiming(1, { duration: context.inhaleTime }), 2, true);
+    }
+    console.log("Breath Animation Alert", alert);
+  }, [alert]);
   // console.log("breathstatestring", breathStateString);
   const derived = useAnimatedReaction(
     () => {
@@ -166,18 +176,39 @@ function BreathAnimation() {
       opacity: 0,
     },
   });
+  // Need to move the breath state into separate component --> move to breath animation??
+  // -- Try to have a hierarchy - BreathSession -> SessionAnimations -> BreathAnimation / HoldAnimation / etc
   // console.log("breathstate", breathState, breathStateString);
-
+  // const backView = useAnimatedStyle(
+  //   () => ({
+  //     backgroundColor: interpolateColor(progress.value, [0, 1], ["white", "red"]),
+  //   })
+  // );
   return (
-    <View style={{ flexGrow: 1, borderWidth: 1 }}>
+    <Animated.View
+      style={[
+        // backView,
+        {
+          backgroundColor: "#ccc",
+          flexGrow: 1,
+          borderWidth: 1,
+        },
+      ]}
+    >
       <AnimatePresence exitBeforeEnter>
         {breathState.includes("breathing") && (
-          <View style={{ flexGrow: 1, justifyContent: "center", alignItems: "center" }}>
+          <View
+            style={{
+              flexGrow: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <MotiView
               key="breathing"
               state={animationState}
-              from={{ opacity: 0, scale: 0.5, translateY: 0 }}
-              animate={{ opacity: 1, translateY: 0 }}
+              from={{ opacity: 0, scale: 0.5, translateY: 0, backgroundColor: "purple" }}
+              animate={{ opacity: 1, translateY: 0, backgroundColor: "red" }}
               transition={{
                 type: "timing",
                 duration: context.inhaleTime,
@@ -187,7 +218,7 @@ function BreathAnimation() {
               style={{
                 justifyContent: "center",
                 alignItems: "center",
-                backgroundColor: "purple",
+
                 width: 200,
                 height: 200,
                 borderRadius: 100,
@@ -218,7 +249,7 @@ function BreathAnimation() {
         )}
       </AnimatePresence>
       {/* {breathStateString === "Hold" && <HoldAnimation key="hold" />} */}
-    </View>
+    </Animated.View>
   );
 }
 

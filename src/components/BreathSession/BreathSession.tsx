@@ -38,7 +38,7 @@ const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsTy
 
   // const breathState = useBreathState();
   // const [bdata, bsend] = useBreathMachineInfo();
-  // console.log("CONTEXT", context.breathCurrRep);
+  // console.log("CONTEXT", context.breathReps);
   // console.log("BSTATE", currState);
 
   // console.log("BREATHSESSION BEFORE ", subscribe.toString());
@@ -46,13 +46,14 @@ const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsTy
     console.log("SESSION", context.sessionStats);
   }
   // console.log("x", x);
-  useEffect(() => {
-    console.log("alert has been alerted", alert);
-  }, [alert]);
+  // useEffect(() => {
+  //   console.log("alert has been alerted", alert);
+  // }, [alert]);
 
   useEffect(() => {
-    console.log("in BreathSession useEffect");
+    // console.log("sessionsettings", sessionSettings);
     breathEvents.updateSessionSettings(sessionSettings);
+
     () => console.log("EXIT BreathSession.tsx");
     // breathEvents.updateSessionBreathRounds({
     //   1: {
