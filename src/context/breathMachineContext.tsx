@@ -1,17 +1,17 @@
 import React, { createContext, useState } from "react";
 import { useInterpret } from "@xstate/react";
-import { ActorRefFrom, State } from "xstate";
-import { breathMachine, BreathContext, BreathEvent } from "../machines/breathMachine";
+import { ActorRefFrom } from "xstate";
+import { breathMachine, BreathContext } from "../machines/breathMachine";
 
 import _, { isEqual } from "lodash";
 
 import { myListener, configureAlertListener } from "../utils/alertListener";
-import { defaultAlertSettings } from "../store/defaultSettings";
 import { useStore } from "../store/useStore";
+import { Alert } from "../utils/alertTypes";
 
 interface BreathMachineContextType {
   breathStateService: ActorRefFrom<typeof breathMachine>;
-  alert: string | undefined;
+  alert: Alert | undefined;
 }
 
 // Object compare for xstate's useSelectors compare function.
@@ -24,7 +24,12 @@ export const BreathMachineContext = createContext({} as BreathMachineContextType
 //************************
 // Remove context items that we won't consider session settings
 export type SessionSettingsType =
-  | Partial<Omit<BreathContext, "extend" | "sessionStats" | "sessionComplete" | "elapsed">>
+  | Partial<
+      Omit<
+        BreathContext,
+        "extend" | "sessionStats" | "sessionComplete" | "elapsed" | "interval"
+      >
+    >
   | undefined;
 // -- passed sessionSettings prop will allow for individual session settings
 // -- to be applied when the machine provider is used and the machine is instantiated.
@@ -36,7 +41,7 @@ export const BreathMachineProvider = ({
   sessionSettings?: SessionSettingsType | undefined;
 }) => {
   const alertSettings = useStore((state) => state.getActiveAlertSettings());
-  const [alert, setAlert] = useState<string>();
+  const [alert, setAlert] = useState<Alert>();
   const breathStateService = useInterpret(
     breathMachine,
     {

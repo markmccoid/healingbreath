@@ -20,7 +20,7 @@ import Animated, {
   interpolateColor,
 } from "react-native-reanimated";
 import HoldAnimation from "./HoldAnimation";
-import { useBreathMachineInfo } from "../../hooks/useBreathMachineHooks";
+import { useBreathAlert, useBreathMachineInfo } from "../../hooks/useBreathMachineHooks";
 import RecoveryAnimation from "./RecoveryAnimation";
 import TextAnimation from "./TextAnimation";
 
@@ -30,7 +30,7 @@ function BreathAnimation() {
       context,
       value: currStateValue,
       tags,
-      alert,
+      // alert,
       breathState: [breathState, breathStateString],
     },
     send,
@@ -38,13 +38,14 @@ function BreathAnimation() {
   const forcedBreathAnim = useSharedValue(0);
   const breathTime = useSharedValue(context.inhaleTime);
   const progress = useSharedValue(0);
+  const myAlert = useBreathAlert();
 
   React.useEffect(() => {
-    if (alert) {
+    if (myAlert) {
       progress.value = withRepeat(withTiming(1, { duration: context.inhaleTime }), 2, true);
     }
-    console.log("Breath Animation Alert", alert);
-  }, [alert]);
+    console.log("Breath Animation Alert", myAlert);
+  }, [myAlert]);
   // console.log("breathstatestring", breathStateString);
   const derived = useAnimatedReaction(
     () => {

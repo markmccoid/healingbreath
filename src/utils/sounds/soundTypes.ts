@@ -1,7 +1,7 @@
 import { Audio } from "expo-av";
 import { Asset } from "expo-asset";
 
-export type AssetNames =
+export type AlertSoundNames =
   | "tick"
   | "ding"
   | "gong"
@@ -12,9 +12,9 @@ export type AssetNames =
   | "elevatorDing";
 
 export type AlertSounds = {
-  [assetName in AssetNames]: Asset;
+  [assetName in AlertSoundNames]: Asset;
 };
 
 export type AlertPlayableSounds = {
-  [assetName in AssetNames]: Audio.Sound;
+  [assetName in AlertSoundNames]: Audio.Sound;
 };

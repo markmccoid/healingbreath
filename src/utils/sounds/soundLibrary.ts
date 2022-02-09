@@ -1,4 +1,4 @@
-import { AssetNames, AlertSounds, AlertPlayableSounds } from "./soundTypes";
+import { AlertSoundNames, AlertSounds, AlertPlayableSounds } from "./soundTypes";
 import { Audio } from "expo-av";
 import React from "react";
 
@@ -20,7 +20,7 @@ export const loadSounds = async () => {
   //-- alertPlayableSounds
   await Promise.all(
     Object.keys(alertSounds).map((key) => {
-      const assetName = key as AssetNames;
+      const assetName = key as AlertSoundNames;
       alertPlayableSounds = { ...alertPlayableSounds, [assetName]: new Audio.Sound() };
       // alertPlayableSounds[assetName] = new Audio.Sound();
       return alertPlayableSounds[assetName].loadAsync(alertSounds[assetName]);
@@ -43,7 +43,7 @@ export const useLoadSounds = () => {
 };
 
 // Will play the passed asset names sound
-export const playSound = async (name: AssetNames) => {
+export const playSound = async (name: AlertSoundNames) => {
   console.log(`plaing sound --> ${name}`);
   try {
     if (alertPlayableSounds[name]) {

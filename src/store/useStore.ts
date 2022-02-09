@@ -3,6 +3,7 @@ import { defaultSessions } from "./defaultSettings";
 import { SessionSettingsType } from "../context/breathMachineContext";
 import { AlertSettings } from "../utils/alertTypes";
 import { defaultAlertSettings } from "./defaultSettings";
+import { BreathContext } from "../machines/breathMachine";
 
 export type StoredSession = {
   id: string;
@@ -33,7 +34,8 @@ export const useStore = create<
     if (!activeSession) return activeSession;
     // Remove the id and name as they are not part of the session settings
     const { id, name, alertSettings, ...settingsOnly } = activeSession;
-    return settingsOnly;
+    const updatedSettings = convertSecondsToMS(settingsOnly);
+    return updatedSettings;
   },
   getActiveAlertSettings: () => {
     const activeSession = get().activeSession;
@@ -44,3 +46,34 @@ export const useStore = create<
     return alertSettings || defaultAlertSettings; // for typescript.  Above return should keep the || from happening
   },
 }));
+
+function convertSecondsToMS(settings: SessionSettingsType): SessionSettingsType {
+  let updatedSettings = { ...settings };
+  const settingsAffected = [
+    "inhaleTime",
+    "pauseTime",
+    "exhaleTime",
+    "defaultHoldTime",
+    "recoveryHoldTime",
+    "actionPauseTimeIn",
+    "actionPauseTimeOut",
+  ];
+
+  // Loop through top level context and only update the
+  // values in settingsAffected array to milliseconds
+  Object.keys(updatedSettings).forEach((key) => {
+    if (updatedSettings?.[key] && settingsAffected.some((el) => el === key)) {
+      updatedSettings[key] = updatedSettings[key] * 1000;
+    }
+  });
+
+  // breathRoundsDetail is an sub object.  Deal with this separately
+  const breathRoundsDetail = { ...settings?.breathRoundsDetail };
+  if (breathRoundsDetail) {
+    Object.keys(breathRoundsDetail).forEach((key) => {
+      breathRoundsDetail[key].holdTime = breathRoundsDetail[key].holdTime * 1000;
+    });
+  }
+  updatedSettings.breathRoundsDetail = { ...breathRoundsDetail };
+  return updatedSettings;
+}

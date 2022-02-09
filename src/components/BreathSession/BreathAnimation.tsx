@@ -31,7 +31,6 @@ function BreathAnimation() {
   ] = useBreathMachineInfo();
   const forcedBreathAnim = useSharedValue(0);
   const breathTime = useSharedValue(context.inhaleTime);
-  console.log("breath", alert);
   // console.log("breathstatestring", breathStateString);
   const derived = useAnimatedReaction(
     () => {

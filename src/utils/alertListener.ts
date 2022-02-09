@@ -5,11 +5,12 @@ import { BreathContext, BreathEvent } from "../machines/breathMachine";
 import { Audio } from "expo-av";
 import { Asset } from "expo-asset";
 
-import { AlertSettings } from "./alertTypes";
-import { AssetNames } from "../utils/sounds/soundTypes";
+import { Alert, AlertSettings } from "./alertTypes";
+import { AlertSoundNames } from "../utils/sounds/soundTypes";
 import { alertSounds, playSound } from "../utils/sounds/soundLibrary";
 import { alertNoAlertSettings } from "../store/defaultSettings";
 import { useStore } from "../store/useStore";
+import { BreathAlert, SecondsAlert } from "../utils/alertTypes";
 
 let prevElapsed = 0;
 let prevState = "idle";
@@ -18,23 +19,11 @@ let soundToPlay: Audio.Sound;
 
 let alertSettings: AlertSettings;
 
-// type AudioSounds = {
-//   [key in AssetNames]: Audio.Sound;
-// };
-// let audioSounds: AudioSounds = {};
-
 export const configureAlertListener = async (userAlertSettings: AlertSettings) => {
   console.log("Configuring Alert Listener", userAlertSettings);
   alertSettings = userAlertSettings;
   // alertSettings = { ...alertNoAlertSettings, ...userAlertSettings };
 };
-
-type Alert =
-  | {
-      alertMessage: string;
-      alertSound: AssetNames;
-    }
-  | undefined;
 
 /**
  * check for the alerts for ConsciousForced Breathing
@@ -42,7 +31,7 @@ type Alert =
  * @param totalBreaths
  * @returns Alert -
  */
-function breathAlerts(currentBreath: number, totalBreaths: number): Alert {
+function breathAlerts(currentBreath: number, totalBreaths: number): BreathAlert {
   // Pull out alert settings to check for from global alertSettings
   // NOTE: maybe this will be in actual state??
   // const {
@@ -59,15 +48,17 @@ function breathAlerts(currentBreath: number, totalBreaths: number): Alert {
   //-- alertEveryXBreaths alert check
   if (everyXValue && currentBreath % everyXValue === 0 && currentBreath !== 0) {
     return {
-      alertMessage: `factor of ${everyXValue} breaths`,
+      type: "breathing.everyXBreaths",
       alertSound: everyXSound,
+      breath: currentBreath,
     };
   }
   //-- alertXBreathsBeforeEnd alert check
   if (breathsBeforeEndValue && currentBreath + breathsBeforeEndValue === totalBreaths) {
     return {
-      alertMessage: `Last breath in ${breathsBeforeEndValue} breaths`,
+      type: "breathing.everyXBreaths",
       alertSound: breathsBeforeEndSound,
+      breath: currentBreath,
     };
   }
   return undefined;
@@ -78,7 +69,7 @@ function breathAlerts(currentBreath: number, totalBreaths: number): Alert {
  * @param elapsed
  * returns Alert
  */
-const BreathRetentionAlerts = (elapsed: number, currRoundHoldTime: number): Alert => {
+const BreathRetentionAlerts = (elapsed: number, currRoundHoldTime: number): SecondsAlert => {
   // Pull out alert settings to check for from global alertSettings
   // NOTE: maybe this will be in actual state??
   // const {
@@ -116,15 +107,17 @@ const BreathRetentionAlerts = (elapsed: number, currRoundHoldTime: number): Aler
       for (let x = 1000; x <= millisecondsBeforeEnd; x = x + 1000) {
         if (currRoundHoldTime - x === elapsed) {
           return {
-            alertMessage: `Ending in ${secondsBeforeEndValue} or ${x} seconds`,
+            type: "retention.secondsBeforeEnd",
             alertSound: countDownSound,
+            elapsed,
           };
         }
       }
     } else if (currRoundHoldTime - millisecondsBeforeEnd === elapsed) {
       return {
-        alertMessage: `Ending in ${secondsBeforeEndValue} seconds`,
+        type: "retention.secondsBeforeEnd",
         alertSound: secondsBeforeEndSound,
+        elapsed,
       };
     }
   }
@@ -135,15 +128,16 @@ const BreathRetentionAlerts = (elapsed: number, currRoundHoldTime: number): Aler
     const everyXMilliseconds = everyXValue * 1000;
     if (elapsed % everyXMilliseconds === 0) {
       return {
-        alertMessage: `factor of ${everyXValue} seconds`,
+        type: "retention.everyXSeconds",
         alertSound: everyXSound,
+        elapsed,
       };
     }
   }
   return undefined;
 };
 
-const BreathRecoveryAlerts = (elapsed: number, currRecoveryTime: number): Alert => {
+const BreathRecoveryAlerts = (elapsed: number, currRecoveryTime: number): SecondsAlert => {
   // Pull out alert settings to check for from global alertSettings
   // NOTE: maybe this will be in actual state??
   // const {
@@ -181,23 +175,26 @@ const BreathRecoveryAlerts = (elapsed: number, currRecoveryTime: number): Alert 
     for (let x = 1000; x <= millisecondsBeforeEnd; x = x + 1000) {
       if (currRecoveryTime - x === elapsed) {
         return {
-          alertMessage: `Ending in ${secondsBeforeEndValue} or ${x} seconds`,
+          type: "recovery.secondsBeforeEnd",
           alertSound: countDownSound,
+          elapsed,
         };
       }
     }
   } else if (currRecoveryTime - millisecondsBeforeEnd === elapsed) {
     return {
-      alertMessage: `Ending in ${secondsBeforeEndValue} seconds`,
+      type: "recovery.secondsBeforeEnd",
       alertSound: secondsBeforeEndSound,
+      elapsed,
     };
   }
 
   //-- alertEveryXSeconds
-  if (elapsed % everyXMilliseconds === 0) {
+  if (everyXMilliseconds && elapsed % everyXMilliseconds === 0) {
     return {
-      alertMessage: `factor of ${everyXValue} seconds`,
+      type: "recovery.everyXSeconds",
       alertSound: everyXSound,
+      elapsed,
     };
   }
   return undefined;
@@ -207,9 +204,9 @@ const BreathRecoveryAlerts = (elapsed: number, currRecoveryTime: number): Alert 
  * Return sound used for Intropause or outropause
  *
  * @param type  - which sound to return
- * @returns AssetNames
+ * @returns AlertSoundNames
  */
-function getAlertSound(type: "intropause" | "outropause"): AssetNames {
+function getAlertSound(type: "intropause" | "outropause"): AlertSoundNames {
   // Get info needed from alertSettings
   // const {
   //   RecoveryBreath: {
@@ -235,7 +232,7 @@ export const myListener = async (
       context: BreathContext;
     }
   >,
-  setAlert: (val: string | undefined) => void
+  setAlert: (val: Alert | undefined) => void
 ) => {
   // const test = useStore.getState().activeSessionSettings;
   // Needed to make sure we don't execute twice for same elapsed time
@@ -260,7 +257,7 @@ export const myListener = async (
     if (prevBreathNum !== state.context.breathCurrRep) {
       prevBreathNum = state.context.breathCurrRep;
       const myAlert = breathAlerts(state.context.breathCurrRep, state.context.breathReps);
-      setAlert(myAlert?.alertMessage); // Will be null if we didn't get a "hit" for an alert
+      setAlert(myAlert); // Will be null if we didn't get a "hit" for an alert
       if (myAlert?.alertSound) {
         await playSound(myAlert.alertSound);
       }
@@ -282,7 +279,7 @@ export const myListener = async (
       state.context.defaultHoldTime;
 
     const holdingAlert = BreathRetentionAlerts(state.context.elapsed, currRoundHoldTime);
-    setAlert(holdingAlert?.alertMessage);
+    setAlert(holdingAlert?.type);
     prevState = currState;
     if (holdingAlert?.alertSound) {
       console.log("playing holdingalert", holdingAlert.alertSound);
@@ -311,7 +308,7 @@ export const myListener = async (
     const currRoundHoldTime = state.context.recoveryHoldTime;
 
     const recoveryAlert = BreathRecoveryAlerts(state.context.elapsed, currRoundHoldTime);
-    setAlert(recoveryAlert?.alertMessage);
+    setAlert(recoveryAlert?.type);
     prevState = currState;
     if (recoveryAlert?.alertSound) {
       await playSound(recoveryAlert.alertSound);

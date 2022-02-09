@@ -7,6 +7,7 @@ import {
 import { useSelector } from "@xstate/react";
 import { Sender, State, StateValue } from "xstate";
 import { BreathContext, BreathEvent, BreathRoundsDetail } from "../machines/breathMachine";
+import { Alert } from "../utils/alertTypes";
 
 type BreathContextWOElapsed = Omit<BreathContext, "elapsed">;
 
@@ -80,7 +81,7 @@ type BreathData = {
   tags: Set<string> | undefined;
   // string version of current state value using
   breathState: BreathStates;
-  alert: string | undefined;
+  alert: Alert | undefined;
 };
 // Selector that excludes elapsed from the context
 const getContextSansElapsed = (
@@ -199,6 +200,7 @@ export const useBreathFlags = () => {
 const updateSessionSettings =
   (send: Sender<BreathEvent>) =>
   (sessionSettings: SessionSettingsType, clearSessionStats: boolean = true) => {
+    if (!sessionSettings) return;
     if (clearSessionStats) {
       send({
         type: "UPDATE_DEFAULTS",
@@ -238,4 +240,57 @@ export const useBreathEvents = () => {
     updateSessionBreathRounds: updateSessionBreathRoundDetails(send),
   };
   return breathEvents;
+};
+
+//----------------------------------
+// Hooks to return Alerts
+// NOTE: if you just want alerts and are using the useBreathMachineInfo hook, alert is included
+//----------------------------------
+//* Return any alert
+export const useAlert = () => {
+  const { alert } = useBreathState();
+
+  return alert;
+};
+
+//* only return breath alerts:
+//* - breathing.everyXBreaths
+//* - breathing.breathsBeforeEnd
+export const useBreathAlert = () => {
+  const { alert } = useBreathState();
+  if (!alert?.type) return;
+
+  if (alert.type.includes("breathing")) {
+    return alert;
+  }
+
+  return;
+};
+
+//* only return retention alerts:
+//* - retention.everyXSeconds
+//* - retention.secondsBeforeEnd
+export const useRetentionAlert = () => {
+  const { alert } = useBreathState();
+  if (!alert?.type) return;
+
+  if (alert.type.includes("retention")) {
+    return alert;
+  }
+
+  return;
+};
+
+//* only return recovery alerts:
+//* - recovery.everyXSeconds
+//* - recovery.secondsBeforeEnd
+export const useRecoveryAlert = () => {
+  const { alert } = useBreathState();
+  if (!alert?.type) return;
+
+  if (alert.type.includes("recovery")) {
+    return alert;
+  }
+
+  return;
 };

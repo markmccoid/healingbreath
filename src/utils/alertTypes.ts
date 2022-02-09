@@ -1,59 +1,65 @@
 import { Asset } from "expo-asset";
-import { AssetNames } from "./sounds/soundTypes";
+import { AlertSoundNames } from "./sounds/soundTypes";
 
 export type AlertSettings = {
-  ConsciousForcedBreathing: {
-    alertEveryXBreaths: {
+  ConsciousForcedBreathing?: {
+    alertEveryXBreaths?: {
       value: number;
-      sound: AssetNames;
+      sound: AlertSoundNames;
     };
-    alertXBreathsBeforeEnd: {
+    alertXBreathsBeforeEnd?: {
       value: number;
-      sound: AssetNames;
+      sound: AlertSoundNames;
       countDown: boolean;
-      countDownSound: AssetNames;
+      countDownSound: AlertSoundNames;
     };
   };
-  BreathRetention: {
-    alertEveryXSeconds: {
+  BreathRetention?: {
+    alertEveryXSeconds?: {
       value: number;
-      sound: AssetNames;
+      sound: AlertSoundNames;
     };
-    alertXSecondsBeforeEnd: {
+    alertXSecondsBeforeEnd?: {
       value: number;
-      sound: AssetNames;
+      sound: AlertSoundNames;
       countDown: boolean;
-      countDownSound: AssetNames;
+      countDownSound: AlertSoundNames;
     };
   };
-  RecoveryBreath: {
-    alertBreathInPause: {
-      sound: AssetNames;
+  RecoveryBreath?: {
+    alertBreathInPause?: {
+      sound: AlertSoundNames;
     };
-    alertEveryXSeconds: {
+    alertEveryXSeconds?: {
       value: number;
-      sound: AssetNames;
+      sound: AlertSoundNames;
     };
-    alertXSecondsBeforeEnd: {
+    alertXSecondsBeforeEnd?: {
       value: number;
-      sound: AssetNames;
+      sound: AlertSoundNames;
       countDown: boolean;
-      countDownSound: AssetNames;
+      countDownSound: AlertSoundNames;
     };
-    alertBreathOutPause: {
-      sound: AssetNames;
+    alertBreathOutPause?: {
+      sound: AlertSoundNames;
     };
   };
 };
 
-// export type AssetNames =
-//   | "gong"
-//   | "churchBell"
-//   | "breathInMark"
-//   | "breathOutMark"
-//   | "airplaneDing"
-//   | "elevatorDing";
+type BreathAlertNames = "breathing.everyXBreaths" | "breathing.breathsBeforeEnd";
+type SecondsAlertNames =
+  | "retention.everyXSeconds"
+  | "retention.secondsBeforeEnd"
+  | "recovery.everyXSeconds"
+  | "recovery.secondsBeforeEnd";
 
-// export type AlertSounds = {
-//   [assetName in AssetNames]: Asset;
-// };
+export type Alert<T = SecondsAlertNames | BreathAlertNames> = {
+  type: T;
+  alertSound: AlertSoundNames;
+  // breath number that triggered alert
+  breath?: number;
+  // elapsed seconds that triggered alert (milliseconds)
+  elapsed?: number;
+};
+export type BreathAlert = Omit<Alert<BreathAlertNames>, "elapsed"> | undefined;
+export type SecondsAlert = Omit<Alert<SecondsAlertNames>, "breath"> | undefined;

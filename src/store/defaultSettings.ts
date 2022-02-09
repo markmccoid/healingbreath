@@ -1,5 +1,6 @@
 import { useDebugValue } from "react";
 import { AlertSettings } from "../utils/alertTypes";
+import { StoredSession } from "./useStore";
 
 export const alertNoAlertSettings = {
   ConsciousForcedBreathing: undefined,
@@ -9,11 +10,11 @@ export const alertNoAlertSettings = {
 export const defaultAlertSettings: AlertSettings = {
   ConsciousForcedBreathing: {
     alertEveryXBreaths: {
-      value: 3,
+      value: 10,
       sound: "gong",
     },
     alertXBreathsBeforeEnd: {
-      value: 1,
+      value: 2,
       sound: "gong",
       countDown: false,
       countDownSound: "gong",
@@ -21,8 +22,8 @@ export const defaultAlertSettings: AlertSettings = {
   },
   BreathRetention: {
     alertEveryXSeconds: {
-      value: 5,
-      sound: "ding",
+      value: 30,
+      sound: "gong",
     },
     alertXSecondsBeforeEnd: {
       value: 5,
@@ -36,11 +37,12 @@ export const defaultAlertSettings: AlertSettings = {
       sound: "breathInMark",
     },
     alertEveryXSeconds: {
-      value: 5,
+      value: 0,
       sound: "ding",
     },
+    // could just leave this key off since it will not run
     alertXSecondsBeforeEnd: {
-      value: 4,
+      value: 0, // zero means NO alert will be triggered
       sound: "ding",
       countDown: false,
       countDownSound: "gong",
@@ -51,25 +53,24 @@ export const defaultAlertSettings: AlertSettings = {
   },
 };
 
-const testSession1 = {
+const testSession1: StoredSession = {
   id: "sample001",
   name: "Short Testing Session",
-  interval: 100,
-  inhaleTime: 1.6 * 1000,
-  exhaleTime: 1.6 * 1000,
+  inhaleTime: 1.6,
+  exhaleTime: 1.6,
   pauseTime: 0,
   breathReps: 5,
   breathRounds: 3,
-  defaultHoldTime: 5 * 1000,
-  recoveryHoldTime: 15 * 1000,
-  actionPauseTimeIn: 3 * 1000,
-  actionPauseTimeOut: 3 * 1000,
+  defaultHoldTime: 5,
+  recoveryHoldTime: 15,
+  actionPauseTimeIn: 3,
+  actionPauseTimeOut: 3,
   breathRoundsDetail: {
     1: {
-      holdTime: 12000,
+      holdTime: 120,
     },
     2: {
-      holdTime: 8000,
+      holdTime: 80,
     },
   },
   alertSettings: {
@@ -91,22 +92,21 @@ const testSession1 = {
 const testSession2 = {
   id: "sample002",
   name: "Standard Sample Session",
-  interval: 100,
-  inhaleTime: 1.6 * 1000,
-  exhaleTime: 1.6 * 1000,
+  inhaleTime: 1.6,
+  exhaleTime: 1.6,
   pauseTime: 0,
   breathReps: 15,
   breathRounds: 2,
-  defaultHoldTime: 60 * 1000,
-  recoveryHoldTime: 15 * 1000,
-  actionPauseTimeIn: 3.5 * 1000,
-  actionPauseTimeOut: 3 * 1000,
+  defaultHoldTime: 60,
+  recoveryHoldTime: 15,
+  actionPauseTimeIn: 3.5,
+  actionPauseTimeOut: 3,
   breathRoundsDetail: {
     1: {
-      holdTime: 60 * 1000,
+      holdTime: 60,
     },
     2: {
-      holdTime: 90 * 1000,
+      holdTime: 90,
     },
   },
 };

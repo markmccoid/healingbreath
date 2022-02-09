@@ -15,7 +15,7 @@ const SessionList = ({ navigation, route }: RootStackProps<"SessionList">) => {
       "Sessions",
       sessions.map((el) => el.name)
     );
-    console.log("Active Session", activeSession?.name);
+    // console.log("Active Session", activeSession?.name);
   }, [activeSession]);
   return (
     <View style={{ flex: 1 }}>
