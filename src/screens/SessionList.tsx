@@ -1,51 +1,34 @@
 import * as React from "react";
 import { View, Text } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { RootStackProps } from "../types/navTypes";
 import { useStore } from "../store/useStore";
 import useBreathNavigation from "../navigation/useBreathNavigation";
+import SessionItem from "../components/SessionList/SessionItem";
 
 const SessionList = ({ navigation, route }: RootStackProps<"SessionList">) => {
   const sessions = useStore((state) => state.storedSessions);
   const activeSession = useStore((state) => state.activeSession);
   const { navigateToSession } = useBreathNavigation();
 
-  React.useEffect(() => {
-    console.log(
-      "Sessions",
-      sessions.map((el) => el.name)
-    );
-    // console.log("Active Session", activeSession?.name);
-  }, [activeSession]);
+  // React.useEffect(() => {
+  //   console.log(
+  //     "Sessions",
+  //     sessions.map((el) => el.name)
+  //   );
+  //   // console.log("Active Session", activeSession?.name);
+  // }, [activeSession]);
   return (
     <View style={{ flex: 1 }}>
-      <Text>Session List</Text>
+      {/* <Text>Session List</Text> */}
 
-      {sessions.map((session) => {
-        return (
-          <View
-            style={{
-              borderWidth: 1,
-              padding: 10,
-              borderRadius: 10,
-              marginBottom: 5,
-              marginHorizontal: 15,
-              backgroundColor: "#8D8ED6",
-            }}
-            key={session.id}
-          >
-            <TouchableOpacity
-              onPress={() => {
-                navigateToSession(session);
-                // setActiveSession(session);
-                // navigation.navigate("Session");
-              }}
-            >
-              <Text>{`${session.id} - ${session.name}`}</Text>
-            </TouchableOpacity>
+      <ScrollView style={{ paddingTop: 10 }}>
+        {sessions.map((session) => (
+          <View key={session.id} style={{ marginBottom: 10 }}>
+            <SessionItem session={session} />
           </View>
-        );
-      })}
+        ))}
+      </ScrollView>
 
       <View
         style={{

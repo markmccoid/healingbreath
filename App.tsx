@@ -12,7 +12,7 @@ export default function App() {
   let [fontsLoaded] = useFonts({
     FiraSans_500Medium,
   });
-
+  console.log(soundsLoaded, fontsLoaded);
   if (!fontsLoaded || !soundsLoaded) {
     return <AppLoading />;
   }

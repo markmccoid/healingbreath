@@ -1,8 +1,7 @@
 import create, { GetState, SetState, StoreApi } from "zustand";
-import { defaultSessions } from "./defaultSettings";
+import { defaultSessions, defaultAlertSettings } from "./defaultSettings";
 import { SessionSettingsType } from "../context/breathMachineContext";
 import { AlertSettings } from "../utils/alertTypes";
-import { defaultAlertSettings } from "./defaultSettings";
 import { BreathContext } from "../machines/breathMachine";
 
 export type StoredSession = {
