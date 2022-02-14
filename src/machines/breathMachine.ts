@@ -285,8 +285,8 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
       breathRoundsDetail: {},
       extend: false, // When true, extend the hold time, don't stop the timer
       recoveryHoldTime: 5000, // inhaled holding time in seconds
-      actionPauseTimeIn: 3, // seconds to "wait" before inhale holds
-      actionPauseTimeOut: 7, // seconds to "wait" after inhale holds
+      actionPauseTimeIn: 3000, // seconds to "wait" before inhale holds
+      actionPauseTimeOut: 7000, // seconds to "wait" after inhale holds
       //-- Breathing session config
       breathRounds: 15, // Number of rounds (breathReps + Long Hold + )
       breathCurrRound: 0, // Current round

@@ -2,6 +2,18 @@ import { useDebugValue } from "react";
 import { AlertSettings } from "../utils/alertTypes";
 import { StoredSession } from "./useStore";
 
+export const defaultSessionSettings = {
+  inhaleTime: 1.6,
+  exhaleTime: 1.6,
+  pauseTime: 0,
+  breathReps: 30,
+  breathRounds: 3,
+  defaultHoldTime: 60,
+  recoveryHoldTime: 15,
+  actionPauseTimeIn: 3.5,
+  actionPauseTimeOut: 6,
+};
+
 export const alertNoAlertSettings = {
   ConsciousForcedBreathing: undefined,
   BreathRetention: undefined,

@@ -18,14 +18,14 @@ export const alertSounds: AlertSounds = {
 export const loadSounds = async () => {
   // Loads all alertSounds to the global object:
   //-- alertPlayableSounds
-  await Promise.all(
-    Object.keys(alertSounds).map((key) => {
-      const assetName = key as AlertSoundNames;
-      alertPlayableSounds = { ...alertPlayableSounds, [assetName]: new Audio.Sound() };
-      // alertPlayableSounds[assetName] = new Audio.Sound();
-      return alertPlayableSounds[assetName].loadAsync(alertSounds[assetName]);
-    })
-  );
+
+  const loadingSounds = Object.keys(alertSounds).map((key) => {
+    const assetName = key as AlertSoundNames;
+    alertPlayableSounds = { ...alertPlayableSounds, [assetName]: new Audio.Sound() };
+    // alertPlayableSounds[assetName] = new Audio.Sound();
+    return alertPlayableSounds[assetName].loadAsync(alertSounds[assetName]);
+  });
+  return await Promise.all(loadingSounds);
 };
 
 // Could call loadSounds from App.tsx, but using a hook is similar to how
@@ -34,8 +34,14 @@ export const useLoadSounds = () => {
   const [soundsLoaded, setSoundsLoaded] = React.useState(false);
   React.useEffect(() => {
     const effectLoadSounds = async () => {
-      await loadSounds();
-      setSoundsLoaded(true);
+      try {
+        // console.log("loading sounds started");
+        await loadSounds();
+        console.log("loading sounds done");
+        setSoundsLoaded(true);
+      } catch (e) {
+        console.log("error loading sounds", e);
+      }
     };
     effectLoadSounds();
   }, []);

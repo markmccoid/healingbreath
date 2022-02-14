@@ -20,7 +20,6 @@ export type MultiStepTimerMachineEvent = {
 const firstStepEnter: AssignAction<MultiStepTimerMachineContext, MultiStepTimerMachineEvent> =
   assign({
     currentLoop: (context, event) => {
-      console.log("context", context);
       return context.currentLoop + 1;
     },
   });

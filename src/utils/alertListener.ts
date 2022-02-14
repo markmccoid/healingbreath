@@ -20,7 +20,7 @@ let soundToPlay: Audio.Sound;
 let alertSettings: AlertSettings;
 
 export const configureAlertListener = async (userAlertSettings: AlertSettings) => {
-  console.log("Configuring Alert Listener", userAlertSettings);
+  // console.log("Configuring Alert Listener", userAlertSettings);
   alertSettings = userAlertSettings;
   // alertSettings = { ...alertNoAlertSettings, ...userAlertSettings };
 };

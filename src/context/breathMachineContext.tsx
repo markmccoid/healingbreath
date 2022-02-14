@@ -54,13 +54,8 @@ export const BreathMachineProvider = ({
   //* maybe when get global state provider implemented
   React.useEffect(() => {
     configureAlertListener(alertSettings);
-    () => console.log("Exit BREATH PROVIDER");
   }, []);
-  // const updateAlert = (newAlert) => {
-  //   if (!_.isEqual(alert, newAlert)) {
-  //     setAlert(newAlert);
-  //   }
-  // };
+
   return (
     <BreathMachineContext.Provider value={{ breathStateService, alert }}>
       {children}

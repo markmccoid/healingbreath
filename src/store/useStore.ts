@@ -2,7 +2,6 @@ import create, { GetState, SetState, StoreApi } from "zustand";
 import { defaultSessions, defaultAlertSettings } from "./defaultSettings";
 import { SessionSettingsType } from "../context/breathMachineContext";
 import { AlertSettings } from "../utils/alertTypes";
-import { BreathContext } from "../machines/breathMachine";
 
 export type StoredSession = {
   id: string;
@@ -10,10 +9,11 @@ export type StoredSession = {
   alertSettings?: AlertSettings;
 } & SessionSettingsType;
 
-type BreathState = {
+export type BreathState = {
   storedSessions: StoredSession[];
   activeSession: StoredSession | undefined;
   setActiveSession: (session: StoredSession) => void;
+  createNewSession: (sessionData: StoredSession) => void;
   getActiveSessionSettings: () => SessionSettingsType | undefined;
   getActiveAlertSettings: () => AlertSettings;
 };
@@ -26,7 +26,13 @@ export const useStore = create<
 >((set, get) => ({
   storedSessions: defaultSessions,
   activeSession: undefined,
+  // --SETTERS
   setActiveSession: (storedSession) => set((state) => ({ activeSession: storedSession })),
+  createNewSession: (sessionData) =>
+    set((state) => {
+      return { storedSessions: [...state.storedSessions, sessionData] };
+    }),
+  // --GETTERS
   getActiveSessionSettings: () => {
     const activeSession = get().activeSession;
     // If not session is active, return undefined

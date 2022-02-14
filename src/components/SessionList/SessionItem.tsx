@@ -30,17 +30,23 @@ function SessionItem({ session }: Props) {
           <Text style={[styles.itemText, styles.itemTitle]}>{`${session.name}`}</Text>
         </View>
         <View style={styles.infoLine1}>
-          <Text style={[styles.itemText, styles.infoLine1Text]}>
-            Rounds: {session.breathRounds}
-          </Text>
-          <Text style={[styles.itemText, styles.infoLine1Text]}>
-            Recovery: {session.recoveryHoldTime}s
-          </Text>
-          <Text style={[styles.itemText, styles.infoLine1Text]}>
-            Breaths/Round: {session.breathReps}
-          </Text>
+          <View style={styles.infoHighlight}>
+            <Text style={[styles.itemText, styles.infoLine1Text]}>
+              Rounds: {session.breathRounds}
+            </Text>
+          </View>
+          <View style={styles.infoHighlight}>
+            <Text style={[styles.itemText, styles.infoLine1Text]}>
+              Recovery: {session.recoveryHoldTime}s
+            </Text>
+          </View>
+          <View style={styles.infoHighlight}>
+            <Text style={[styles.itemText, styles.infoLine1Text]}>
+              Breaths/Round: {session.breathReps}
+            </Text>
+          </View>
         </View>
-        <View style={{ flexDirection: "row", justifyContent: "flex-start", marginTop: 4 }}>
+        <View style={styles.retentionContainer}>
           <Text style={[styles.itemText, styles.retentionText]}>Retention:</Text>
           {retentionTimes?.map((time, idx) => (
             <View key={idx} style={{ marginHorizontal: 5 }}>
@@ -61,7 +67,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     backgroundColor: "#8D8ED6",
   },
-  itemPressable: { padding: 10, paddingTop: 5 },
+  itemPressable: {},
   itemText: {
     fontFamily: "FiraSans_500Medium",
   },
@@ -69,17 +75,37 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     marginBottom: 5,
+    paddingVertical: 5,
+    borderRadius: 10,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    borderBottomWidth: 1, //StyleSheet.hairlineWidth,
+    backgroundColor: "#ffffffaa",
   },
   itemTitle: { fontSize: 18 },
   // Info line 1
   infoLine1: {
+    paddingHorizontal: 5,
     flexDirection: "row",
     justifyContent: "space-between",
   },
   infoLine1Text: {
     fontSize: 16,
   },
+  infoHighlight: {
+    backgroundColor: "#ffffff77",
+    padding: 3,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 6,
+  },
   // Retention Line
+  retentionContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    marginTop: 4,
+    paddingHorizontal: 5,
+    marginBottom: 5,
+  },
   retentionText: {
     fontSize: 17,
   },
