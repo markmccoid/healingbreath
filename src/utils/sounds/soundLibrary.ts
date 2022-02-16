@@ -47,6 +47,23 @@ export const useLoadSounds = () => {
   }, []);
   return [soundsLoaded];
 };
+// export const useLoadSounds = () => {
+//   const [soundsLoaded, setSoundsLoaded] = React.useState(false);
+//   React.useEffect(() => {
+//     const effectLoadSounds = async () => {
+//       try {
+//         // console.log("loading sounds started");
+//         await loadSounds();
+//         console.log("loading sounds done");
+//         setSoundsLoaded(true);
+//       } catch (e) {
+//         console.log("error loading sounds", e);
+//       }
+//     };
+//     effectLoadSounds();
+//   }, []);
+//   return [soundsLoaded];
+// };
 
 // Will play the passed asset names sound
 export const playSound = async (name: AlertSoundNames) => {

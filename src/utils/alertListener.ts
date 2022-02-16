@@ -206,7 +206,7 @@ const BreathRecoveryAlerts = (elapsed: number, currRecoveryTime: number): Second
  * @param type  - which sound to return
  * @returns AlertSoundNames
  */
-function getAlertSound(type: "intropause" | "outropause"): AlertSoundNames {
+function getAlertSound(type: "intropause" | "outropause"): AlertSoundNames | undefined {
   // Get info needed from alertSettings
   // const {
   //   RecoveryBreath: {
@@ -217,7 +217,7 @@ function getAlertSound(type: "intropause" | "outropause"): AlertSoundNames {
   const { sound: alertBreathInSound } =
     alertSettings?.RecoveryBreath?.alertBreathInPause || {};
   const { sound: alertBreathOutSound } =
-    alertSettings?.RecoveryBreath?.alertBreathInPause || {};
+    alertSettings?.RecoveryBreath?.alertBreathOutPause || {};
 
   return type === "intropause" ? alertBreathInSound : alertBreathOutSound;
 }

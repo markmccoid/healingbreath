@@ -7,7 +7,8 @@ import Session from "../screens/Session/Session";
 
 // Types
 import { RootStackParamList } from "../types/navTypes";
-import SessionEditMain from "../components/SessionEdit/SessionEditMain";
+// import SessionEditMain from "../components/SessionEdit/SessionEditMain";
+import SessionEdit from "../components/SessionEdit/SessionEditFormik";
 
 const RootNav = () => {
   const RootStack = createStackNavigator<RootStackParamList>();
@@ -35,7 +36,7 @@ const RootNav = () => {
           <RootStack.Screen name="Main Modal" component={Session} />
           <RootStack.Screen
             name="SessionEdit"
-            component={SessionEditMain}
+            component={SessionEdit}
             options={{ headerShown: false }}
           />
         </RootStack.Group>

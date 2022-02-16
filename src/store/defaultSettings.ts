@@ -3,8 +3,8 @@ import { AlertSettings } from "../utils/alertTypes";
 import { StoredSession } from "./useStore";
 
 export const defaultSessionSettings = {
-  inhaleTime: 1.6,
-  exhaleTime: 1.6,
+  inhaleTime: 1.2,
+  exhaleTime: 1.2,
   pauseTime: 0,
   breathReps: 30,
   breathRounds: 3,
@@ -54,7 +54,7 @@ export const defaultAlertSettings: AlertSettings = {
     },
     // could just leave this key off since it will not run
     alertXSecondsBeforeEnd: {
-      value: 0, // zero means NO alert will be triggered
+      value: 3, // zero means NO alert will be triggered
       sound: "ding",
       countDown: false,
       countDownSound: "gong",
@@ -104,23 +104,30 @@ const testSession1: StoredSession = {
 const testSession2 = {
   id: "sample002",
   name: "Standard Sample Session",
-  inhaleTime: 1.6,
-  exhaleTime: 1.6,
+  inhaleTime: 1.2,
+  exhaleTime: 1.2,
   pauseTime: 0,
-  breathReps: 15,
-  breathRounds: 2,
+  breathReps: 35,
+  breathRounds: 4,
   defaultHoldTime: 60,
   recoveryHoldTime: 15,
   actionPauseTimeIn: 3.5,
   actionPauseTimeOut: 3,
   breathRoundsDetail: {
     1: {
-      holdTime: 60,
-    },
-    2: {
       holdTime: 90,
     },
+    2: {
+      holdTime: 120,
+    },
+    3: {
+      holdTime: 150,
+    },
+    4: {
+      holdTime: 180,
+    },
   },
+  alertSettings: defaultAlertSettings,
 };
 
 export const defaultSessions = [testSession1, testSession2];

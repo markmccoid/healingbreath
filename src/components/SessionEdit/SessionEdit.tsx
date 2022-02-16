@@ -10,7 +10,7 @@ import { SessionInputProvider, useSessionInputs } from "../../context/SessionInp
 const SessionEdit = () => {
   const route = useRoute<RootRouteProps<"SessionEdit">>();
   const navigation = useNavigation<RootNavProps<"SessionEdit">>();
-  const { displayValues, setters, errorMessages } = useSessionInputs();
+  const { displayValues, setters, errorMessages, saveSession } = useSessionInputs();
 
   const createNewSession = useStore((state) => state.createNewSession);
   const [title, setTitle] = useState("Create Session");
@@ -22,16 +22,16 @@ const SessionEdit = () => {
     }
     navigation.setOptions({});
   }, []);
-  console.log("error messages", displayValues, errorMessages);
-  // Display the retention hold time entry inputs
-  // useEffect(() => {
-  //   // console.log("breathRounds", state.breathRounds);
-  //   if (displayValues?.breathRounds) {
-  //     setShowRetentionBreaths(true);
-  //   } else {
-  //     setShowRetentionBreaths(false);
-  //   }
-  // }, [displayValues?.breathRounds]);
+  // console.log("error messages", displayValues, errorMessages);
+  useEffect(() => {
+    // Display the retention hold time entry inputs when we
+    // have a breathRounds value
+    if (displayValues?.breathRounds) {
+      setShowRetentionBreaths(true);
+    } else {
+      setShowRetentionBreaths(false);
+    }
+  }, [displayValues?.breathRounds]);
 
   return (
     <View style={styles.container}>
@@ -44,21 +44,25 @@ const SessionEdit = () => {
           <CloseIcon color={"black"} size={25} />
         </TouchableOpacity>
       </View>
+
       <View style={styles.editorContainer}>
-        {/* <View style={styles.editorRow}>
+        <View style={styles.editorRow}>
           <Text style={styles.editorLabelText}>Session Name:</Text>
           <TextInput
             placeholder=""
-            onChangeText={(e) => dispatch({ type: "name", payload: e })}
-            value={state.name}
-            style={[styles.editorInputText, { borderBottomWidth: 1, width: 100 }]}
+            onChangeText={(e) => setters.setSessionName(e)}
+            value={displayValues?.name}
+            style={[styles.editorInputText, { borderBottomWidth: 1, width: 200 }]}
             // style={styles.filterName}
           />
-        </View> */}
+          {errorMessages?.name ? <Text>{errorMessages?.name}</Text> : null}
+        </View>
+
         <View style={styles.divider} />
         <View style={styles.editorRow}>
           <Text style={styles.editorLabelText}>Rounds:</Text>
           <TextInput
+            selectTextOnFocus={true}
             placeholder=""
             keyboardType="numeric"
             onChangeText={(e) => setters.setBreathRounds(e)} //dispatch({ type: "breathRounds", payload: e })}
@@ -75,6 +79,55 @@ const SessionEdit = () => {
             textAlign="center"
             // style={styles.filterName}
           />
+          {errorMessages?.breathRounds ? <Text>{errorMessages?.breathRounds}</Text> : null}
+        </View>
+
+        <View style={styles.editorRow}>
+          <Text style={styles.editorLabelText}>Breath Reps:</Text>
+          <TextInput
+            selectTextOnFocus={true}
+            placeholder=""
+            keyboardType="numeric"
+            onChangeText={(e) => setters.setBreathReps(e)} //dispatch({ type: "breathRounds", payload: e })}
+            value={displayValues?.breathReps}
+            style={[
+              styles.editorInputText,
+              {
+                borderBottomWidth: 1,
+                width: 25,
+                backgroundColor: errorMessages?.breathReps ? "red" : "white",
+              },
+            ]}
+            maxLength={3}
+            textAlign="center"
+            // style={styles.filterName}
+          />
+          {errorMessages?.breathReps ? <Text>{errorMessages?.breathReps}</Text> : null}
+        </View>
+
+        <View style={styles.editorRow}>
+          <Text style={styles.editorLabelText}>Recovery Hold Time:</Text>
+          <TextInput
+            selectTextOnFocus={true}
+            placeholder=""
+            keyboardType="numeric"
+            onChangeText={(e) => setters.setRecoveryHoldTime(e)} //dispatch({ type: "breathRounds", payload: e })}
+            value={displayValues?.recoveryHoldTime}
+            style={[
+              styles.editorInputText,
+              {
+                borderBottomWidth: 1,
+                width: 25,
+                backgroundColor: errorMessages?.recoveryHoldTime ? "red" : "white",
+              },
+            ]}
+            maxLength={3}
+            textAlign="center"
+            // style={styles.filterName}
+          />
+          {errorMessages?.recoveryHoldTime ? (
+            <Text>{errorMessages?.recoveryHoldTime}</Text>
+          ) : null}
         </View>
         {/* <View style={styles.divider} />
         <View style={styles.editorRow}>
@@ -112,32 +165,36 @@ const SessionEdit = () => {
             // style={styles.filterName}
           />
         </View>
-
+*/}
         <View style={styles.divider} />
         {showRetentionBreaths &&
-          Array.from<number>({ length: state.breathRounds || 0 }).map((_, index) => (
+          Array.from<number>({ length: displayValues.breathRounds || 0 }).map((_, index) => (
             <View style={styles.editorRow} key={index}>
               <Text style={styles.editorLabelText}>
                 {`Retention Breath Round ${index + 1}`}:
               </Text>
               <TextInput
+                selectTextOnFocus={true}
                 placeholder=""
                 keyboardType="numeric"
-                onChangeText={(e) => {
-                  const breathLength = parseInt(e.replace(/[^0-9]/g, ""));
-                  dispatch({
-                    type: "retentionHoldTimes",
-                    payload: { index: index + 1, holdTime: breathLength },
-                  });
-                }}
-                value={state?.breathRoundsDetail?.[index + 1].holdTime || "60"}
+                onChangeText={(e) => setters.setRetentionHoldTimes(index + 1, e)}
+                value={
+                  displayValues?.breathRoundsDetail?.[index + 1]?.holdTime ||
+                  displayValues.defaultHoldTime
+                }
                 style={[styles.editorInputText, { borderBottomWidth: 1, width: 50 }]}
                 maxLength={4}
                 textAlign="center"
                 // style={styles.filterName}
               />
             </View>
-          ))} */}
+          ))}
+        <TouchableOpacity
+          onPress={saveSession}
+          style={{ padding: 5, borderWidth: 1, backgroundColor: "#ccc", margin: 19 }}
+        >
+          <Text>Save Session</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
