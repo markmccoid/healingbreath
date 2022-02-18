@@ -1,7 +1,18 @@
 import React from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from "react-native";
-import { Formik } from "formik";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView } from "react-native";
+import { Formik, useFormik } from "formik";
 import * as yup from "yup";
+import _values from "lodash/values";
+import {
+  createRetentionFields,
+  prepareSubmit,
+  arrayToObject,
+  BreathRoundsArray,
+  BreathSessionValues,
+  initialValues,
+} from "./sessionEditHelpers";
+import { useStore, StoredSession } from "../../store/useStore";
+import { RootStackProps } from "../../types/navTypes";
 
 const sessionValidationSchema = yup.object({
   sessionName: yup.string().required(),
@@ -17,14 +28,25 @@ const sessionValidationSchema = yup.object({
     .required()
     .integer("Field must be an integer")
     .positive("Field must be greater than zero"),
-  recoveryBreath: yup
+  recoveryHoldTime: yup
     .number()
     .typeError("Field must be an intger greater than zero")
     .required()
     .integer("Field must be an integer")
     .positive("Field must be greater than zero"),
+  retentionHoldTimes: yup.array().of(
+    yup.object().shape({
+      holdTime: yup
+        .number()
+        .typeError("Must be a number")
+        .required("Hold Time is required")
+        .integer("Hold Time must be an integer")
+        .positive("Hold Time must be positive"),
+    })
+  ),
 });
-const SessionEditFormik = () => {
+const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
+  const createNewSession = useStore((state) => state.createNewSession);
   return (
     <View style={{ flex: 1 }}>
       <View
@@ -40,76 +62,118 @@ const SessionEditFormik = () => {
         <Text style={{ fontSize: 18, fontWeight: "600" }}>Create Session</Text>
       </View>
       <Formik
-        initialValues={{
-          sessionName: "",
-          breathRounds: "3",
-          breathReps: "30",
-          recoveryBreath: "15",
-        }}
+        initialValues={initialValues}
         validationSchema={sessionValidationSchema}
-        onSubmit={(values) => console.log(values)}
+        onSubmit={(values) => {
+          const newSession = prepareSubmit(values);
+          createNewSession(newSession);
+          navigation.goBack();
+        }}
       >
-        {(props) => (
-          <View>
-            <View style={styles.field}>
-              <Text style={styles.inputLabel}>Session Name</Text>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Session Name"
-                onChangeText={props.handleChange("sessionName")}
-                value={props.values.sessionName}
-              />
-            </View>
-            <View style={styles.field}>
-              <Text style={styles.inputLabel}>Breath Rounds</Text>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Breath Rounds"
-                onChangeText={props.handleChange("breathRounds")}
-                value={props.values.breathRounds}
-                keyboardType="numeric"
-                onBlur={props.handleBlur("breathRounds")}
-              />
-              <Text style={styles.errorMessage}>
-                {props.touched.breathRounds && props.errors.breathRounds}
-              </Text>
-            </View>
-            <View style={styles.field}>
-              <Text style={styles.inputLabel}>Breath Reps Per Round</Text>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Breath Reps Per Round"
-                onChangeText={props.handleChange("breathReps")}
-                value={props.values.breathReps}
-              />
-            </View>
-            <View style={styles.field}>
-              <Text style={styles.inputLabel}>Recovery Breath Hold Time</Text>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Recovery Breath Hold Time"
-                onChangeText={props.handleChange("recoveryBreath")}
-                value={props.values.recoveryBreath}
-              />
-            </View>
-            <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-              <TouchableOpacity
-                onPress={props.submitForm}
-                style={{
-                  // flexDirection: "row",
-                  // justifyContent: "center",
-                  // width: 100,
-                  padding: 5,
-                  paddingHorizontal: 15,
-                  borderWidth: 1,
-                  backgroundColor: "#ccc",
-                }}
-              >
-                <Text>Submit</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
+        {(props) => {
+          //* =-=
+          //* Create retentionBreath array entries IF the length of the current retentionHoldTimes
+          //* array is NOT equal to the num of breathRounds AND breathRounds isn't empty
+          //* if we don't check for empty when blank all values are wiped out
+          if (
+            parseInt(props.values.breathRounds) !== props.values.retentionHoldTimes.length &&
+            props.values.breathRounds
+          ) {
+            props.values.retentionHoldTimes = createRetentionFields(
+              props.values.breathRounds,
+              props.values.defaultHoldTime,
+              props.values.retentionHoldTimes
+            );
+          }
+
+          return (
+            <ScrollView>
+              <View style={styles.field}>
+                <Text style={styles.inputLabel}>Session Name</Text>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Session Name"
+                  onChangeText={props.handleChange("sessionName")}
+                  value={props.values.sessionName}
+                />
+                <Text style={styles.errorText}>{props.errors.sessionName}</Text>
+              </View>
+              <View style={styles.field}>
+                <Text style={styles.inputLabel}>Breath Rounds</Text>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Breath Rounds"
+                  onChangeText={props.handleChange("breathRounds")}
+                  value={props.values.breathRounds}
+                  keyboardType="numeric"
+                  maxLength={2}
+                  onBlur={props.handleBlur("breathRounds")}
+                />
+                <Text style={styles.errorText}>
+                  {props.touched.breathRounds && props.errors.breathRounds}
+                </Text>
+              </View>
+              <View style={styles.field}>
+                <Text style={styles.inputLabel}>Breath Reps Per Round</Text>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Breath Reps Per Round"
+                  onChangeText={props.handleChange("breathReps")}
+                  value={props.values.breathReps}
+                />
+                <Text style={styles.errorText}>{props.errors.breathReps}</Text>
+              </View>
+              <View style={styles.field}>
+                <Text style={styles.inputLabel}>Recovery Breath Hold Time</Text>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Recovery Breath Hold Time"
+                  onChangeText={props.handleChange("recoveryHoldTime")}
+                  value={props.values.recoveryHoldTime}
+                />
+                <Text style={styles.errorText}>{props.errors.recoveryHoldTime}</Text>
+              </View>
+
+              {props.values.retentionHoldTimes.map((el, index) => {
+                return (
+                  <View style={styles.field} key={index}>
+                    <Text>Retention Hold Time {index + 1}</Text>
+                    <TextInput
+                      style={styles.textInput}
+                      key={index}
+                      onChangeText={props.handleChange(
+                        `retentionHoldTimes[${index}].holdTime`
+                      )}
+                      onBlur={props.handleBlur(`retentionHoldTimes[${index}].holdTime`)}
+                      value={props.values.retentionHoldTimes[index].holdTime}
+                      maxLength={3}
+                    />
+                    <Text style={styles.errorText}>
+                      {props.errors?.retentionHoldTimes?.[index]?.holdTime}
+                    </Text>
+                  </View>
+                );
+              })}
+
+              <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+                <TouchableOpacity
+                  onPress={props.submitForm}
+                  style={{
+                    // flexDirection: "row",
+                    // justifyContent: "center",
+                    // width: 100,
+                    padding: 5,
+                    paddingHorizontal: 15,
+                    borderWidth: 1,
+                    backgroundColor: "#ccc",
+                  }}
+                >
+                  <Text>Submit</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          );
+        }}
       </Formik>
     </View>
   );
@@ -126,17 +190,18 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginBottom: 2,
   },
-  errorMessage: {
-    fontWeight: "600",
-    color: "crimson",
-    textAlign: "center",
-  },
   textInput: {
     borderWidth: StyleSheet.hairlineWidth,
     paddingHorizontal: 8,
     paddingVertical: 5,
     borderRadius: 10,
     fontSize: 18,
+  },
+  errorText: {
+    color: "crimson",
+    textAlign: "center",
+    fontStyle: "italic",
+    fontWeight: "700",
   },
 });
 

@@ -9,6 +9,7 @@ import { AddIcon } from "../components/common/Icons";
 
 const SessionList = ({ navigation, route }: RootStackProps<"SessionList">) => {
   const sessions = useStore((state) => state.storedSessions);
+  const deleteSession = useStore((state) => state.deleteSession);
   // const activeSession = useStore((state) => state.activeSession);
   // const { navigateToSession } = useBreathNavigation();
   // console.log("sessions", sessions);
@@ -19,7 +20,7 @@ const SessionList = ({ navigation, route }: RootStackProps<"SessionList">) => {
       <ScrollView style={{ paddingTop: 10 }}>
         {sessions.map((session) => (
           <View key={session.id} style={{ marginBottom: 10 }}>
-            <SessionItem session={session} />
+            <SessionItem session={session} deleteSession={deleteSession} />
           </View>
         ))}
       </ScrollView>

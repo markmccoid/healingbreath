@@ -1,14 +1,16 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import useBreathNavigation from "../../navigation/useBreathNavigation";
-import { StoredSession } from "../../store/useStore";
+import { StoredSession, BreathState } from "../../store/useStore";
 import { formattedRetentionTimes } from "../../utils/helpers";
+import { DeleteIcon } from "../common/Icons";
 
 type Props = {
   session: StoredSession;
+  deleteSession: BreathState["deleteSession"];
 };
 
-function SessionItem({ session }: Props) {
+function SessionItem({ session, deleteSession }: Props) {
   const { navigateToSession } = useBreathNavigation();
   const retentionTimes = formattedRetentionTimes(
     session.breathRounds,
@@ -18,6 +20,21 @@ function SessionItem({ session }: Props) {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        style={{
+          position: "absolute",
+          zIndex: 10,
+          right: -6,
+          padding: 3,
+          borderWidth: 1,
+          backgroundColor: "white",
+          borderRadius: 10,
+          top: -10,
+        }}
+        onPress={() => deleteSession(session.id)}
+      >
+        <DeleteIcon size={20} />
+      </TouchableOpacity>
       <TouchableOpacity
         style={styles.itemPressable}
         onPress={() => {

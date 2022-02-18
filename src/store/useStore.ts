@@ -2,6 +2,8 @@ import create, { GetState, SetState, StoreApi } from "zustand";
 import { defaultSessions, defaultAlertSettings } from "./defaultSettings";
 import { SessionSettingsType } from "../context/breathMachineContext";
 import { AlertSettings } from "../utils/alertTypes";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { configurePersist } from "zustand-persist";
 
 export type StoredSession = {
   id: string;
@@ -14,24 +16,35 @@ export type BreathState = {
   activeSession: StoredSession | undefined;
   setActiveSession: (session: StoredSession) => void;
   createNewSession: (sessionData: StoredSession) => void;
+  deleteSession: (sessionId: string) => void;
   getActiveSessionSettings: () => SessionSettingsType | undefined;
   getActiveAlertSettings: () => AlertSettings;
 };
 
-export const useStore = create<
-  BreathState,
-  SetState<BreathState>,
-  GetState<BreathState>,
-  StoreApi<BreathState>
->((set, get) => ({
+//-- Configure zustand persist
+const { persist, purge } = configurePersist({
+  storage: AsyncStorage, // use `AsyncStorage` in react native
+  rootKey: "root", // optional, default value is `root`
+});
+
+//-- Function that defines the store setters and getters
+const storeFunction = (
+  set: SetState<BreathState>,
+  get: GetState<BreathState>
+): BreathState => ({
   storedSessions: defaultSessions,
   activeSession: undefined,
   // --SETTERS
   setActiveSession: (storedSession) => set((state) => ({ activeSession: storedSession })),
   createNewSession: (sessionData) =>
     set((state) => {
-      return { storedSessions: [...state.storedSessions, sessionData] };
+      return { storedSessions: [sessionData, ...state.storedSessions] };
     }),
+  deleteSession: (sessionId) => {
+    set((state) => {
+      return { storedSessions: [...state.storedSessions.filter((el) => el.id !== sessionId)] };
+    });
+  },
   // --GETTERS
   getActiveSessionSettings: () => {
     const activeSession = get().activeSession;
@@ -50,7 +63,23 @@ export const useStore = create<
     const { alertSettings, ...otherSettings } = activeSession;
     return alertSettings || defaultAlertSettings; // for typescript.  Above return should keep the || from happening
   },
-}));
+});
+
+export const useStore = create<
+  BreathState,
+  SetState<BreathState>,
+  GetState<BreathState>,
+  StoreApi<BreathState>
+>(
+  persist(
+    {
+      key: "breath", // required, child key of storage
+      allowlist: ["storedSessions"], // optional, will save everything if allowlist is undefined
+      denylist: [], // optional, if allowlist set, denylist will be ignored
+    },
+    storeFunction
+  )
+);
 
 function convertSecondsToMS(settings: SessionSettingsType): SessionSettingsType {
   let updatedSettings = { ...settings };

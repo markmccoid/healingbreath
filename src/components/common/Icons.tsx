@@ -93,7 +93,7 @@ export const CloseIcon = ({ size, color = undefined, style = {} }: IconProps) =>
   return <AntDesign name="close" size={size} color={color} style={style} />;
 };
 
-export const DeleteIcon = ({ size = 25, color = "#b20a2c", style }) => {
+export const DeleteIcon = ({ size = 25, color = "#b20a2c", style = {} }: IconProps) => {
   return <AntDesign name="delete" size={size} color={color} style={style} />;
 };
 

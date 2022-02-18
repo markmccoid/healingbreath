@@ -32,6 +32,12 @@ export type BreathRoundsDetail = {
     holdTime: number;
   };
 };
+// Used in Formik Input form
+export type BreathRoundsDetailForInput = {
+  [breathRound: number]: {
+    holdTime: string;
+  };
+};
 export type BreathContext = {
   // -- Breathing pattern config
   inhaleTime: number; // milliseconds
