@@ -55,7 +55,7 @@ type SecondsAlertNames =
 
 export type Alert<T = SecondsAlertNames | BreathAlertNames> = {
   type: T;
-  alertSound: AlertSoundNames;
+  alertSound: AlertSoundNames | undefined;
   // breath number that triggered alert
   breath?: number;
   // elapsed seconds that triggered alert (milliseconds)

@@ -4,6 +4,8 @@ import { SessionSettingsType } from "../context/breathMachineContext";
 import { AlertSettings } from "../utils/alertTypes";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { configurePersist } from "zustand-persist";
+import { AlertSoundNames } from "../utils/sounds/soundTypes";
+import { flatMapDeep, flattenDeep } from "lodash";
 
 export type StoredSession = {
   id: string;
@@ -18,7 +20,7 @@ export type BreathState = {
   createNewSession: (sessionData: StoredSession) => void;
   deleteSession: (sessionId: string) => void;
   getActiveSessionSettings: () => SessionSettingsType | undefined;
-  getActiveAlertSettings: () => AlertSettings;
+  getActiveAlertSettings: () => [AlertSettings, Partial<AlertSoundNames>[]];
 };
 
 //-- Configure zustand persist
@@ -57,11 +59,17 @@ const storeFunction = (
   },
   getActiveAlertSettings: () => {
     const activeSession = get().activeSession;
-    // If not session is active, return undefined
-    if (!activeSession) return defaultAlertSettings;
-    // Remove the id and name as they are not part of the session settings
-    const { alertSettings, ...otherSettings } = activeSession;
-    return alertSettings || defaultAlertSettings; // for typescript.  Above return should keep the || from happening
+    // If no session is active, return undefined
+    if (!activeSession) return undefined;
+    // Separate the alertSettings from all the other settings in the session
+    let { alertSettings, ...otherSettings } = activeSession;
+    // If not alert settings, then use defaultAlertSettings
+    if (!alertSettings) {
+      alertSettings = defaultAlertSettings;
+    }
+    // extract the alert sounds used in these settings
+    const alertSoundNames = getAlertSoundNames(alertSettings);
+    return [alertSettings, alertSoundNames];
   },
 });
 
@@ -73,7 +81,7 @@ export const useStore = create<
 >(
   persist(
     {
-      key: "breath", // required, child key of storage
+      key: "breath2", // required, child key of storage
       allowlist: ["storedSessions"], // optional, will save everything if allowlist is undefined
       denylist: [], // optional, if allowlist set, denylist will be ignored
     },
@@ -81,6 +89,24 @@ export const useStore = create<
   )
 );
 
+//**** Utils */
+//-- Extract used Alert Sounds from session
+// This ONLY works for the existing Alert structure
+// Need to make more robust with recursive funtion
+// looking for any keys with "sound" in them
+function findSounds(flatObj: []) {
+  let sounds = flatObj.map((obj, index) => {
+    //console.log(obj)
+    return Object.keys(obj).map((key) => [obj[key].sound, obj[key].countDownSound]);
+  });
+  sounds = new Set(flattenDeep(sounds).filter((el) => el));
+  return Array.from(sounds);
+}
+function getAlertSoundNames(alertSettings: AlertSettings) {
+  const uniqSounds = findSounds(flatMapDeep(alertSettings));
+  return uniqSounds;
+}
+//-- Convert To milliseconds
 function convertSecondsToMS(settings: SessionSettingsType): SessionSettingsType {
   let updatedSettings = { ...settings };
   const settingsAffected = [

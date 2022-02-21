@@ -98,6 +98,25 @@ const testSession1: StoredSession = {
         countDownSound: "gong",
       },
     },
+    RecoveryBreath: {
+      alertBreathInPause: {
+        sound: "breathInMark",
+      },
+      alertEveryXSeconds: {
+        value: 0,
+        sound: "ding",
+      },
+      // could just leave this key off since it will not run
+      alertXSecondsBeforeEnd: {
+        value: 3, // zero means NO alert will be triggered
+        sound: "ding",
+        countDown: false,
+        countDownSound: "gong",
+      },
+      alertBreathOutPause: {
+        sound: "breathOutMark",
+      },
+    },
   },
 };
 

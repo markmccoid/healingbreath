@@ -8,12 +8,13 @@ import RootNav from "./src/navigation/RootNav";
 import { useLoadSounds } from "./src/utils/sounds/soundLibrary";
 
 export default function App() {
-  let [soundsLoaded] = useLoadSounds();
+  // let [soundsLoaded] = useLoadSounds();
   let [fontsLoaded] = useFonts({
     FiraSans_500Medium,
   });
-  console.log(soundsLoaded, fontsLoaded);
-  if (!fontsLoaded || !soundsLoaded) {
+  // console.log(soundsLoaded, fontsLoaded);
+  if (!fontsLoaded) {
+    // if (!fontsLoaded || !soundsLoaded) {
     return <AppLoading />;
   }
 

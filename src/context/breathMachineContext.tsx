@@ -1,13 +1,16 @@
 import React, { createContext, useState } from "react";
+import { View, Text } from "react-native";
 import { useInterpret } from "@xstate/react";
 import { ActorRefFrom } from "xstate";
 import { breathMachine, BreathContext } from "../machines/breathMachine";
 
 import _, { isEqual } from "lodash";
 
-import { myListener, configureAlertListener } from "../utils/alertListener";
+import { breathAlertListener, configureAlertListener } from "../utils/alertListener";
 import { useStore } from "../store/useStore";
 import { Alert } from "../utils/alertTypes";
+// import { useAlertSounds } from "../utils/sounds/soundLibrary";
+import { useAlertSounds } from "../hooks/useAlertSounds";
 
 interface BreathMachineContextType {
   breathStateService: ActorRefFrom<typeof breathMachine>;
@@ -40,7 +43,9 @@ export const BreathMachineProvider = ({
   children: any;
   sessionSettings?: SessionSettingsType | undefined;
 }) => {
-  const alertSettings = useStore((state) => state.getActiveAlertSettings());
+  // const getActiveAlertSettings = useStore((state) => state.getActiveAlertSettings);
+  const [alertSettings, alertSoundNames] = useStore((state) => state.getActiveAlertSettings());
+
   const [alert, setAlert] = useState<Alert>();
   const breathStateService = useInterpret(
     breathMachine,
@@ -48,14 +53,28 @@ export const BreathMachineProvider = ({
       context: { ...sessionSettings },
       // devTools: true,
     },
-    (state) => myListener(state, setAlert)
+    (state) => breathAlertListener(state, setAlert)
   );
+
+  const { soundsLoaded, playSound } = useAlertSounds(alertSoundNames);
+
   //* Probably a better way to get Alert settings configured.
   //* maybe when get global state provider implemented
   React.useEffect(() => {
-    configureAlertListener(alertSettings);
-  }, []);
+    console.log("USEEFFECT Config Alert listener", soundsLoaded);
+    if (soundsLoaded) {
+      configureAlertListener(alertSettings, playSound);
+    }
+    return () => console.log("exiting breath machine context");
+  }, [soundsLoaded]);
 
+  {
+    !soundsLoaded && (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
   return (
     <BreathMachineContext.Provider value={{ breathStateService, alert }}>
       {children}

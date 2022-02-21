@@ -1,28 +1,33 @@
-import React, { createContext, useState } from "react";
 import { State } from "xstate";
 import { BreathContext, BreathEvent } from "../machines/breathMachine";
 
 import { Audio } from "expo-av";
-import { Asset } from "expo-asset";
+// import { Asset } from "expo-asset";
 
 import { Alert, AlertSettings } from "./alertTypes";
 import { AlertSoundNames } from "../utils/sounds/soundTypes";
-import { alertSounds, playSound } from "../utils/sounds/soundLibrary";
-import { alertNoAlertSettings } from "../store/defaultSettings";
-import { useStore } from "../store/useStore";
+// import { alertSounds, playSound } from "../utils/sounds/soundLibrary";
+
+// import { alertNoAlertSettings } from "../store/defaultSettings";
+// import { useStore } from "../store/useStore";
 import { BreathAlert, SecondsAlert } from "../utils/alertTypes";
+import { PlaySound } from "../hooks/useAlertSounds";
 
 let prevElapsed = 0;
 let prevState = "idle";
 let prevBreathNum = 0;
 let soundToPlay: Audio.Sound;
+let playSound: PlaySound;
 
 let alertSettings: AlertSettings;
 
-export const configureAlertListener = async (userAlertSettings: AlertSettings) => {
-  // console.log("Configuring Alert Listener", userAlertSettings);
+export const configureAlertListener = async (
+  userAlertSettings: AlertSettings,
+  playSoundFunction: PlaySound
+) => {
+  console.log("Configuring Alert Listener");
   alertSettings = userAlertSettings;
-  // alertSettings = { ...alertNoAlertSettings, ...userAlertSettings };
+  playSound = playSoundFunction;
 };
 
 /**
@@ -152,10 +157,10 @@ const BreathRecoveryAlerts = (elapsed: number, currRecoveryTime: number): Second
   //   },
   // } = alertSettings;
 
-  const { value: everyXValue, sound: everyXSound } =
+  const { value: everyXValue = 0, sound: everyXSound } =
     alertSettings?.RecoveryBreath?.alertEveryXSeconds || {};
   const {
-    value: secondsBeforeEndValue,
+    value: secondsBeforeEndValue = 0,
     sound: secondsBeforeEndSound,
     countDown,
     countDownSound,
@@ -222,7 +227,7 @@ function getAlertSound(type: "intropause" | "outropause"): AlertSoundNames | und
   return type === "intropause" ? alertBreathInSound : alertBreathOutSound;
 }
 
-export const myListener = async (
+export const breathAlertListener = async (
   state: State<
     BreathContext,
     BreathEvent,
@@ -279,7 +284,7 @@ export const myListener = async (
       state.context.defaultHoldTime;
 
     const holdingAlert = BreathRetentionAlerts(state.context.elapsed, currRoundHoldTime);
-    setAlert(holdingAlert?.type);
+    setAlert(holdingAlert);
     prevState = currState;
     if (holdingAlert?.alertSound) {
       console.log("playing holdingalert", holdingAlert.alertSound);
@@ -308,7 +313,7 @@ export const myListener = async (
     const currRoundHoldTime = state.context.recoveryHoldTime;
 
     const recoveryAlert = BreathRecoveryAlerts(state.context.elapsed, currRoundHoldTime);
-    setAlert(recoveryAlert?.type);
+    setAlert(recoveryAlert);
     prevState = currState;
     if (recoveryAlert?.alertSound) {
       await playSound(recoveryAlert.alertSound);
