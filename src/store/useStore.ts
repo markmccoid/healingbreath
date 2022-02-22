@@ -5,7 +5,8 @@ import { AlertSettings } from "../utils/alertTypes";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { configurePersist } from "zustand-persist";
 import { AlertSoundNames } from "../utils/sounds/soundTypes";
-import { flatMapDeep, flattenDeep } from "lodash";
+import { flatMapDeep, flattenDeep, uniq } from "lodash";
+import { findKeyValuesInObject } from "../utils/helpers";
 
 export type StoredSession = {
   id: string;
@@ -16,7 +17,7 @@ export type StoredSession = {
 export type BreathState = {
   storedSessions: StoredSession[];
   activeSession: StoredSession | undefined;
-  setActiveSession: (session: StoredSession) => void;
+  setActiveSession: (sessionId: string) => void;
   createNewSession: (sessionData: StoredSession) => void;
   deleteSession: (sessionId: string) => void;
   getActiveSessionSettings: () => SessionSettingsType | undefined;
@@ -37,7 +38,8 @@ const storeFunction = (
   storedSessions: defaultSessions,
   activeSession: undefined,
   // --SETTERS
-  setActiveSession: (storedSession) => set((state) => ({ activeSession: storedSession })),
+  setActiveSession: (sessionId) =>
+    set((state) => ({ activeSession: getSessionFromId(state.storedSessions, sessionId) })),
   createNewSession: (sessionData) =>
     set((state) => {
       return { storedSessions: [sessionData, ...state.storedSessions] };
@@ -81,7 +83,7 @@ export const useStore = create<
 >(
   persist(
     {
-      key: "breath2", // required, child key of storage
+      key: "breath4", // required, child key of storage
       allowlist: ["storedSessions"], // optional, will save everything if allowlist is undefined
       denylist: [], // optional, if allowlist set, denylist will be ignored
     },
@@ -90,23 +92,22 @@ export const useStore = create<
 );
 
 //**** Utils */
-//-- Extract used Alert Sounds from session
-// This ONLY works for the existing Alert structure
-// Need to make more robust with recursive funtion
-// looking for any keys with "sound" in them
-function findSounds(flatObj: []) {
-  let sounds = flatObj.map((obj, index) => {
-    //console.log(obj)
-    return Object.keys(obj).map((key) => [obj[key].sound, obj[key].countDownSound]);
-  });
-  sounds = new Set(flattenDeep(sounds).filter((el) => el));
-  return Array.from(sounds);
-}
+//-- Extract used Alert Sounds from session's alertSettings
 function getAlertSoundNames(alertSettings: AlertSettings) {
-  const uniqSounds = findSounds(flatMapDeep(alertSettings));
-  return uniqSounds;
+  // Use helper function to return unique values in "sound" and "countDownSound" keys
+  // Need to take the result and make it unique (get rid of dups)
+  const uniqSounds = [
+    ...findKeyValuesInObject(alertSettings, "sound", true),
+    ...findKeyValuesInObject(alertSettings, "countDownSound", true),
+  ];
+  const uniqSoundsSet = new Set(uniqSounds);
+  // console.log("GET UNIQUE", Array.from(uniqSoundsSet));
+  return Array.from(uniqSoundsSet);
 }
+
+//----------------------------
 //-- Convert To milliseconds
+//----------------------------
 function convertSecondsToMS(settings: SessionSettingsType): SessionSettingsType {
   let updatedSettings = { ...settings };
   const settingsAffected = [
@@ -128,7 +129,9 @@ function convertSecondsToMS(settings: SessionSettingsType): SessionSettingsType 
   });
 
   // breathRoundsDetail is an sub object.  Deal with this separately
-  const breathRoundsDetail = { ...settings?.breathRoundsDetail };
+  // Since it is a sub object, make a deep clone so that we are not
+  // inadvertantely changing the source object
+  const breathRoundsDetail = JSON.parse(JSON.stringify(settings?.breathRoundsDetail));
   if (breathRoundsDetail) {
     Object.keys(breathRoundsDetail).forEach((key) => {
       breathRoundsDetail[key].holdTime = breathRoundsDetail[key].holdTime * 1000;
@@ -136,4 +139,13 @@ function convertSecondsToMS(settings: SessionSettingsType): SessionSettingsType 
   }
   updatedSettings.breathRoundsDetail = { ...breathRoundsDetail };
   return updatedSettings;
+}
+//----------------------------
+//-- get session from Id
+//----------------------------
+function getSessionFromId(
+  storedSessions: StoredSession[],
+  sessionId: string
+): StoredSession | undefined {
+  return storedSessions.find((session) => session.id === sessionId);
 }

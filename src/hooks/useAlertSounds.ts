@@ -14,7 +14,9 @@ export const alertSounds: AlertSounds = {
   ding: require("../../assets/sounds/ding.mp3"),
 };
 
-//***** LOAD SOUNDS FOR SESSION ******************** */
+export const alertSoundNames = Object.keys(alertSounds);
+
+//***** LOAD SOUNDS FOR SESSION  ******************** */
 const unloadSounds = async (playableAlertSounds: Partial<AlertPlayableSounds>) => {
   return Promise.all(
     Object.keys(playableAlertSounds).map(async (key) => {

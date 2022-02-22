@@ -7,8 +7,8 @@ const useBreathNavigation = () => {
 
   //-------------
   // Navigates to a session but first sets the Active Session
-  const navigateToSession = (session: StoredSession) => {
-    setActiveSession(session);
+  const navigateToSession = (sessionId: string) => {
+    setActiveSession(sessionId);
     navigation.navigate("Session");
   };
 

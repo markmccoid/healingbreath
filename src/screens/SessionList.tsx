@@ -12,11 +12,12 @@ const SessionList = ({ navigation, route }: RootStackProps<"SessionList">) => {
   const deleteSession = useStore((state) => state.deleteSession);
   // const activeSession = useStore((state) => state.activeSession);
   // const { navigateToSession } = useBreathNavigation();
-  // console.log("sessions", sessions);
+  console.log(
+    "sessions",
+    sessions.map((el) => el.name)
+  );
   return (
     <View style={{ flex: 1 }}>
-      {/* <Text>Session List</Text> */}
-
       <ScrollView style={{ paddingTop: 10 }}>
         {sessions.map((session) => (
           <View key={session.id} style={{ marginBottom: 10 }}>

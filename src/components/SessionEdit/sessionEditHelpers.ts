@@ -4,6 +4,8 @@ import { defaultSessionSettings } from "../../store/defaultSettings";
 
 import uuid from "react-native-uuid";
 import _values from "lodash/values";
+import { AlertSoundNames } from "../../utils/sounds/soundTypes";
+import { AlertSettings } from "../../utils/alertTypes";
 
 //-- -- -- -- -- -- -- -- --
 //- In Typescript, take one type and covert
@@ -37,6 +39,20 @@ export type BreathSessionValues = {
   actionPauseTimeIn: string;
   actionPauseTimeOut: string;
   // Maybe all alert stuff here too
+  alerts?: {
+    ConsciousForcedBreathing?: {
+      alertEveryXBreaths?: {
+        value: string;
+        sound: AlertSoundNames;
+      };
+      alertXBreathsBeforeEnd?: {
+        value: string;
+        sound: AlertSoundNames;
+        countDown: boolean;
+        countDownSound: AlertSoundNames | undefined;
+      };
+    };
+  };
 };
 
 export const initialValues: BreathSessionValues = {
@@ -52,6 +68,20 @@ export const initialValues: BreathSessionValues = {
   pauseTime: defaultSessionSettings.pauseTime.toString(),
   actionPauseTimeIn: defaultSessionSettings.actionPauseTimeIn.toString(),
   actionPauseTimeOut: defaultSessionSettings.actionPauseTimeOut.toString(),
+  alerts: {
+    ConsciousForcedBreathing: {
+      alertEveryXBreaths: {
+        value: "1",
+        sound: "gong",
+      },
+      alertXBreathsBeforeEnd: {
+        value: "1",
+        sound: "ding",
+        countDown: false,
+        countDownSound: undefined,
+      },
+    },
+  },
 };
 
 //***** arrayToObject() *********************************** /
@@ -125,6 +155,14 @@ export const prepareSubmit = (values: BreathSessionValues): StoredSession => {
     breathRoundsDetail: arrayToObject<BreathRoundsDetail>(values.retentionHoldTimes),
   };
 
+  //--------- ALERTS
+  // console.log("Alert settings", values.alerts);
+  // const newAlerts: AlertSettings = { ...values.alerts };
+  // newAlerts.ConsciousForcedBreathing.alertEveryXBreaths.value = parseInt(
+  //   newAlerts.ConsciousForcedBreathing?.alertEveryXBreaths?.value
+  // );
+  // console.log("NEW", newAlerts);
+  //----------------------------
   const newSessionValues = { ...defaultSessionSettings, ...inputValuesFormatted };
   return newSessionValues;
 };

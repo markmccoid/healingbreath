@@ -7,7 +7,7 @@ import { breathMachine, BreathContext } from "../machines/breathMachine";
 import _, { isEqual } from "lodash";
 
 import { breathAlertListener, configureAlertListener } from "../utils/alertListener";
-import { useStore } from "../store/useStore";
+import { BreathState, useStore } from "../store/useStore";
 import { Alert } from "../utils/alertTypes";
 // import { useAlertSounds } from "../utils/sounds/soundLibrary";
 import { useAlertSounds } from "../hooks/useAlertSounds";
@@ -34,6 +34,10 @@ export type SessionSettingsType =
       >
     >
   | undefined;
+
+// zustand getter, only needs to be called once when BreathMachineProvider instantiated
+// doing this instead of context: https://docs.pmnd.rs/zustand/recipes#memoizing-selectors
+const alertSettingGetter = (state: BreathState) => state.getActiveAlertSettings();
 // -- passed sessionSettings prop will allow for individual session settings
 // -- to be applied when the machine provider is used and the machine is instantiated.
 export const BreathMachineProvider = ({
@@ -43,8 +47,7 @@ export const BreathMachineProvider = ({
   children: any;
   sessionSettings?: SessionSettingsType | undefined;
 }) => {
-  // const getActiveAlertSettings = useStore((state) => state.getActiveAlertSettings);
-  const [alertSettings, alertSoundNames] = useStore((state) => state.getActiveAlertSettings());
+  const [alertSettings, alertSoundNames] = useStore(alertSettingGetter);
 
   const [alert, setAlert] = useState<Alert>();
   const breathStateService = useInterpret(

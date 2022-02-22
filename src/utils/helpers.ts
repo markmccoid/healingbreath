@@ -46,3 +46,44 @@ function convertSecondsToMinutes(secondsIn: number, padMinutes: boolean = false)
   //
   return `${padMinutes ? minutes.padStart(2, "0") : minutes}:${seconds.padStart(2, "0")}`;
 }
+
+// Function to determine if parameter is object or not
+const isObject = (obj: any): boolean => typeof obj === "object" && !Array.isArray(obj);
+
+function recurseObjForKey(obj: any, keyToFind: string, result: any[]): any[] {
+  // Loop through each key of obj passed.
+  // if the key contains an object recurse passing the value at the key
+  // the keyToFind and the result.
+  Object.keys(obj).forEach((key) => {
+    if (isObject(obj[key])) {
+      // console.log('recurse result', result)
+      result = recurseObjForKey(obj[key], keyToFind, result);
+    } else if (key === keyToFind) {
+      // If we find a key we are looking for, add it to the result array
+      // But if it is an array flatten in result
+      if (Array.isArray(obj[key])) {
+        result = [...obj[key], ...result];
+      } else {
+        result = [obj[key], ...result];
+      }
+      // console.log('result', result, obj[key])
+    }
+  });
+  return result;
+}
+
+// Pass in an object and a key whose values you want returned.
+// You wil get an array back with the values.
+export function findKeyValuesInObject(
+  obj: any,
+  keyValuesToReturn: string,
+  makeUnique: boolean = true
+): any[] {
+  const values = recurseObjForKey(obj, keyValuesToReturn, []);
+  if (makeUnique) {
+    const valuesSet = new Set(values);
+    return Array.from(valuesSet);
+  }
+
+  return values;
+}

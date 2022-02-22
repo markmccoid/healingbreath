@@ -38,7 +38,7 @@ function SessionItem({ session, deleteSession }: Props) {
       <TouchableOpacity
         style={styles.itemPressable}
         onPress={() => {
-          navigateToSession(session);
+          navigateToSession(session.id);
           // setActiveSession(session);
           // navigation.navigate("Session");
         }}

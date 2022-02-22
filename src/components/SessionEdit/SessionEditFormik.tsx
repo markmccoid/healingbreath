@@ -13,6 +13,7 @@ import {
 } from "./sessionEditHelpers";
 import { useStore, StoredSession } from "../../store/useStore";
 import { RootStackProps } from "../../types/navTypes";
+import SessionEditAlerts from "./SessionEditAlerts";
 
 const sessionValidationSchema = yup.object({
   sessionName: yup.string().required(),
@@ -44,6 +45,13 @@ const sessionValidationSchema = yup.object({
         .positive("Hold Time must be positive"),
     })
   ),
+  alerts: yup.object().shape({
+    ConsciousForcedBreathing: yup.object().shape({
+      alertEveryXBreaths: yup.object().shape({
+        value: yup.number().typeError("Must Be a number").integer("Must be an integer"),
+      }),
+    }),
+  }),
 });
 const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
   const createNewSession = useStore((state) => state.createNewSession);
@@ -87,74 +95,8 @@ const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">)
           }
 
           return (
-            <ScrollView>
-              <View style={styles.field}>
-                <Text style={styles.inputLabel}>Session Name</Text>
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="Session Name"
-                  onChangeText={props.handleChange("sessionName")}
-                  value={props.values.sessionName}
-                />
-                <Text style={styles.errorText}>{props.errors.sessionName}</Text>
-              </View>
-              <View style={styles.field}>
-                <Text style={styles.inputLabel}>Breath Rounds</Text>
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="Breath Rounds"
-                  onChangeText={props.handleChange("breathRounds")}
-                  value={props.values.breathRounds}
-                  keyboardType="numeric"
-                  maxLength={2}
-                  onBlur={props.handleBlur("breathRounds")}
-                />
-                <Text style={styles.errorText}>
-                  {props.touched.breathRounds && props.errors.breathRounds}
-                </Text>
-              </View>
-              <View style={styles.field}>
-                <Text style={styles.inputLabel}>Breath Reps Per Round</Text>
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="Breath Reps Per Round"
-                  onChangeText={props.handleChange("breathReps")}
-                  value={props.values.breathReps}
-                />
-                <Text style={styles.errorText}>{props.errors.breathReps}</Text>
-              </View>
-              <View style={styles.field}>
-                <Text style={styles.inputLabel}>Recovery Breath Hold Time</Text>
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="Recovery Breath Hold Time"
-                  onChangeText={props.handleChange("recoveryHoldTime")}
-                  value={props.values.recoveryHoldTime}
-                />
-                <Text style={styles.errorText}>{props.errors.recoveryHoldTime}</Text>
-              </View>
-
-              {props.values.retentionHoldTimes.map((el, index) => {
-                return (
-                  <View style={styles.field} key={index}>
-                    <Text>Retention Hold Time {index + 1}</Text>
-                    <TextInput
-                      style={styles.textInput}
-                      key={index}
-                      onChangeText={props.handleChange(
-                        `retentionHoldTimes[${index}].holdTime`
-                      )}
-                      onBlur={props.handleBlur(`retentionHoldTimes[${index}].holdTime`)}
-                      value={props.values.retentionHoldTimes[index].holdTime}
-                      maxLength={3}
-                    />
-                    <Text style={styles.errorText}>
-                      {props.errors?.retentionHoldTimes?.[index]?.holdTime}
-                    </Text>
-                  </View>
-                );
-              })}
-
+            <View>
+              {/*----- Submit Button ------------*/}
               <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
                 <TouchableOpacity
                   onPress={props.submitForm}
@@ -171,7 +113,81 @@ const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">)
                   <Text>Submit</Text>
                 </TouchableOpacity>
               </View>
-            </ScrollView>
+              {/*----- Form Fields ------------*/}
+              <ScrollView>
+                <View style={styles.field}>
+                  <Text style={styles.inputLabel}>Session Name</Text>
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Session Name"
+                    onChangeText={props.handleChange("sessionName")}
+                    value={props.values.sessionName}
+                  />
+                  <Text style={styles.errorText}>{props.errors.sessionName}</Text>
+                </View>
+                <View style={styles.field}>
+                  <Text style={styles.inputLabel}>Breath Rounds</Text>
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Breath Rounds"
+                    onChangeText={props.handleChange("breathRounds")}
+                    value={props.values.breathRounds}
+                    keyboardType="numeric"
+                    maxLength={2}
+                    onBlur={props.handleBlur("breathRounds")}
+                  />
+                  <Text style={styles.errorText}>
+                    {props.touched.breathRounds && props.errors.breathRounds}
+                  </Text>
+                </View>
+                <View style={styles.field}>
+                  <Text style={styles.inputLabel}>Breath Reps Per Round</Text>
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Breath Reps Per Round"
+                    onChangeText={props.handleChange("breathReps")}
+                    value={props.values.breathReps}
+                  />
+                  <Text style={styles.errorText}>{props.errors.breathReps}</Text>
+                </View>
+                <View style={styles.field}>
+                  <Text style={styles.inputLabel}>Recovery Breath Hold Time</Text>
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Recovery Breath Hold Time"
+                    onChangeText={props.handleChange("recoveryHoldTime")}
+                    value={props.values.recoveryHoldTime}
+                  />
+                  <Text style={styles.errorText}>{props.errors.recoveryHoldTime}</Text>
+                </View>
+
+                {props.values.retentionHoldTimes.map((el, index) => {
+                  return (
+                    <View style={styles.field} key={index}>
+                      <Text>Retention Hold Time {index + 1}</Text>
+                      <TextInput
+                        style={styles.textInput}
+                        key={index}
+                        onChangeText={props.handleChange(
+                          `retentionHoldTimes[${index}].holdTime`
+                        )}
+                        onBlur={props.handleBlur(`retentionHoldTimes[${index}].holdTime`)}
+                        value={props.values.retentionHoldTimes[index].holdTime}
+                        maxLength={3}
+                      />
+                      <Text style={styles.errorText}>
+                        {props.errors?.retentionHoldTimes?.[index]?.holdTime}
+                      </Text>
+                    </View>
+                  );
+                })}
+                <SessionEditAlerts
+                  values={props.values}
+                  errors={props.errors}
+                  handleChange={props.handleChange}
+                />
+              </ScrollView>
+            </View>
           );
         }}
       </Formik>
