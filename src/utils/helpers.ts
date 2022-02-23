@@ -87,3 +87,15 @@ export function findKeyValuesInObject(
 
   return values;
 }
+
+//--------------------
+// take an attrString "objKey1.objKey2..." and use
+// it to return the value at the end of the string
+export function getObjValueFromString(obj: any, attrString: string) {
+  // if (!obj) return;
+  var path = attrString.split(".");
+  for (var i in path) {
+    obj = obj?.[path[i]];
+  }
+  return obj;
+}

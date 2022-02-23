@@ -1,7 +1,6 @@
 import { AlertSoundNames, AlertSounds, AlertPlayableSounds } from "../utils/sounds/soundTypes";
 import { Audio } from "expo-av";
 import { useState, useEffect } from "react";
-import { set } from "lodash";
 
 export const alertSounds: AlertSounds = {
   gong: require("../../assets/sounds/gong01.wav"),
@@ -16,7 +15,26 @@ export const alertSounds: AlertSounds = {
 
 export const alertSoundNames = Object.keys(alertSounds);
 
-//***** LOAD SOUNDS FOR SESSION  ******************** */
+// Global var to hold sample sound played from "loadAndPlaySound" function
+const soundToPlay = new Audio.Sound();
+
+// load and play passed name
+export const loadAndPlaySound = async (soundName: AlertSoundNames) => {
+  // first unload if other sound is loaded
+  try {
+    await soundToPlay.unloadAsync();
+  } catch (err) {
+    console.log("Unloading Sound error", err);
+  }
+  try {
+    await soundToPlay.loadAsync(alertSounds[soundName]);
+    await soundToPlay.playAsync();
+  } catch (err) {
+    console.log(`Error playing sample ${soundName} - ${err}`);
+  }
+};
+
+//***** UNLOAD SOUNDS Currently Loaded  ******************** */
 const unloadSounds = async (playableAlertSounds: Partial<AlertPlayableSounds>) => {
   return Promise.all(
     Object.keys(playableAlertSounds).map(async (key) => {
@@ -25,6 +43,7 @@ const unloadSounds = async (playableAlertSounds: Partial<AlertPlayableSounds>) =
   );
 };
 
+//***** LOAD SOUNDS FOR SESSION  ******************** */
 const loadAlertSounds = async (
   sounds: Partial<AlertSoundNames>[]
 ): Promise<Partial<AlertPlayableSounds>> => {

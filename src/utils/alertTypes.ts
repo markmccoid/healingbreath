@@ -5,43 +5,43 @@ export type AlertSettings = {
   ConsciousForcedBreathing?: {
     alertEveryXBreaths?: {
       value: number;
-      sound: AlertSoundNames;
+      sound: AlertSoundNames | undefined;
     };
     alertXBreathsBeforeEnd?: {
       value: number;
-      sound: AlertSoundNames;
+      sound: AlertSoundNames | undefined;
       countDown: boolean;
-      countDownSound: AlertSoundNames;
+      countDownSound: AlertSoundNames | undefined;
     };
   };
   BreathRetention?: {
     alertEveryXSeconds?: {
       value: number;
-      sound: AlertSoundNames;
+      sound: AlertSoundNames | undefined;
     };
     alertXSecondsBeforeEnd?: {
       value: number;
-      sound: AlertSoundNames;
+      sound: AlertSoundNames | undefined;
       countDown: boolean;
-      countDownSound: AlertSoundNames;
+      countDownSound: AlertSoundNames | undefined;
     };
   };
   RecoveryBreath?: {
     alertBreathInPause?: {
-      sound: AlertSoundNames;
+      sound: AlertSoundNames | undefined;
     };
     alertEveryXSeconds?: {
       value: number;
-      sound: AlertSoundNames;
+      sound: AlertSoundNames | undefined;
     };
     alertXSecondsBeforeEnd?: {
       value: number;
-      sound: AlertSoundNames;
+      sound: AlertSoundNames | undefined;
       countDown: boolean;
-      countDownSound: AlertSoundNames;
+      countDownSound: AlertSoundNames | undefined;
     };
     alertBreathOutPause?: {
-      sound: AlertSoundNames;
+      sound: AlertSoundNames | undefined;
     };
   };
 };

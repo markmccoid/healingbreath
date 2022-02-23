@@ -1,5 +1,13 @@
-import React from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  Switch,
+} from "react-native";
 import { Formik, useFormik } from "formik";
 import * as yup from "yup";
 import _values from "lodash/values";
@@ -55,8 +63,10 @@ const sessionValidationSchema = yup.object({
 });
 const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
   const createNewSession = useStore((state) => state.createNewSession);
+  const [showAlerts, setShowAlerts] = useState(false);
+
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, paddingBottom: 125 }}>
       <View
         style={{
           flexDirection: "row",
@@ -74,8 +84,8 @@ const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">)
         validationSchema={sessionValidationSchema}
         onSubmit={(values) => {
           const newSession = prepareSubmit(values);
-          createNewSession(newSession);
-          navigation.goBack();
+          // createNewSession(newSession);
+          // navigation.goBack();
         }}
       >
         {(props) => {
@@ -114,7 +124,7 @@ const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">)
                 </TouchableOpacity>
               </View>
               {/*----- Form Fields ------------*/}
-              <ScrollView>
+              <ScrollView style={{}}>
                 <View style={styles.field}>
                   <Text style={styles.inputLabel}>Session Name</Text>
                   <TextInput
@@ -181,11 +191,26 @@ const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">)
                     </View>
                   );
                 })}
-                <SessionEditAlerts
-                  values={props.values}
-                  errors={props.errors}
-                  handleChange={props.handleChange}
-                />
+                <View style={[styles.field, { flexDirection: "row", alignItems: "center" }]}>
+                  <Switch
+                    style={{ transform: [{ scaleY: 0.8 }, { scaleX: 0.8 }] }}
+                    onValueChange={(val) => props.setFieldValue("includeAlerts", val)}
+                    value={props.values.includeAlerts}
+                  />
+                  <Text style={styles.inputLabel}>{`Session Alerts ${
+                    props.values.includeAlerts ? "On" : "Off"
+                  } `}</Text>
+                </View>
+                {props.values.includeAlerts && (
+                  <View style={{ marginBottom: 300 }}>
+                    <SessionEditAlerts
+                      values={props.values}
+                      errors={props.errors}
+                      handleChange={props.handleChange}
+                    />
+                  </View>
+                )}
+                <View style={{ paddingVertical: 100 }} />
               </ScrollView>
             </View>
           );

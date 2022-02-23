@@ -42,6 +42,9 @@ const storeFunction = (
     set((state) => ({ activeSession: getSessionFromId(state.storedSessions, sessionId) })),
   createNewSession: (sessionData) =>
     set((state) => {
+      if (!sessionData.id || !sessionData.name) {
+        return { storedSessions: state.storedSessions };
+      }
       return { storedSessions: [sessionData, ...state.storedSessions] };
     }),
   deleteSession: (sessionId) => {
@@ -83,7 +86,7 @@ export const useStore = create<
 >(
   persist(
     {
-      key: "breath4", // required, child key of storage
+      key: "breath5", // required, child key of storage
       allowlist: ["storedSessions"], // optional, will save everything if allowlist is undefined
       denylist: [], // optional, if allowlist set, denylist will be ignored
     },

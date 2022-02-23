@@ -6,6 +6,7 @@ import uuid from "react-native-uuid";
 import _values from "lodash/values";
 import { AlertSoundNames } from "../../utils/sounds/soundTypes";
 import { AlertSettings } from "../../utils/alertTypes";
+import { extendWith } from "lodash";
 
 //-- -- -- -- -- -- -- -- --
 //- In Typescript, take one type and covert
@@ -27,6 +28,7 @@ type InputValues = InputToString<Init>
 */
 
 export type BreathSessionValues = {
+  includeAlerts: boolean;
   sessionName: string;
   breathRounds: string;
   breathReps: string;
@@ -43,19 +45,50 @@ export type BreathSessionValues = {
     ConsciousForcedBreathing?: {
       alertEveryXBreaths?: {
         value: string;
-        sound: AlertSoundNames;
+        sound: AlertSoundNames | undefined;
       };
       alertXBreathsBeforeEnd?: {
         value: string;
-        sound: AlertSoundNames;
+        sound: AlertSoundNames | undefined;
         countDown: boolean;
         countDownSound: AlertSoundNames | undefined;
+      };
+    };
+    BreathRetention?: {
+      alertEveryXSeconds?: {
+        value: string;
+        sound: AlertSoundNames | undefined;
+      };
+      alertXSecondsBeforeEnd?: {
+        value: string;
+        sound: AlertSoundNames | undefined;
+        countDown: boolean;
+        countDownSound: AlertSoundNames | undefined;
+      };
+    };
+    RecoveryBreath?: {
+      alertBreathInPause?: {
+        sound: AlertSoundNames | undefined;
+      };
+      alertEveryXSeconds?: {
+        value: string;
+        sound: AlertSoundNames | undefined;
+      };
+      alertXSecondsBeforeEnd?: {
+        value: string;
+        sound: AlertSoundNames | undefined;
+        countDown: boolean;
+        countDownSound: AlertSoundNames | undefined;
+      };
+      alertBreathOutPause?: {
+        sound: AlertSoundNames | undefined;
       };
     };
   };
 };
 
 export const initialValues: BreathSessionValues = {
+  includeAlerts: false,
   sessionName: "",
   breathRounds: defaultSessionSettings.breathRounds.toString(),
   breathReps: defaultSessionSettings.breathReps.toString(),
@@ -71,12 +104,12 @@ export const initialValues: BreathSessionValues = {
   alerts: {
     ConsciousForcedBreathing: {
       alertEveryXBreaths: {
-        value: "1",
+        value: "10",
         sound: "gong",
       },
       alertXBreathsBeforeEnd: {
-        value: "1",
-        sound: "ding",
+        value: "5",
+        sound: "",
         countDown: false,
         countDownSound: undefined,
       },
@@ -146,6 +179,8 @@ export const prepareSubmit = (values: BreathSessionValues): StoredSession => {
   // console.log("values", values);
   // Build retention hold times
   // console.log(arrayToObject(values.retentionHoldTimes));
+  console.log(values);
+  return;
   const inputValuesFormatted = {
     id: uuid.v4() as string,
     name: values.sessionName,
