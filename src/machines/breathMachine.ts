@@ -440,7 +440,7 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
           STOP: "idle",
           PAUSE: ".paused",
           NEXT: {
-            target: "recoveryhold",
+            target: "intropause",
           },
           EXTEND_TOGGLE: {
             actions: "extendToggle",
@@ -495,8 +495,7 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
           STOP: "idle",
           PAUSE: ".paused",
           NEXT: {
-            target: "breathing",
-            actions: "resetBreathCurrRep",
+            target: "outropause",
           },
           EXTEND_TOGGLE: {
             actions: "extendToggle",
