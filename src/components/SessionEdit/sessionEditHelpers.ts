@@ -7,6 +7,7 @@ import _values from "lodash/values";
 import { AlertSoundNames } from "../../utils/sounds/soundTypes";
 import { AlertSettings } from "../../utils/alertTypes";
 import { extendWith } from "lodash";
+import { convertKeyValsToNumber } from "../../utils/helpers";
 
 //-- -- -- -- -- -- -- -- --
 //- In Typescript, take one type and covert
@@ -29,7 +30,7 @@ type InputValues = InputToString<Init>
 
 export type BreathSessionValues = {
   includeAlerts: boolean;
-  sessionName: string;
+  name: string;
   breathRounds: string;
   breathReps: string;
   defaultHoldTime: string;
@@ -89,7 +90,7 @@ export type BreathSessionValues = {
 
 export const initialValues: BreathSessionValues = {
   includeAlerts: false,
-  sessionName: "",
+  name: "",
   breathRounds: defaultSessionSettings.breathRounds.toString(),
   breathReps: defaultSessionSettings.breathReps.toString(),
   defaultHoldTime: defaultSessionSettings.defaultHoldTime.toString(),
@@ -104,14 +105,44 @@ export const initialValues: BreathSessionValues = {
   alerts: {
     ConsciousForcedBreathing: {
       alertEveryXBreaths: {
-        value: "10",
-        sound: "gong",
+        value: "0",
+        sound: undefined,
       },
       alertXBreathsBeforeEnd: {
-        value: "5",
-        sound: "",
+        value: "0",
+        sound: undefined,
         countDown: false,
         countDownSound: undefined,
+      },
+    },
+    BreathRetention: {
+      alertEveryXSeconds: {
+        value: "0",
+        sound: undefined,
+      },
+      alertXSecondsBeforeEnd: {
+        value: "0",
+        sound: undefined,
+        countDown: false,
+        countDownSound: undefined,
+      },
+    },
+    RecoveryBreath: {
+      alertEveryXSeconds: {
+        value: "0",
+        sound: undefined,
+      },
+      alertXSecondsBeforeEnd: {
+        value: "0",
+        sound: undefined,
+        countDown: false,
+        countDownSound: undefined,
+      },
+      alertBreathInPause: {
+        sound: undefined,
+      },
+      alertBreathOutPause: {
+        sound: undefined,
       },
     },
   },
@@ -179,17 +210,18 @@ export const prepareSubmit = (values: BreathSessionValues): StoredSession => {
   // console.log("values", values);
   // Build retention hold times
   // console.log(arrayToObject(values.retentionHoldTimes));
-  console.log(values);
-  return;
-  const inputValuesFormatted = {
-    id: uuid.v4() as string,
-    name: values.sessionName,
-    breathRounds: parseInt(values.breathRounds),
-    breathReps: parseInt(values.breathReps),
-    recoveryHoldTime: parseInt(values.recoveryHoldTime),
-    breathRoundsDetail: arrayToObject<BreathRoundsDetail>(values.retentionHoldTimes),
-  };
 
+  const holdSession = convertKeyValsToNumber(values, [], true);
+
+  const { retentionHoldTimes, alerts, includeAlerts, ...restOfSessionValues } = holdSession;
+
+  const inputValuesFormatted: StoredSession = {
+    id: uuid.v4() as string,
+    ...restOfSessionValues,
+    breathRoundsDetail: arrayToObject<BreathRoundsDetail>(retentionHoldTimes),
+    alertSettings: alerts,
+  };
+  console.log("INPUTFORMATTEd", inputValuesFormatted);
   //--------- ALERTS
   // console.log("Alert settings", values.alerts);
   // const newAlerts: AlertSettings = { ...values.alerts };
@@ -198,6 +230,7 @@ export const prepareSubmit = (values: BreathSessionValues): StoredSession => {
   // );
   // console.log("NEW", newAlerts);
   //----------------------------
+  //! Not sure if I need to spread the defaultSessionSetting since I'm doing that when setting up session in formik
   const newSessionValues = { ...defaultSessionSettings, ...inputValuesFormatted };
   return newSessionValues;
 };

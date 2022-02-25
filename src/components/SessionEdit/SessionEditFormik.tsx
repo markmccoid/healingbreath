@@ -22,45 +22,8 @@ import {
 import { useStore, StoredSession } from "../../store/useStore";
 import { RootStackProps } from "../../types/navTypes";
 import SessionEditAlerts from "./SessionEditAlerts";
+import { sessionValidationSchema } from "./sessionValidationRules";
 
-const sessionValidationSchema = yup.object({
-  sessionName: yup.string().required(),
-  breathRounds: yup
-    .number()
-    .typeError("Field must be an intger greater than zero")
-    .required()
-    .integer("Field must be an integer")
-    .positive("Field must be greater than zero"),
-  breathReps: yup
-    .number()
-    .typeError("Field must be an intger greater than zero")
-    .required()
-    .integer("Field must be an integer")
-    .positive("Field must be greater than zero"),
-  recoveryHoldTime: yup
-    .number()
-    .typeError("Field must be an intger greater than zero")
-    .required()
-    .integer("Field must be an integer")
-    .positive("Field must be greater than zero"),
-  retentionHoldTimes: yup.array().of(
-    yup.object().shape({
-      holdTime: yup
-        .number()
-        .typeError("Must be a number")
-        .required("Hold Time is required")
-        .integer("Hold Time must be an integer")
-        .positive("Hold Time must be positive"),
-    })
-  ),
-  alerts: yup.object().shape({
-    ConsciousForcedBreathing: yup.object().shape({
-      alertEveryXBreaths: yup.object().shape({
-        value: yup.number().typeError("Must Be a number").integer("Must be an integer"),
-      }),
-    }),
-  }),
-});
 const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
   const createNewSession = useStore((state) => state.createNewSession);
   const [showAlerts, setShowAlerts] = useState(false);
@@ -84,8 +47,8 @@ const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">)
         validationSchema={sessionValidationSchema}
         onSubmit={(values) => {
           const newSession = prepareSubmit(values);
-          // createNewSession(newSession);
-          // navigation.goBack();
+          createNewSession(newSession);
+          navigation.goBack();
         }}
       >
         {(props) => {
@@ -130,10 +93,10 @@ const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">)
                   <TextInput
                     style={styles.textInput}
                     placeholder="Session Name"
-                    onChangeText={props.handleChange("sessionName")}
-                    value={props.values.sessionName}
+                    onChangeText={props.handleChange("name")}
+                    value={props.values.name}
                   />
-                  <Text style={styles.errorText}>{props.errors.sessionName}</Text>
+                  <Text style={styles.errorText}>{props.errors.name}</Text>
                 </View>
                 <View style={styles.field}>
                   <Text style={styles.inputLabel}>Breath Rounds</Text>

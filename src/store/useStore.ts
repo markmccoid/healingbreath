@@ -86,7 +86,7 @@ export const useStore = create<
 >(
   persist(
     {
-      key: "breath5", // required, child key of storage
+      key: "breath6", // required, child key of storage
       allowlist: ["storedSessions"], // optional, will save everything if allowlist is undefined
       denylist: [], // optional, if allowlist set, denylist will be ignored
     },
@@ -105,7 +105,7 @@ function getAlertSoundNames(alertSettings: AlertSettings) {
   ];
   const uniqSoundsSet = new Set(uniqSounds);
   // console.log("GET UNIQUE", Array.from(uniqSoundsSet));
-  return Array.from(uniqSoundsSet);
+  return Array.from(uniqSoundsSet).filter((el) => el);
 }
 
 //----------------------------

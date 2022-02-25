@@ -89,32 +89,32 @@ const testSession1: StoredSession = {
     ConsciousForcedBreathing: {
       alertEveryXBreaths: {
         value: 2,
-        sound: "gong",
+        sound: "bowlgong_001",
       },
       alertXBreathsBeforeEnd: {
         value: 1,
-        sound: "gong",
+        sound: "bowlgong_001",
         countDown: false,
-        countDownSound: "gong",
+        countDownSound: "bowlgong_001",
       },
     },
     RecoveryBreath: {
       alertBreathInPause: {
-        sound: "breathInMark",
+        sound: "speak_mm_breath_in_and_hold",
       },
       alertEveryXSeconds: {
         value: 0,
-        sound: "ding",
+        sound: "ding_001",
       },
       // could just leave this key off since it will not run
       alertXSecondsBeforeEnd: {
         value: 3, // zero means NO alert will be triggered
-        sound: "ding",
+        sound: "ding_001",
         countDown: false,
-        countDownSound: "gong",
+        countDownSound: "bowlgong_001",
       },
       alertBreathOutPause: {
-        sound: "breathOutMark",
+        sound: "speak_mm_breath_out",
       },
     },
   },

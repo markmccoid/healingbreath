@@ -14,7 +14,7 @@ const SessionList = ({ navigation, route }: RootStackProps<"SessionList">) => {
   // const { navigateToSession } = useBreathNavigation();
   console.log(
     "sessions",
-    sessions.map((el) => el.name)
+    sessions.map((el) => el)
   );
   return (
     <View style={{ flex: 1 }}>
