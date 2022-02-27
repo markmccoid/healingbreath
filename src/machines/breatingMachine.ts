@@ -23,7 +23,6 @@ const ticker = (ctx: XContext) => (cb: XCallBack) => {
     cb("TICK");
   }, ctx.interval * 1000);
   return () => {
-    console.log("clearing interval");
     clearInterval(interval);
   };
 };

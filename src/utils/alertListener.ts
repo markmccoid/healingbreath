@@ -25,7 +25,7 @@ export const configureAlertListener = async (
   userAlertSettings: AlertSettings,
   playSoundFunction: PlaySound
 ) => {
-  console.log("Configuring Alert Listener");
+  // console.log("Configuring Alert Listener");
   alertSettings = userAlertSettings;
   playSound = playSoundFunction;
 };
@@ -287,7 +287,7 @@ export const breathAlertListener = async (
     setAlert(holdingAlert);
     prevState = currState;
     if (holdingAlert?.alertSound) {
-      console.log("playing holdingalert", holdingAlert.alertSound);
+      // console.log("playing holdingalert", holdingAlert.alertSound);
       await playSound(holdingAlert.alertSound);
     }
     return;

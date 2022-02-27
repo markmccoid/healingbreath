@@ -86,13 +86,8 @@ export const useAlertSounds = (
   const [playableAlertSounds, setPlayableAlertSounds] =
     useState<Partial<AlertPlayableSounds>>();
 
-  if (sounds.length === 0 || !sounds) {
-    console.log("Sound Length Zero, set soundsloaded to true");
-    setSoundsLoaded(true);
-  }
-
   const playSound = async (name: AlertSoundNames) => {
-    console.log(`plaing sound useAlert--> ${name}`);
+    // console.log(`plaing sound useAlert--> ${name}`);
     try {
       if (playableAlertSounds?.[name]) {
         await playableAlertSounds?.[name]?.replayAsync();
@@ -104,13 +99,19 @@ export const useAlertSounds = (
 
   useEffect(() => {
     // Load the passed array of sounds
-
     const callAlertLoad = async () => {
+      console.log("inCallAlertLOad");
       const playableSounds = await loadAlertSounds(sounds);
       setPlayableAlertSounds(playableSounds);
       setSoundsLoaded(true);
     };
-    callAlertLoad();
+    // If no sounds / alerts return
+    if (sounds.length === 0 || !sounds) {
+      console.log("Sound Length Zero, set soundsloaded to true");
+      setSoundsLoaded(true);
+    } else {
+      callAlertLoad();
+    }
     // when exiting, unload the sounds
     return () => {
       if (playableAlertSounds) {

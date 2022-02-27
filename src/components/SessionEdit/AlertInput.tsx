@@ -1,10 +1,15 @@
 import { FormikErrors } from "formik";
 import React from "react";
-import { View, Text, StyleSheet, TextInput } from "react-native";
+import { View, Text, Dimensions } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { getObjValueFromString } from "../../utils/helpers";
 import { AlertSoundNames } from "../../utils/sounds/soundTypes";
 import { BreathSessionValues } from "./sessionEditHelpers";
+import AlertSoundPicker from "./AlertSoundPicker";
+import { NumberInput } from "./Inputs";
+import { styles } from "./styles";
+
+const { width, height } = Dimensions.get("window");
 
 type Props = {
   values: BreathSessionValues;
@@ -26,38 +31,45 @@ type Props = {
   }[];
 };
 
-function AlertInput({
-  values,
-  errors,
-  field,
-  onFieldUpdate,
-  title,
-  pickerStateInfo,
-  pickerItems,
-}: Props) {
+function AlertInput(props: Props) {
+  const { values, errors, field, onFieldUpdate, title, pickerStateInfo, pickerItems } = props;
   // Get the value from the formik values object.
   // in essense constructs values.alerts.BreathRetention.AlertEveryXSeconds
   const fieldTextValue = getObjValueFromString(values.alerts, `${field}.value`);
   const errorTextValue = getObjValueFromString(errors.alerts, `${field}.value`);
   const updateTextFieldString = `alerts.${field}.value`;
-  const fieldSoundValue = getObjValueFromString(values.alerts, `${field}.sound`);
-  const errorSoundValue = getObjValueFromString(errors.alerts, `${field}.sound`);
-  const updateSoundFieldString = `alerts.${field}.sound`;
+  const breathsOrSeconds = title.toLowerCase().includes("breaths") ? "Breaths" : "Seconds";
+  // const fieldSoundValue = getObjValueFromString(values.alerts, `${field}.sound`);
+  // const errorSoundValue = getObjValueFromString(errors.alerts, `${field}.sound`);
+  // const updateSoundFieldString = `alerts.${field}.sound`;
 
-  const { pickerStates, pickerKey, updatePickerStates } = pickerStateInfo;
+  // const { pickerStates, pickerKey, updatePickerStates } = pickerStateInfo;
 
   return (
-    <View>
-      <View style={styles.field}>
-        <Text style={styles.inputLabel}>{title}</Text>
-        <TextInput
-          style={styles.textInput}
-          onChangeText={onFieldUpdate.handleChange(updateTextFieldString)}
-          value={fieldTextValue}
-        />
-        <Text style={styles.errorText}>{errorTextValue}</Text>
+    <View style={styles.individualAlertContainer}>
+      <Text style={{ textAlign: "left", fontSize: 18, fontWeight: "500" }}>{title}</Text>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-around",
+        }}
+      >
+        <View>
+          <Text style={styles.inputLabel}>{breathsOrSeconds}</Text>
+          <NumberInput
+            style={{ height: 35, textAlign: "center" }}
+            onChangeText={onFieldUpdate.handleChange(updateTextFieldString)}
+            value={fieldTextValue}
+            includeDecimal={false}
+            maxLength={3}
+          />
+          {errorTextValue && <Text style={styles.errorText}>{errorTextValue}</Text>}
+        </View>
+        <View style={{ justifyContent: "flex-start", flex: 1, marginHorizontal: 10 }}>
+          <AlertSoundPicker {...props} />
+        </View>
       </View>
-      <View style={[styles.field]}>
+      {/* <View style={[styles.field]}>
         <Text style={styles.inputLabel}> Select Alert Sound</Text>
         <DropDownPicker
           dropDownDirection="BOTTOM"
@@ -75,35 +87,9 @@ function AlertInput({
           setValue={(fn) => onFieldUpdate.pickerFieldUpdate(updateSoundFieldString, fn)}
           // setItems={setItems}
         />
-      </View>
+      </View> */}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  field: {
-    marginHorizontal: 10,
-    marginVertical: 5,
-  },
-  inputLabel: {
-    fontSize: 16,
-    fontWeight: "500",
-    marginLeft: 5,
-    marginBottom: 2,
-  },
-  textInput: {
-    borderWidth: StyleSheet.hairlineWidth,
-    paddingHorizontal: 8,
-    paddingVertical: 5,
-    borderRadius: 10,
-    fontSize: 18,
-  },
-  errorText: {
-    color: "crimson",
-    textAlign: "center",
-    fontStyle: "italic",
-    fontWeight: "700",
-  },
-});
 
 export default AlertInput;

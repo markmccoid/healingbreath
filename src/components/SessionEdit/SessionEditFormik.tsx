@@ -7,9 +7,9 @@ import {
   TouchableOpacity,
   ScrollView,
   Switch,
+  KeyboardAvoidingView,
 } from "react-native";
 import { Formik, useFormik } from "formik";
-import * as yup from "yup";
 import _values from "lodash/values";
 import {
   createRetentionFields,
@@ -23,6 +23,9 @@ import { useStore, StoredSession } from "../../store/useStore";
 import { RootStackProps } from "../../types/navTypes";
 import SessionEditAlerts from "./SessionEditAlerts";
 import { sessionValidationSchema } from "./sessionValidationRules";
+import { MyTextInput, NumberInput } from "./Inputs";
+import { AnimatePresence, MotiView } from "moti";
+import { styles } from "./styles";
 
 const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
   const createNewSession = useStore((state) => state.createNewSession);
@@ -87,94 +90,115 @@ const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">)
                 </TouchableOpacity>
               </View>
               {/*----- Form Fields ------------*/}
-              <ScrollView style={{}}>
-                <View style={styles.field}>
-                  <Text style={styles.inputLabel}>Session Name</Text>
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Session Name"
-                    onChangeText={props.handleChange("name")}
-                    value={props.values.name}
-                  />
-                  <Text style={styles.errorText}>{props.errors.name}</Text>
-                </View>
-                <View style={styles.field}>
-                  <Text style={styles.inputLabel}>Breath Rounds</Text>
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Breath Rounds"
-                    onChangeText={props.handleChange("breathRounds")}
-                    value={props.values.breathRounds}
-                    keyboardType="numeric"
-                    maxLength={2}
-                    onBlur={props.handleBlur("breathRounds")}
-                  />
-                  <Text style={styles.errorText}>
-                    {props.touched.breathRounds && props.errors.breathRounds}
-                  </Text>
-                </View>
-                <View style={styles.field}>
-                  <Text style={styles.inputLabel}>Breath Reps Per Round</Text>
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Breath Reps Per Round"
-                    onChangeText={props.handleChange("breathReps")}
-                    value={props.values.breathReps}
-                  />
-                  <Text style={styles.errorText}>{props.errors.breathReps}</Text>
-                </View>
-                <View style={styles.field}>
-                  <Text style={styles.inputLabel}>Recovery Breath Hold Time</Text>
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Recovery Breath Hold Time"
-                    onChangeText={props.handleChange("recoveryHoldTime")}
-                    value={props.values.recoveryHoldTime}
-                  />
-                  <Text style={styles.errorText}>{props.errors.recoveryHoldTime}</Text>
-                </View>
-
-                {props.values.retentionHoldTimes.map((el, index) => {
-                  return (
-                    <View style={styles.field} key={index}>
-                      <Text>Retention Hold Time {index + 1}</Text>
-                      <TextInput
-                        style={styles.textInput}
-                        key={index}
-                        onChangeText={props.handleChange(
-                          `retentionHoldTimes[${index}].holdTime`
-                        )}
-                        onBlur={props.handleBlur(`retentionHoldTimes[${index}].holdTime`)}
-                        value={props.values.retentionHoldTimes[index].holdTime}
-                        maxLength={3}
-                      />
-                      <Text style={styles.errorText}>
-                        {props.errors?.retentionHoldTimes?.[index]?.holdTime}
-                      </Text>
-                    </View>
-                  );
-                })}
-                <View style={[styles.field, { flexDirection: "row", alignItems: "center" }]}>
-                  <Switch
-                    style={{ transform: [{ scaleY: 0.8 }, { scaleX: 0.8 }] }}
-                    onValueChange={(val) => props.setFieldValue("includeAlerts", val)}
-                    value={props.values.includeAlerts}
-                  />
-                  <Text style={styles.inputLabel}>{`Session Alerts ${
-                    props.values.includeAlerts ? "On" : "Off"
-                  } `}</Text>
-                </View>
-                {props.values.includeAlerts && (
-                  <View style={{ marginBottom: 300 }}>
-                    <SessionEditAlerts
-                      values={props.values}
-                      errors={props.errors}
-                      handleChange={props.handleChange}
+              <KeyboardAvoidingView
+                style={{ flexDirection: "column", justifyContent: "center" }}
+                behavior="padding"
+                enabled
+                keyboardVerticalOffset={120}
+              >
+                <ScrollView style={{}}>
+                  <View style={styles.field}>
+                    <Text style={styles.inputLabel}>Session Name</Text>
+                    <MyTextInput
+                      placeholder="Session Name"
+                      onChangeText={props.handleChange("name")}
+                      value={props.values.name}
                     />
+                    <Text style={styles.errorText}>{props.errors.name}</Text>
                   </View>
-                )}
-                <View style={{ paddingVertical: 100 }} />
-              </ScrollView>
+                  <View style={styles.field}>
+                    <Text style={styles.inputLabel}>Breath Rounds</Text>
+                    <NumberInput
+                      placeholder="Breath Rounds"
+                      onChangeText={props.handleChange("breathRounds")}
+                      value={props.values.breathRounds}
+                      includeDecimal={false}
+                      maxLength={2}
+                    />
+                    <Text style={styles.errorText}>
+                      {props.touched.breathRounds && props.errors.breathRounds}
+                    </Text>
+                  </View>
+                  <View style={styles.field}>
+                    <Text style={styles.inputLabel}>Breath Reps Per Round</Text>
+                    <NumberInput
+                      placeholder="Breath Reps Per Round"
+                      onChangeText={props.handleChange("breathReps")}
+                      value={props.values.breathReps}
+                      includeDecimal={false}
+                      maxLength={3}
+                    />
+                    <Text style={styles.errorText}>{props.errors.breathReps}</Text>
+                  </View>
+                  <View style={styles.field}>
+                    <Text style={styles.inputLabel}>Recovery Breath Hold Time</Text>
+                    <NumberInput
+                      placeholder="Recovery Breath Hold Time (seconds)"
+                      onChangeText={props.handleChange("recoveryHoldTime")}
+                      value={props.values.recoveryHoldTime}
+                      includeDecimal={false}
+                      maxLength={3}
+                    />
+                    <Text style={styles.errorText}>{props.errors.recoveryHoldTime}</Text>
+                  </View>
+
+                  {props.values.retentionHoldTimes.map((el, index) => {
+                    return (
+                      <View style={styles.field} key={index}>
+                        <Text style={styles.inputLabel}>Retention Hold Time {index + 1}</Text>
+                        <NumberInput
+                          key={index}
+                          onChangeText={props.handleChange(
+                            `retentionHoldTimes[${index}].holdTime`
+                          )}
+                          onBlur={props.handleBlur(`retentionHoldTimes[${index}].holdTime`)}
+                          value={props.values.retentionHoldTimes[index].holdTime}
+                          maxLength={3}
+                        />
+                        <Text style={styles.errorText}>
+                          {props.errors?.retentionHoldTimes?.[index]?.holdTime}
+                        </Text>
+                      </View>
+                    );
+                  })}
+                  <View style={[styles.field, { flexDirection: "row", alignItems: "center" }]}>
+                    <Switch
+                      style={{ transform: [{ scaleY: 0.8 }, { scaleX: 0.8 }] }}
+                      onValueChange={(val) => props.setFieldValue("includeAlerts", val)}
+                      value={props.values.includeAlerts}
+                    />
+                    <Text style={styles.inputLabel}>{`Session Alerts ${
+                      props.values.includeAlerts ? "On" : "Off"
+                    } `}</Text>
+                  </View>
+                  <AnimatePresence>
+                    {props.values.includeAlerts && (
+                      <MotiView
+                        from={{
+                          opacity: 0,
+                          // scale: 0.9,
+                        }}
+                        animate={{
+                          opacity: 1,
+                          // scale: 1,
+                        }}
+                        exit={{
+                          opacity: 0,
+                          // scale: 0.9,
+                        }}
+                        style={{ marginBottom: 300 }}
+                      >
+                        <SessionEditAlerts
+                          values={props.values}
+                          errors={props.errors}
+                          handleChange={props.handleChange}
+                        />
+                      </MotiView>
+                    )}
+                  </AnimatePresence>
+                  <View style={{ paddingVertical: 100 }} />
+                </ScrollView>
+              </KeyboardAvoidingView>
             </View>
           );
         }}
@@ -182,31 +206,5 @@ const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">)
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  field: {
-    marginHorizontal: 10,
-    marginVertical: 5,
-  },
-  inputLabel: {
-    fontSize: 16,
-    fontWeight: "500",
-    marginLeft: 5,
-    marginBottom: 2,
-  },
-  textInput: {
-    borderWidth: StyleSheet.hairlineWidth,
-    paddingHorizontal: 8,
-    paddingVertical: 5,
-    borderRadius: 10,
-    fontSize: 18,
-  },
-  errorText: {
-    color: "crimson",
-    textAlign: "center",
-    fontStyle: "italic",
-    fontWeight: "700",
-  },
-});
 
 export default SessionEditFormik;

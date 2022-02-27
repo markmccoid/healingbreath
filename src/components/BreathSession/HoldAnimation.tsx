@@ -39,7 +39,7 @@ function HoldAnimation() {
   });
 
   React.useEffect(() => {
-    console.log("Hold Animation Alert", alert);
+    // console.log("Hold Animation Alert", alert);
   }, [alert]);
   return (
     <View

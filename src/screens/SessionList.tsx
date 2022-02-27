@@ -12,10 +12,10 @@ const SessionList = ({ navigation, route }: RootStackProps<"SessionList">) => {
   const deleteSession = useStore((state) => state.deleteSession);
   // const activeSession = useStore((state) => state.activeSession);
   // const { navigateToSession } = useBreathNavigation();
-  console.log(
-    "sessions",
-    sessions.map((el) => el)
-  );
+  // console.log(
+  //   "sessions",
+  //   sessions.map((el) => el)
+  // );
   return (
     <View style={{ flex: 1 }}>
       <ScrollView style={{ paddingTop: 10 }}>
@@ -28,7 +28,7 @@ const SessionList = ({ navigation, route }: RootStackProps<"SessionList">) => {
 
       <View style={styles.addButton}>
         <TouchableOpacity onPress={() => navigation.navigate("SessionEdit")}>
-          <AddIcon size={30} color="black" />
+          <AddIcon size={30} color="white" />
         </TouchableOpacity>
       </View>
     </View>
@@ -38,10 +38,11 @@ const SessionList = ({ navigation, route }: RootStackProps<"SessionList">) => {
 const styles = StyleSheet.create({
   addButton: {
     position: "absolute",
-    backgroundColor: "purple",
+    backgroundColor: "#2D728F",
     bottom: 30,
     right: 20,
     borderWidth: 1,
+    borderColor: "#ccc",
     borderRadius: 30,
     width: 60,
     height: 60,

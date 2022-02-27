@@ -110,6 +110,10 @@ export function getObjValueFromString(obj: any, attrString: string) {
 //-- all number like items to numbers
 //-- Will also work for an array of objects (since an array is an object with key 0,1...)
 //------------------------------
+//!! NOTE: String fields that start with a number with a number but have text, will get the
+//!! rest of the string truncated and return the number.
+//!! ex: 9String will convert to just 9
+//!!  Need to use some regex to see if any letters or special chars other than . and ,
 export function convertKeyValsToNumberRecurse(
   obj: any,
   keysToChange: string[],

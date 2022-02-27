@@ -7,6 +7,8 @@ import DropDownPicker from "react-native-dropdown-picker";
 import { loadAndPlaySound } from "../../hooks/useAlertSounds";
 import { AlertSoundNames } from "../../utils/sounds/soundTypes";
 import AlertInput from "./AlertInput";
+import AlertSoundPicker from "./AlertSoundPicker";
+import { styles } from "./styles";
 
 type Props = {
   values: BreathSessionValues;
@@ -30,7 +32,12 @@ export type AlertFields = {
   brXSecondsBeforeEnd: string;
   rbEveryXSeconds: string;
   rbXSecondsBeforeEnd: string;
+  rbAlertBreathInPause: string;
+  rbAlertBreathOutPause: string;
 };
+
+// Used as a unique key in the dropdown component.  Need one for each sound
+// used so that when on picker opens, others close.
 const alertFields: AlertFields = {
   cfbEveryXBreaths: "ConsciousForcedBreathing.alertEveryXBreaths",
   cfbXBreathsBeforeEnd: "ConsciousForcedBreathing.alertXBreathsBeforeEnd",
@@ -38,6 +45,8 @@ const alertFields: AlertFields = {
   brXSecondsBeforeEnd: "BreathRetention.alertXSecondsBeforeEnd",
   rbEveryXSeconds: "RecoveryBreath.alertEveryXSeconds",
   rbXSecondsBeforeEnd: "RecoveryBreath.alertXSecondsBeforeEnd",
+  rbAlertBreathInPause: "RecoveryBreath.alertBreathInPause",
+  rbAlertBreathOutPause: "RecoveryBreath.alertBreathOutPause",
 };
 
 const defaultPickerStates = Object.entries(alertFields).reduce(
@@ -76,7 +85,7 @@ function SessionEditAlerts({ values, errors, handleChange }: Props) {
   // }, [value]);
 
   return (
-    <View>
+    <View style={styles.alertContainer}>
       {/* <View style={styles.field}>
         <Text style={styles.inputLabel}>Alert Every X Breaths</Text>
         <TextInput
@@ -93,7 +102,9 @@ function SessionEditAlerts({ values, errors, handleChange }: Props) {
       - Conscious Forced Breathing -
       ------------------------------- */}
       <View style={{ zIndex: 6000 }}>
-        <Text>Conscious Forced Breathing</Text>
+        <View style={styles.alertTitleView}>
+          <Text style={styles.alertTitleText}>Conscious Forced Breathing</Text>
+        </View>
         <View style={{ zIndex: 6000 }}>
           <AlertInput
             pickerItems={items}
@@ -130,7 +141,9 @@ function SessionEditAlerts({ values, errors, handleChange }: Props) {
       - Breath Retention            -
       ------------------------------- */}
       <View style={{ zIndex: 5000 }}>
-        <Text>Breath Retention</Text>
+        <View style={styles.alertTitleView}>
+          <Text style={styles.alertTitleText}>Breath Retention</Text>
+        </View>
         <View style={{ zIndex: 5000 }}>
           <AlertInput
             pickerItems={items}
@@ -167,7 +180,9 @@ function SessionEditAlerts({ values, errors, handleChange }: Props) {
       - Breath Retention            -
       ------------------------------- */}
       <View style={{ zIndex: 4000 }}>
-        <Text>Recovery Breath</Text>
+        <View style={styles.alertTitleView}>
+          <Text style={styles.alertTitleText}>Recovery Breath</Text>
+        </View>
         <View style={{ zIndex: 3500 }}>
           <AlertInput
             pickerItems={items}
@@ -199,99 +214,48 @@ function SessionEditAlerts({ values, errors, handleChange }: Props) {
           />
         </View>
       </View>
-
-      {/* <AlertInput
-        items={items}
-        setIsOpen={setOpen}
-        isOpen={open}
-        values={values}
-        errors={errors}
-        field="ConsciousForcedBreathing.alertEveryXBreaths.sound"
-        updateFunction={(fn) =>
-          onFieldUpdate("alerts.ConsciousForcedBreathing.alertEveryXBreaths.sound", fn)
-        }
-      /> */}
-
-      {/* <View style={styles.field}>
-        <Text style={styles.inputLabel}>Alert X Breaths Before Last</Text>
-        <TextInput
-          style={styles.textInput}
-          placeholder="Alert X Breaths before End"
-          onChangeText={handleChange(
-            "alerts.ConsciousForcedBreathing.alertXBreathsBeforeEnd.value"
-          )}
-          value={CFBAlerts?.alertXBreathsBeforeEnd?.value}
-        />
-        <Text style={styles.errorText}>{CFBErrors?.alertXBreathsBeforeEnd?.value}</Text>
+      <View style={{ zIndex: 3000 }}>
+        <View style={styles.alertTitleView}>
+          <Text style={styles.alertTitleText}>Breath In Sound</Text>
+        </View>
+        <View style={styles.individualAlertContainer}>
+          <AlertSoundPicker
+            pickerItems={items}
+            values={values}
+            errors={errors}
+            field="RecoveryBreath.alertBreathInPause"
+            onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
+            pickerStateInfo={{
+              pickerStates,
+              updatePickerStates,
+              pickerKey: alertFields.rbAlertBreathInPause,
+            }}
+            title="Alert Breath In Sound"
+          />
+        </View>
       </View>
-      <View style={styles.field}>
-        <DropDownPicker
-          zIndex={2000}
-          zIndexInverse={2000}
-          open={open2}
-          searchable={true}
-          searchPlaceholder="Search for Sound..."
-          value={CFBAlerts?.alertXBreathsBeforeEnd?.sound}
-          items={items}
-          setOpen={setOpen2}
-          setValue={(fn) =>
-            onFieldUpdate("alerts.ConsciousForcedBreathing.alertXBreathsBeforeEnd.sound", fn)
-          }
-          // setItems={setItems}
-        />
+      <View style={{ zIndex: 2900 }}>
+        <View style={styles.alertTitleView}>
+          <Text style={styles.alertTitleText}>Breath Out Sound</Text>
+        </View>
+        <View style={styles.individualAlertContainer}>
+          <AlertSoundPicker
+            pickerItems={items}
+            values={values}
+            errors={errors}
+            field="RecoveryBreath.alertBreathOutPause"
+            onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
+            pickerStateInfo={{
+              pickerStates,
+              updatePickerStates,
+              pickerKey: alertFields.rbAlertBreathOutPause,
+            }}
+            title="Alert Breath Out Sound"
+          />
+        </View>
       </View>
-
-      <View style={styles.field}>
-        <Text style={styles.inputLabel}>Alert Every X Seconds</Text>
-        <TextInput
-          style={styles.textInput}
-          placeholder="Alert Every X Seconds"
-          onChangeText={handleChange("alerts.BreathRetention.alertEveryXSeconds.value")}
-          value={BRAlerts?.alertEveryXSeconds?.value}
-        />
-        <Text style={styles.errorText}>{BRErrors?.alertEveryXSeconds?.value}</Text>
-      </View>
-      <View style={styles.field}>
-        <DropDownPicker
-          open={open3}
-          searchable={true}
-          searchPlaceholder="Search for Sound..."
-          value={BRAlerts?.alertEveryXSeconds?.sound}
-          items={items}
-          setOpen={setOpen3}
-          setValue={(fn) =>
-            onFieldUpdate("alerts.BreathRetention.alertEveryXSeconds.sound", fn)
-          }
-          // setItems={setItems}
-        />
-      </View> */}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  field: {
-    marginHorizontal: 10,
-    marginVertical: 5,
-  },
-  inputLabel: {
-    fontSize: 16,
-    fontWeight: "500",
-    marginLeft: 5,
-    marginBottom: 2,
-  },
-  textInput: {
-    borderWidth: StyleSheet.hairlineWidth,
-    paddingHorizontal: 8,
-    paddingVertical: 5,
-    borderRadius: 10,
-    fontSize: 18,
-  },
-  errorText: {
-    color: "crimson",
-    textAlign: "center",
-    fontStyle: "italic",
-    fontWeight: "700",
-  },
-});
 export default SessionEditAlerts;

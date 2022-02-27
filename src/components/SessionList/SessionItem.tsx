@@ -46,30 +46,49 @@ function SessionItem({ session, deleteSession }: Props) {
         <View style={styles.itemTitleContainer}>
           <Text style={[styles.itemText, styles.itemTitle]}>{`${session.name}`}</Text>
         </View>
+        {/* Line 1 of Information */}
         <View style={styles.infoLine1}>
           <View style={styles.infoHighlight}>
             <Text style={[styles.itemText, styles.infoLine1Text]}>
               Rounds: {session.breathRounds}
             </Text>
           </View>
-          <View style={styles.infoHighlight}>
-            <Text style={[styles.itemText, styles.infoLine1Text]}>
-              Recovery: {session.recoveryHoldTime}s
-            </Text>
-          </View>
+
           <View style={styles.infoHighlight}>
             <Text style={[styles.itemText, styles.infoLine1Text]}>
               Breaths/Round: {session.breathReps}
             </Text>
           </View>
         </View>
+        {/* Line 2 of Information */}
+        <View style={styles.infoLine1}>
+          <View style={styles.infoHighlight}>
+            <Text style={[styles.itemText, styles.infoLine1Text]}>
+              Recovery Breath: {session.recoveryHoldTime}s
+            </Text>
+          </View>
+        </View>
+        {/* Line 3 RETENTION Information */}
         <View style={styles.retentionContainer}>
-          <Text style={[styles.itemText, styles.retentionText]}>Retention:</Text>
-          {retentionTimes?.map((time, idx) => (
-            <View key={idx} style={{ marginHorizontal: 5 }}>
-              <Text style={[styles.itemText, styles.retentionText]}>{time}</Text>
-            </View>
-          ))}
+          <View
+            style={{
+              borderTopWidth: 1,
+              borderBottomWidth: 1,
+              borderColor: "#777",
+              backgroundColor: "#A1CDF4",
+              paddingVertical: 4,
+              marginBottom: 5,
+            }}
+          >
+            <Text style={[styles.itemText, styles.retentionText]}>Retention Hold Times</Text>
+          </View>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", marginLeft: 10 }}>
+            {retentionTimes?.map((time, idx) => (
+              <View key={idx} style={{ marginHorizontal: 5 }}>
+                <Text style={[styles.itemText, styles.retentionText]}>{time}</Text>
+              </View>
+            ))}
+          </View>
         </View>
       </TouchableOpacity>
     </View>
@@ -82,9 +101,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 5,
     marginHorizontal: 15,
-    backgroundColor: "#8D8ED6",
+    backgroundColor: "#A1CDF499",
+    flex: 1,
   },
-  itemPressable: {},
+  itemPressable: {
+    flex: 1,
+    flexDirection: "column",
+  },
   itemText: {
     fontFamily: "FiraSans_500Medium",
   },
@@ -97,34 +120,39 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
     borderBottomWidth: 1, //StyleSheet.hairlineWidth,
-    backgroundColor: "#ffffffaa",
+    backgroundColor: "#A1CDF4aa",
   },
-  itemTitle: { fontSize: 18 },
+  itemTitle: { fontSize: 18, color: "black" },
   // Info line 1
   infoLine1: {
     paddingHorizontal: 5,
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
+    marginBottom: 5,
   },
   infoLine1Text: {
     fontSize: 16,
   },
   infoHighlight: {
+    flexGrow: 1,
+    marginLeft: 2,
+    marginRight: 5,
     backgroundColor: "#ffffff77",
-    padding: 3,
+    paddingVertical: 3,
+    paddingHorizontal: 10,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 6,
   },
   // Retention Line
   retentionContainer: {
-    flexDirection: "row",
+    flexDirection: "column",
     justifyContent: "flex-start",
     marginTop: 4,
-    paddingHorizontal: 5,
     marginBottom: 5,
   },
   retentionText: {
     fontSize: 17,
+    textAlign: "center",
   },
 });
 export default SessionItem;

@@ -210,7 +210,7 @@ export const prepareSubmit = (values: BreathSessionValues): StoredSession => {
   // console.log("values", values);
   // Build retention hold times
   // console.log(arrayToObject(values.retentionHoldTimes));
-
+  const { name } = values;
   const holdSession = convertKeyValsToNumber(values, [], true);
 
   const { retentionHoldTimes, alerts, includeAlerts, ...restOfSessionValues } = holdSession;
@@ -218,6 +218,7 @@ export const prepareSubmit = (values: BreathSessionValues): StoredSession => {
   const inputValuesFormatted: StoredSession = {
     id: uuid.v4() as string,
     ...restOfSessionValues,
+    name,
     breathRoundsDetail: arrayToObject<BreathRoundsDetail>(retentionHoldTimes),
     alertSettings: alerts,
   };

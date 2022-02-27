@@ -38,15 +38,15 @@ function BreathAnimation() {
     },
     (result, previous) => {
       if (result === "Inhale") {
-        console.log("Inhale");
+        // console.log("Inhale");
         breathTime.value = context.inhaleTime;
         forcedBreathAnim.value = withTiming(1, { duration: breathTime.value });
       } else if (result === "Exhale") {
-        console.log("Exhale");
+        // console.log("Exhale");
         breathTime.value = context.exhaleTime;
         forcedBreathAnim.value = withTiming(0, { duration: breathTime.value });
       } else {
-        console.log("Other", currStateValue);
+        // console.log("Other", currStateValue);
         breathTime.value = 1000;
         forcedBreathAnim.value = withTiming(1, { duration: 1000 });
         // forcedBreathAnim.value = withSpring(0.25, { stiffness: 90, damping: 8 });
@@ -55,7 +55,7 @@ function BreathAnimation() {
     [breathStateString]
   );
   React.useEffect(() => {
-    console.log("Breath Animation Alert", alert);
+    // console.log("Breath Animation Alert", alert);
   }, [alert]);
 
   // Animated Styles
