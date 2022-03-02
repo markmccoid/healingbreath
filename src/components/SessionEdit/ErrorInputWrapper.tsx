@@ -12,7 +12,10 @@ type Props = {
   errorText: string | undefined;
   showErrorText?: boolean;
 };
-
+//!!!!!
+//! Incorporate touched options into this
+//!!!!!
+//!!!!!
 const ErrorInputWrapper: React.FC<Props> = ({
   children,
   errorText,
@@ -33,7 +36,7 @@ const ErrorInputWrapper: React.FC<Props> = ({
   }, [errorText]);
 
   const animatedStyles = useAnimatedStyle(() => {
-    const borderColor = interpolateColor(progress.value, [1, 0], ["red", "white"]);
+    const borderColor = interpolateColor(progress.value, [1, 0], ["red", "#ffffff00"]);
     return {
       borderWidth: 1,
       borderRadius: 10,

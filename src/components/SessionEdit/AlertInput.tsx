@@ -8,6 +8,7 @@ import { BreathSessionValues } from "./sessionEditHelpers";
 import AlertSoundPicker from "./AlertSoundPicker";
 import { NumberInput } from "./Inputs";
 import { styles } from "./styles";
+import ErrorInputWrapper from "./ErrorInputWrapper";
 
 const { width, height } = Dimensions.get("window");
 
@@ -44,10 +45,15 @@ function AlertInput(props: Props) {
   // const updateSoundFieldString = `alerts.${field}.sound`;
 
   // const { pickerStates, pickerKey, updatePickerStates } = pickerStateInfo;
-
+  console.log(parseInt(fieldTextValue));
   return (
     <View style={styles.individualAlertContainer}>
-      <Text style={{ textAlign: "left", fontSize: 18, fontWeight: "500" }}>{title}</Text>
+      <View
+        style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}
+      >
+        <Text style={{ textAlign: "left", fontSize: 18, fontWeight: "500" }}>{title}</Text>
+        <Text>{parseInt(fieldTextValue) > 0 ? "On" : "Off"}</Text>
+      </View>
       <View
         style={{
           flexDirection: "row",
@@ -56,14 +62,15 @@ function AlertInput(props: Props) {
       >
         <View>
           <Text style={styles.inputLabel}>{breathsOrSeconds}</Text>
-          <NumberInput
-            style={{ height: 35, textAlign: "center" }}
-            onChangeText={onFieldUpdate.handleChange(updateTextFieldString)}
-            value={fieldTextValue}
-            includeDecimal={false}
-            maxLength={3}
-          />
-          {errorTextValue && <Text style={styles.errorText}>{errorTextValue}</Text>}
+          <ErrorInputWrapper errorText={errorTextValue} showErrorText>
+            <NumberInput
+              style={{ height: 35, textAlign: "center" }}
+              onChangeText={onFieldUpdate.handleChange(updateTextFieldString)}
+              value={fieldTextValue}
+              includeDecimal={false}
+              maxLength={3}
+            />
+          </ErrorInputWrapper>
         </View>
         <View style={{ justifyContent: "flex-start", flex: 1, marginHorizontal: 10 }}>
           <AlertSoundPicker {...props} />

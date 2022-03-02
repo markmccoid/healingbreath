@@ -78,18 +78,6 @@ function SessionEditAlerts({ values, errors, handleChange }: Props) {
 
   return (
     <View style={styles.alertContainer}>
-      {/* <View style={styles.field}>
-        <Text style={styles.inputLabel}>Alert Every X Breaths</Text>
-        <TextInput
-          style={styles.textInput}
-          placeholder="Alert Every X Breaths"
-          onChangeText={handleChange(
-            "alerts.ConsciousForcedBreathing.alertEveryXBreaths.value"
-          )}
-          value={CFBAlerts?.alertEveryXBreaths?.value}
-        />
-        <Text style={styles.errorText}>{CFBErrors?.alertEveryXBreaths?.value}</Text>
-      </View> */}
       {/*----------------------------
       - Conscious Forced Breathing -
       ------------------------------- */}

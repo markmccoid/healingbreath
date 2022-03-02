@@ -2,9 +2,9 @@ import * as yup from "yup";
 
 const alertValueValidation = yup
   .number()
-  .typeError("Must Be a number")
-  .required("Required, enter 0 to turn OFF this alert")
-  .integer("Must be an integer")
+  .typeError("Number")
+  .required("Required")
+  .integer("Integer")
   .min(0);
 
 const alertValidationSchema = yup.object().shape({

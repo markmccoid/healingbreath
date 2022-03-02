@@ -28,6 +28,7 @@ import { MyTextInput, NumberInput } from "./Inputs";
 import { AnimatePresence, MotiView } from "moti";
 import { styles } from "./styles";
 import SessionEditAdvanced from "./SessionEditAdvanced";
+import ErrorInputWrapper from "./ErrorInputWrapper";
 
 const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
   const createNewSession = useStore((state) => state.createNewSession);
@@ -101,22 +102,25 @@ const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">)
                 <ScrollView style={{}}>
                   <View style={styles.field}>
                     <Text style={styles.inputLabel}>Session Name</Text>
-                    <MyTextInput
-                      placeholder="Session Name"
-                      onChangeText={props.handleChange("name")}
-                      value={props.values.name}
-                    />
-                    <Text style={styles.errorText}>{props.errors.name}</Text>
+                    <ErrorInputWrapper errorText={props.errors.name} showErrorText>
+                      <MyTextInput
+                        placeholder="Session Name"
+                        onChangeText={props.handleChange("name")}
+                        value={props.values.name}
+                      />
+                    </ErrorInputWrapper>
                   </View>
                   <View style={styles.field}>
                     <Text style={styles.inputLabel}>Breath Rounds</Text>
-                    <NumberInput
-                      placeholder="Breath Rounds"
-                      onChangeText={props.handleChange("breathRounds")}
-                      value={props.values.breathRounds}
-                      includeDecimal={false}
-                      maxLength={2}
-                    />
+                    <ErrorInputWrapper errorText={props.errors.breathRounds} showErrorText>
+                      <NumberInput
+                        placeholder="Breath Rounds"
+                        onChangeText={props.handleChange("breathRounds")}
+                        value={props.values.breathRounds}
+                        includeDecimal={false}
+                        maxLength={2}
+                      />
+                    </ErrorInputWrapper>
                     <Text style={styles.errorText}>
                       {props.touched.breathRounds && props.errors.breathRounds}
                     </Text>
