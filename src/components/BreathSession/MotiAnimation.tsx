@@ -18,6 +18,7 @@ import Animated, {
   withSpring,
   timing,
   interpolateColor,
+  Easing,
 } from "react-native-reanimated";
 import HoldAnimation from "./HoldAnimation";
 import { useBreathAlert, useBreathMachineInfo } from "../../hooks/useBreathMachineHooks";
@@ -42,7 +43,11 @@ function BreathAnimation() {
 
   React.useEffect(() => {
     if (myAlert) {
-      progress.value = withRepeat(withTiming(1, { duration: context.inhaleTime }), 2, true);
+      progress.value = withRepeat(
+        withTiming(1, { duration: context.inhaleTime, easing: Easing.circle }),
+        2,
+        true
+      );
     }
     // console.log("Breath Animation Alert", myAlert);
   }, [myAlert]);
@@ -55,11 +60,17 @@ function BreathAnimation() {
       if (result === "Inhale") {
         // console.log("Inhale");
         breathTime.value = context.inhaleTime;
-        forcedBreathAnim.value = withTiming(1, { duration: breathTime.value });
+        forcedBreathAnim.value = withTiming(1, {
+          duration: breathTime.value,
+          easing: Easing.bounce,
+        });
       } else if (result === "Exhale") {
         // console.log("Exhale");
         breathTime.value = context.exhaleTime;
-        forcedBreathAnim.value = withTiming(0, { duration: breathTime.value });
+        forcedBreathAnim.value = withTiming(0, {
+          duration: breathTime.value,
+          easing: Easing.bounce,
+        });
       } else {
         // console.log("Other", currStateValue);
         breathTime.value = 1000;
@@ -212,7 +223,13 @@ function BreathAnimation() {
               animate={{ opacity: 1, translateY: 0, backgroundColor: "red" }}
               transition={{
                 type: "timing",
-                duration: context.inhaleTime,
+                duration:
+                  breathStateString === "Inhale"
+                    ? context.inhaleTime
+                    : breathStateString === "Exhale"
+                    ? context.exhaleTime
+                    : 1,
+                easing: Easing.ease,
               }}
               exit={{ opacity: 0, scale: 0.5, translateY: 500 }}
               exitTransition={{ type: "timing", duration: 1500 }}
@@ -230,7 +247,12 @@ function BreathAnimation() {
               from={{ opacity: 0, scale: 0.5 }}
               transition={{
                 type: "timing",
-                duration: context.inhaleTime,
+                duration:
+                  breathStateString === "Inhale"
+                    ? context.inhaleTime
+                    : breathStateString === "Exhale"
+                    ? context.exhaleTime
+                    : 1,
               }}
               exit={{ opacity: 0, scale: 0.1 }}
               exitTransition={{ type: "timing", duration: 500 }}

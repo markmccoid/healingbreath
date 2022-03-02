@@ -72,17 +72,9 @@ function SessionEditAlerts({ values, errors, handleChange }: Props) {
 
   const onFieldUpdate = (fieldName: string, fn: () => AlertSoundNames) => {
     const newValue = fn();
-    console.log("Field Update", fieldName, newValue);
     handleChange(fieldName)(newValue);
     loadAndPlaySound(newValue);
   };
-
-  // React.useEffect(() => {
-  //   if (value) {
-  //     handleChange("alerts.ConsciousForcedBreathing.alertEveryXBreaths.sound")(value);
-  //     loadAndPlaySound(value);
-  //   }
-  // }, [value]);
 
   return (
     <View style={styles.alertContainer}>

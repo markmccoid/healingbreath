@@ -36,32 +36,36 @@ const alertValidationSchema = yup.object().shape({
 
 export const sessionValidationSchema = yup.object({
   name: yup.string().required(),
+  inhaleTime: yup.number().typeError("Number").required("Required").positive("> zero"),
+  exhaleTime: yup.number().typeError("Number").required("Required").positive("> zero"),
+  actionPauseTimeIn: yup.number().typeError("Number").required("Required").positive("> zero"),
+  actionPauseTimeOut: yup.number().typeError("Number").required("Required").positive("> zero"),
   breathRounds: yup
     .number()
-    .typeError("Field must be an intger greater than zero")
-    .required()
-    .integer("Field must be an integer")
-    .positive("Field must be greater than zero"),
+    .typeError("> zero")
+    .required("Required")
+    .integer("Integer")
+    .positive("> zero"),
   breathReps: yup
     .number()
-    .typeError("Field must be an intger greater than zero")
-    .required()
-    .integer("Field must be an integer")
-    .positive("Field must be greater than zero"),
+    .typeError("> zero")
+    .required("Required")
+    .integer("Integer")
+    .positive("> zero"),
   recoveryHoldTime: yup
     .number()
-    .typeError("Field must be an intger greater than zero")
-    .required()
-    .integer("Field must be an integer")
-    .positive("Field must be greater than zero"),
+    .typeError("Number")
+    .required("Required")
+    .integer("Integer")
+    .positive("> zero"),
   retentionHoldTimes: yup.array().of(
     yup.object().shape({
       holdTime: yup
         .number()
-        .typeError("Must be a number")
-        .required("Hold Time is required")
-        .integer("Hold Time must be an integer")
-        .positive("Hold Time must be positive"),
+        .typeError("Number")
+        .required("Required")
+        .integer("Integer")
+        .positive("> zero"),
     })
   ),
   alerts: alertValidationSchema,

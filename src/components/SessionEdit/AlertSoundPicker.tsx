@@ -27,7 +27,7 @@ type Props = {
   }[];
 };
 
-function AlertInput({
+function AlertSoundPicker({
   values,
   errors,
   field,
@@ -53,8 +53,9 @@ function AlertInput({
         dropDownDirection="BOTTOM"
         zIndex={1000}
         dropDownContainerStyle={{
-          backgroundColor: "#ccc",
+          backgroundColor: "#fff",
         }}
+        closeAfterSelecting={false}
         style={{ height: 35 }}
         open={pickerStates[pickerKey]}
         setOpen={() => updatePickerStates(pickerKey, true)}
@@ -70,4 +71,4 @@ function AlertInput({
   );
 }
 
-export default AlertInput;
+export default AlertSoundPicker;

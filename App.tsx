@@ -14,6 +14,7 @@ export default function App() {
   if (!fontsLoaded) {
     return <AppLoading />;
   }
+
   DropDownPicker.setListMode("SCROLLVIEW");
   return (
     <SafeAreaProvider>

@@ -8,6 +8,7 @@ import {
   ScrollView,
   Switch,
   KeyboardAvoidingView,
+  Pressable,
 } from "react-native";
 import { Formik, useFormik } from "formik";
 import _values from "lodash/values";
@@ -26,10 +27,11 @@ import { sessionValidationSchema } from "./sessionValidationRules";
 import { MyTextInput, NumberInput } from "./Inputs";
 import { AnimatePresence, MotiView } from "moti";
 import { styles } from "./styles";
+import SessionEditAdvanced from "./SessionEditAdvanced";
 
 const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
   const createNewSession = useStore((state) => state.createNewSession);
-  const [showAlerts, setShowAlerts] = useState(false);
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
 
   return (
     <View style={{ flex: 1, paddingBottom: 125 }}>
@@ -161,16 +163,21 @@ const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">)
                       </View>
                     );
                   })}
-                  <View style={[styles.field, { flexDirection: "row", alignItems: "center" }]}>
+                  <Pressable
+                    onPress={() =>
+                      props.setFieldValue("includeAlerts", !props.values.includeAlerts)
+                    }
+                    style={[styles.field, { flexDirection: "row", alignItems: "center" }]}
+                  >
+                    <Text style={[styles.inputLabel, { marginBottom: 0 }]}>{`${
+                      props.values.includeAlerts ? "Hide" : "Show"
+                    } Session Alerts `}</Text>
                     <Switch
                       style={{ transform: [{ scaleY: 0.8 }, { scaleX: 0.8 }] }}
                       onValueChange={(val) => props.setFieldValue("includeAlerts", val)}
                       value={props.values.includeAlerts}
                     />
-                    <Text style={styles.inputLabel}>{`Session Alerts ${
-                      props.values.includeAlerts ? "On" : "Off"
-                    } `}</Text>
-                  </View>
+                  </Pressable>
                   <AnimatePresence>
                     {props.values.includeAlerts && (
                       <MotiView
@@ -186,9 +193,47 @@ const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">)
                           opacity: 0,
                           // scale: 0.9,
                         }}
-                        style={{ marginBottom: 300 }}
                       >
                         <SessionEditAlerts
+                          values={props.values}
+                          errors={props.errors}
+                          handleChange={props.handleChange}
+                        />
+                      </MotiView>
+                    )}
+                  </AnimatePresence>
+                  {/* Advanced Settings */}
+                  <Pressable
+                    onPress={() => setShowAdvancedSettings((prev) => !prev)}
+                    style={[styles.field, { flexDirection: "row", alignItems: "center" }]}
+                  >
+                    <Text style={[styles.inputLabel, { marginBottom: 0 }]}>{`${
+                      showAdvancedSettings ? "Hide" : "Show"
+                    } Advanced Settings `}</Text>
+                    <Switch
+                      style={{ transform: [{ scaleY: 0.8 }, { scaleX: 0.8 }] }}
+                      onValueChange={(val) => setShowAdvancedSettings(val)}
+                      value={showAdvancedSettings}
+                    />
+                  </Pressable>
+                  <AnimatePresence>
+                    {showAdvancedSettings && (
+                      <MotiView
+                        from={{
+                          opacity: 0,
+                          // scale: 0.9,
+                        }}
+                        animate={{
+                          opacity: 1,
+                          // scale: 1,
+                        }}
+                        exit={{
+                          opacity: 0,
+                          // scale: 0.9,
+                        }}
+                        style={{ marginBottom: 300 }}
+                      >
+                        <SessionEditAdvanced
                           values={props.values}
                           errors={props.errors}
                           handleChange={props.handleChange}

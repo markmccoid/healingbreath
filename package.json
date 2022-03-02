@@ -24,6 +24,7 @@
     "expo-asset": "~8.4.6",
     "expo-av": "~10.2.0",
     "expo-font": "~10.0.4",
+    "expo-keep-awake": "~10.0.1",
     "expo-status-bar": "~1.2.0",
     "formik": "^2.2.9",
     "immer": "^9.0.12",

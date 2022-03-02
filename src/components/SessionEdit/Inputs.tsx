@@ -21,7 +21,6 @@ export const NumberInput = (props: NumberProps) => {
 
 type CustomTextProps = {
   style?: ViewStyle;
-  includeDecimal?: boolean;
 };
 type MyTextProps = TextInputProps & CustomTextProps;
 export const MyTextInput = (props: MyTextProps) => {
