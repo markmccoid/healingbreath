@@ -24,7 +24,7 @@ import { useStore, StoredSession } from "../../store/useStore";
 import { RootStackProps } from "../../types/navTypes";
 import SessionEditAlerts from "./SessionEditAlerts";
 import { sessionValidationSchema } from "./sessionValidationRules";
-import { MyTextInput, NumberInput } from "./Inputs";
+import { TextInputWError, NumberInput, NumberInputWError } from "./Inputs";
 import { AnimatePresence, MotiView } from "moti";
 import { styles } from "./styles";
 import SessionEditAdvanced from "./SessionEditAdvanced";
@@ -72,7 +72,6 @@ const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">)
               props.values.retentionHoldTimes
             );
           }
-
           return (
             <View>
               {/*----- Submit Button ------------*/}
@@ -102,57 +101,64 @@ const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">)
                 <ScrollView style={{}}>
                   <View style={styles.field}>
                     <Text style={styles.inputLabel}>Session Name</Text>
-                    <ErrorInputWrapper errorText={props.errors.name} showErrorText>
-                      <MyTextInput
-                        placeholder="Session Name"
-                        onChangeText={props.handleChange("name")}
-                        value={props.values.name}
-                      />
-                    </ErrorInputWrapper>
+                    <TextInputWError
+                      placeholder="Session Name"
+                      onChangeText={props.handleChange("name")}
+                      value={props.values.name}
+                      onBlur={props.handleBlur("name")}
+                      errorText={props.errors.name}
+                      showErrorText
+                      isTouched={props.touched.name ?? false}
+                    />
                   </View>
                   <View style={styles.field}>
                     <Text style={styles.inputLabel}>Breath Rounds</Text>
-                    <ErrorInputWrapper errorText={props.errors.breathRounds} showErrorText>
-                      <NumberInput
-                        placeholder="Breath Rounds"
-                        onChangeText={props.handleChange("breathRounds")}
-                        value={props.values.breathRounds}
-                        includeDecimal={false}
-                        maxLength={2}
-                      />
-                    </ErrorInputWrapper>
-                    <Text style={styles.errorText}>
-                      {props.touched.breathRounds && props.errors.breathRounds}
-                    </Text>
+                    <NumberInputWError
+                      placeholder="Breath Rounds"
+                      onChangeText={props.handleChange("breathRounds")}
+                      value={props.values.breathRounds}
+                      includeDecimal={false}
+                      maxLength={2}
+                      onBlur={props.handleBlur("breathRounds")}
+                      errorText={props.errors.breathRounds}
+                      showErrorText
+                      isTouched={props.touched.breathRounds ?? false}
+                    />
                   </View>
                   <View style={styles.field}>
                     <Text style={styles.inputLabel}>Breath Reps Per Round</Text>
-                    <NumberInput
+                    <NumberInputWError
                       placeholder="Breath Reps Per Round"
                       onChangeText={props.handleChange("breathReps")}
                       value={props.values.breathReps}
                       includeDecimal={false}
                       maxLength={3}
+                      onBlur={props.handleBlur("breathReps")}
+                      errorText={props.errors.breathReps}
+                      showErrorText
+                      isTouched={props.touched.breathReps ?? false}
                     />
-                    <Text style={styles.errorText}>{props.errors.breathReps}</Text>
                   </View>
                   <View style={styles.field}>
                     <Text style={styles.inputLabel}>Recovery Breath Hold Time</Text>
-                    <NumberInput
+                    <NumberInputWError
                       placeholder="Recovery Breath Hold Time (seconds)"
                       onChangeText={props.handleChange("recoveryHoldTime")}
                       value={props.values.recoveryHoldTime}
                       includeDecimal={false}
                       maxLength={3}
+                      onBlur={props.handleBlur("recoveryHoldTime")}
+                      errorText={props.errors.recoveryHoldTime}
+                      showErrorText
+                      isTouched={props.touched.recoveryHoldTime ?? false}
                     />
-                    <Text style={styles.errorText}>{props.errors.recoveryHoldTime}</Text>
                   </View>
 
                   {props.values.retentionHoldTimes.map((el, index) => {
                     return (
                       <View style={styles.field} key={index}>
                         <Text style={styles.inputLabel}>Retention Hold Time {index + 1}</Text>
-                        <NumberInput
+                        <NumberInputWError
                           key={index}
                           onChangeText={props.handleChange(
                             `retentionHoldTimes[${index}].holdTime`
@@ -160,10 +166,12 @@ const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">)
                           onBlur={props.handleBlur(`retentionHoldTimes[${index}].holdTime`)}
                           value={props.values.retentionHoldTimes[index].holdTime}
                           maxLength={3}
+                          errorText={props.errors?.retentionHoldTimes?.[index]?.holdTime}
+                          showErrorText
+                          isTouched={
+                            props.touched?.retentionHoldTimes?.[index]?.holdTime ?? false
+                          }
                         />
-                        <Text style={styles.errorText}>
-                          {props.errors?.retentionHoldTimes?.[index]?.holdTime}
-                        </Text>
                       </View>
                     );
                   })}
@@ -201,7 +209,9 @@ const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">)
                         <SessionEditAlerts
                           values={props.values}
                           errors={props.errors}
+                          touched={props.touched}
                           handleChange={props.handleChange}
+                          handleBlur={props.handleBlur}
                         />
                       </MotiView>
                     )}
@@ -240,6 +250,8 @@ const SessionEditFormik = ({ navigation, route }: RootStackProps<"SessionEdit">)
                         <SessionEditAdvanced
                           values={props.values}
                           errors={props.errors}
+                          touched={props.touched}
+                          handleBlur={props.handleBlur}
                           handleChange={props.handleChange}
                         />
                       </MotiView>

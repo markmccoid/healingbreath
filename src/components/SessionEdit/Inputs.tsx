@@ -1,6 +1,7 @@
 import React from "react";
 import { ViewStyle } from "react-native";
 import { TextInput, StyleSheet, TextInputProps } from "react-native";
+import ErrorInputWrapper, { Props as EIWProps } from "./ErrorInputWrapper";
 
 type CustomNumberProps = {
   style?: ViewStyle;
@@ -19,13 +20,44 @@ export const NumberInput = (props: NumberProps) => {
   );
 };
 
+//*==============================
+//* Number Input with the error wrapper built in
+//*==============================
+export const NumberInputWError = (props: NumberProps & EIWProps) => {
+  const { style, includeDecimal, errorText, showErrorText, isTouched, ...spreadProps } = props;
+  return (
+    <ErrorInputWrapper
+      errorText={errorText}
+      showErrorText={showErrorText}
+      isTouched={isTouched}
+    >
+      <TextInput
+        style={[styles.numberInput, style]}
+        keyboardType={includeDecimal ? "decimal-pad" : "number-pad"}
+        {...spreadProps}
+      />
+    </ErrorInputWrapper>
+  );
+};
+
+//*==============================
+//* Text Input with the error wrapper built in
+//*==============================
 type CustomTextProps = {
   style?: ViewStyle;
 };
 type MyTextProps = TextInputProps & CustomTextProps;
-export const MyTextInput = (props: MyTextProps) => {
-  const { style, ...spreadProps } = props;
-  return <TextInput style={[styles.textInput, style]} {...spreadProps} />;
+export const TextInputWError = (props: MyTextProps & EIWProps) => {
+  const { style, errorText, showErrorText, isTouched, ...spreadProps } = props;
+  return (
+    <ErrorInputWrapper
+      errorText={errorText}
+      showErrorText={showErrorText}
+      isTouched={isTouched}
+    >
+      <TextInput style={[styles.textInput, style]} {...spreadProps} />
+    </ErrorInputWrapper>
+  );
 };
 
 const styles = StyleSheet.create({

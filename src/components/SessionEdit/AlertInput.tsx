@@ -1,4 +1,4 @@
-import { FormikErrors } from "formik";
+import { FormikErrors, FormikHandlers, FormikTouched } from "formik";
 import React from "react";
 import { View, Text, Dimensions } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -6,7 +6,7 @@ import { getObjValueFromString } from "../../utils/helpers";
 import { AlertSoundNames } from "../../utils/sounds/soundTypes";
 import { BreathSessionValues } from "./sessionEditHelpers";
 import AlertSoundPicker from "./AlertSoundPicker";
-import { NumberInput } from "./Inputs";
+import { NumberInput, NumberInputWError } from "./Inputs";
 import { styles } from "./styles";
 import ErrorInputWrapper from "./ErrorInputWrapper";
 
@@ -15,6 +15,8 @@ const { width, height } = Dimensions.get("window");
 type Props = {
   values: BreathSessionValues;
   errors: FormikErrors<BreathSessionValues>;
+  touched: FormikTouched<BreathSessionValues>;
+  handleBlur: FormikHandlers["handleBlur"];
   field: string;
   onFieldUpdate: {
     pickerFieldUpdate: (fieldName: string, fn: () => AlertSoundNames) => void;
@@ -33,19 +35,26 @@ type Props = {
 };
 
 function AlertInput(props: Props) {
-  const { values, errors, field, onFieldUpdate, title, pickerStateInfo, pickerItems } = props;
+  const {
+    values,
+    errors,
+    touched,
+    handleBlur,
+    field,
+    onFieldUpdate,
+    title,
+    pickerStateInfo,
+    pickerItems,
+  } = props;
   // Get the value from the formik values object.
   // in essense constructs values.alerts.BreathRetention.AlertEveryXSeconds
   const fieldTextValue = getObjValueFromString(values.alerts, `${field}.value`);
   const errorTextValue = getObjValueFromString(errors.alerts, `${field}.value`);
+  const touchedValue = getObjValueFromString(touched?.alerts, `${field}`);
   const updateTextFieldString = `alerts.${field}.value`;
   const breathsOrSeconds = title.toLowerCase().includes("breaths") ? "Breaths" : "Seconds";
-  // const fieldSoundValue = getObjValueFromString(values.alerts, `${field}.sound`);
-  // const errorSoundValue = getObjValueFromString(errors.alerts, `${field}.sound`);
-  // const updateSoundFieldString = `alerts.${field}.sound`;
 
   // const { pickerStates, pickerKey, updatePickerStates } = pickerStateInfo;
-  console.log(parseInt(fieldTextValue));
   return (
     <View style={styles.individualAlertContainer}>
       <View
@@ -62,15 +71,19 @@ function AlertInput(props: Props) {
       >
         <View>
           <Text style={styles.inputLabel}>{breathsOrSeconds}</Text>
-          <ErrorInputWrapper errorText={errorTextValue} showErrorText>
-            <NumberInput
-              style={{ height: 35, textAlign: "center" }}
-              onChangeText={onFieldUpdate.handleChange(updateTextFieldString)}
-              value={fieldTextValue}
-              includeDecimal={false}
-              maxLength={3}
-            />
-          </ErrorInputWrapper>
+          {/* <ErrorInputWrapper errorText={errorTextValue} showErrorText> */}
+          <NumberInputWError
+            style={{ height: 35, textAlign: "center" }}
+            onChangeText={onFieldUpdate.handleChange(updateTextFieldString)}
+            value={fieldTextValue}
+            includeDecimal={false}
+            maxLength={3}
+            errorText={errorTextValue}
+            showErrorText
+            isTouched={touchedValue ?? false}
+            onBlur={handleBlur(updateTextFieldString)}
+          />
+          {/* </ErrorInputWrapper> */}
         </View>
         <View style={{ justifyContent: "flex-start", flex: 1, marginHorizontal: 10 }}>
           <AlertSoundPicker {...props} />

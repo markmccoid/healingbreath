@@ -1,22 +1,22 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput } from "react-native";
-import { FormikErrors, FormikHandlers } from "formik";
+import { FormikTouched, FormikErrors, FormikHandlers } from "formik";
 import { BreathSessionValues } from "./sessionEditHelpers";
 import { loadAndPlaySound } from "../../hooks/useAlertSounds";
 import { AlertSoundNames } from "../../utils/sounds/soundTypes";
-import { NumberInput } from "./Inputs";
+import { NumberInput, NumberInputWError } from "./Inputs";
 import { styles } from "./styles";
-import { MotiView } from "moti";
-import { FiraSans_200ExtraLight_Italic } from "@expo-google-fonts/fira-sans";
 import ErrorInputWrapper from "./ErrorInputWrapper";
 
 type Props = {
   values: BreathSessionValues;
   errors: FormikErrors<BreathSessionValues>;
   handleChange: FormikHandlers["handleChange"];
+  touched: FormikTouched<BreathSessionValues>;
+  handleBlur: FormikHandlers["handleBlur"];
 };
 
-function SessionEditAdvanced({ values, errors, handleChange }: Props) {
+function SessionEditAdvanced({ values, errors, touched, handleBlur, handleChange }: Props) {
   const onFieldUpdate = (fieldName: string, fn: () => AlertSoundNames) => {
     const newValue = fn();
     handleChange(fieldName)(newValue);
@@ -28,47 +28,56 @@ function SessionEditAdvanced({ values, errors, handleChange }: Props) {
       <View style={{ flexDirection: "row" }}>
         <View style={styles.field}>
           <Text>Inhale Time</Text>
-          <ErrorInputWrapper errorText={errors.inhaleTime} showErrorText>
-            <NumberInput
-              value={values.inhaleTime}
-              includeDecimal
-              onChangeText={handleChange("inhaleTime")}
-            />
-          </ErrorInputWrapper>
+          <NumberInputWError
+            value={values.inhaleTime}
+            includeDecimal
+            onChangeText={handleChange("inhaleTime")}
+            errorText={errors.inhaleTime}
+            showErrorText
+            onBlur={handleBlur("inhaleTime")}
+            isTouched={touched.inhaleTime ?? false}
+          />
         </View>
         <View style={styles.field}>
           <Text>Exhale Time</Text>
-          <ErrorInputWrapper errorText={errors.exhaleTime} showErrorText>
-            <NumberInput
-              value={values.exhaleTime}
-              includeDecimal
-              onChangeText={handleChange("exhaleTime")}
-            />
-          </ErrorInputWrapper>
+          <NumberInputWError
+            value={values.exhaleTime}
+            includeDecimal
+            onChangeText={handleChange("exhaleTime")}
+            errorText={errors.exhaleTime}
+            showErrorText
+            onBlur={handleBlur("exhaleTime")}
+            isTouched={touched.exhaleTime ?? false}
+          />
         </View>
       </View>
 
       <View style={{ flexDirection: "row" }}>
         <View style={styles.field}>
           <Text>Recovery Inhale </Text>
-          <ErrorInputWrapper errorText={errors.actionPauseTimeIn} showErrorText>
-            <NumberInput
-              value={values.actionPauseTimeIn}
-              includeDecimal
-              onChangeText={handleChange("actionPauseTimeIn")}
-            />
-          </ErrorInputWrapper>
+
+          <NumberInputWError
+            value={values.actionPauseTimeIn}
+            includeDecimal
+            onChangeText={handleChange("actionPauseTimeIn")}
+            errorText={errors.actionPauseTimeIn}
+            showErrorText
+            onBlur={handleBlur("actionPauseTimeIn")}
+            isTouched={touched.actionPauseTimeIn ?? false}
+          />
         </View>
 
         <View style={styles.field}>
           <Text>Recovery Exhale</Text>
-          <ErrorInputWrapper errorText={errors.actionPauseTimeOut} showErrorText>
-            <NumberInput
-              value={values.actionPauseTimeOut}
-              includeDecimal
-              onChangeText={handleChange("actionPauseTimeOut")}
-            />
-          </ErrorInputWrapper>
+          <NumberInputWError
+            value={values.actionPauseTimeOut}
+            includeDecimal
+            onChangeText={handleChange("actionPauseTimeOut")}
+            errorText={errors.actionPauseTimeOut}
+            showErrorText
+            onBlur={handleBlur("actionPauseTimeOut")}
+            isTouched={touched.actionPauseTimeOut ?? false}
+          />
         </View>
       </View>
     </View>

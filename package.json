@@ -41,6 +41,7 @@
     "react-native-screens": "~3.10.1",
     "react-native-uuid": "^2.0.1",
     "react-native-web": "0.17.1",
+    "rn-segmented-control": "^1.1.2",
     "usepubsub": "^1.0.2",
     "xstate": "^4.27.0",
     "yup": "^0.32.11",

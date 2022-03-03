@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput } from "react-native";
-import { FormikErrors, FormikHandlers } from "formik";
+import { FormikErrors, FormikHandlers, FormikTouched } from "formik";
 import { BreathSessionValues } from "./sessionEditHelpers";
 import { alertSoundNames } from "../../hooks/useAlertSounds";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -14,6 +14,8 @@ type Props = {
   values: BreathSessionValues;
   errors: FormikErrors<BreathSessionValues>;
   handleChange: FormikHandlers["handleChange"];
+  touched: FormikTouched<BreathSessionValues>;
+  handleBlur: FormikHandlers["handleBlur"];
 };
 
 const pickerAlertSounds = alertSoundNames.map((sound) => ({
@@ -54,7 +56,7 @@ const defaultPickerStates = Object.entries(alertFields).reduce(
   {}
 );
 
-function SessionEditAlerts({ values, errors, handleChange }: Props) {
+function SessionEditAlerts({ values, errors, touched, handleBlur, handleChange }: Props) {
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [open3, setOpen3] = useState(false);
@@ -90,6 +92,8 @@ function SessionEditAlerts({ values, errors, handleChange }: Props) {
             pickerItems={items}
             values={values}
             errors={errors}
+            touched={touched}
+            handleBlur={handleBlur}
             field="ConsciousForcedBreathing.alertEveryXBreaths"
             onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
             pickerStateInfo={{
@@ -105,6 +109,8 @@ function SessionEditAlerts({ values, errors, handleChange }: Props) {
             pickerItems={items}
             values={values}
             errors={errors}
+            touched={touched}
+            handleBlur={handleBlur}
             field="ConsciousForcedBreathing.alertXBreathsBeforeEnd"
             onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
             pickerStateInfo={{
@@ -129,6 +135,8 @@ function SessionEditAlerts({ values, errors, handleChange }: Props) {
             pickerItems={items}
             values={values}
             errors={errors}
+            touched={touched}
+            handleBlur={handleBlur}
             field="BreathRetention.alertEveryXSeconds"
             onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
             pickerStateInfo={{
@@ -144,6 +152,8 @@ function SessionEditAlerts({ values, errors, handleChange }: Props) {
             pickerItems={items}
             values={values}
             errors={errors}
+            touched={touched}
+            handleBlur={handleBlur}
             field="BreathRetention.alertXSecondsBeforeEnd"
             onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
             pickerStateInfo={{
@@ -168,6 +178,8 @@ function SessionEditAlerts({ values, errors, handleChange }: Props) {
             pickerItems={items}
             values={values}
             errors={errors}
+            touched={touched}
+            handleBlur={handleBlur}
             field="RecoveryBreath.alertEveryXSeconds"
             onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
             pickerStateInfo={{
@@ -183,6 +195,8 @@ function SessionEditAlerts({ values, errors, handleChange }: Props) {
             pickerItems={items}
             values={values}
             errors={errors}
+            touched={touched}
+            handleBlur={handleBlur}
             field="RecoveryBreath.alertXSecondsBeforeEnd"
             onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
             pickerStateInfo={{
