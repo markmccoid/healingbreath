@@ -8,7 +8,8 @@ import Session from "../screens/Session/Session";
 // Types
 import { RootStackParamList } from "../types/navTypes";
 // import SessionEditMain from "../components/SessionEdit/SessionEditMain";
-import SessionEdit from "../components/SessionEdit/SessionEditFormik";
+// import SessionEdit from "../components/SessionEdit/SessionEditFormik";
+import SessionEdit from "../components/SessionEdit/SessionEdit";
 
 const RootNav = () => {
   const RootStack = createStackNavigator<RootStackParamList>();

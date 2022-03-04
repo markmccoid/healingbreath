@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { FormikErrors, FormikHandlers, FormikTouched } from "formik";
 import { BreathSessionValues } from "./sessionEditHelpers";
 import { alertSoundNames } from "../../hooks/useAlertSounds";
@@ -57,10 +57,6 @@ const defaultPickerStates = Object.entries(alertFields).reduce(
 );
 
 function SessionEditAlerts({ values, errors, touched, handleBlur, handleChange }: Props) {
-  const [open, setOpen] = useState(false);
-  const [open2, setOpen2] = useState(false);
-  const [open3, setOpen3] = useState(false);
-
   const [items, setItems] = useState(pickerAlertSounds);
   const [pickerStates, setPickerStates] = React.useState(defaultPickerStates);
 
@@ -79,10 +75,14 @@ function SessionEditAlerts({ values, errors, touched, handleBlur, handleChange }
   };
 
   return (
-    <View style={styles.alertContainer}>
-      {/*----------------------------
-      - Conscious Forced Breathing -
-      ------------------------------- */}
+    // <View style={styles.alertContainer}>
+    <ScrollView
+      style={{ marginHorizontal: 10, flex: 1, marginBottom: 15, paddingTop: 50 }}
+      contentContainerStyle={{ paddingBottom: 150 }}
+    >
+      {/*-----------------------1-----
+        - Conscious Forced Breathing -
+        ------------------------------- */}
       <View style={{ zIndex: 6000 }}>
         <View style={styles.alertTitleView}>
           <Text style={styles.alertTitleText}>Conscious Forced Breathing</Text>
@@ -124,8 +124,8 @@ function SessionEditAlerts({ values, errors, touched, handleBlur, handleChange }
       </View>
 
       {/*----------------------------
-      - Breath Retention            -
-      ------------------------------- */}
+        - Breath Retention            -
+        ------------------------------- */}
       <View style={{ zIndex: 5000 }}>
         <View style={styles.alertTitleView}>
           <Text style={styles.alertTitleText}>Breath Retention</Text>
@@ -167,8 +167,8 @@ function SessionEditAlerts({ values, errors, touched, handleBlur, handleChange }
       </View>
 
       {/*----------------------------
-      - Breath Retention            -
-      ------------------------------- */}
+        - Breath Retention            -
+        ------------------------------- */}
       <View style={{ zIndex: 4000 }}>
         <View style={styles.alertTitleView}>
           <Text style={styles.alertTitleText}>Recovery Breath</Text>
@@ -248,7 +248,8 @@ function SessionEditAlerts({ values, errors, touched, handleBlur, handleChange }
           />
         </View>
       </View>
-    </View>
+    </ScrollView>
+    // </View>
   );
 }
 
