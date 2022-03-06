@@ -17,6 +17,8 @@ type Props = {
   errors: FormikErrors<BreathSessionValues>;
   touched: FormikTouched<BreathSessionValues>;
   handleBlur: FormikHandlers["handleBlur"];
+  // Run this function when number field gets focus
+  handleFocus: () => void;
   field: string;
   onFieldUpdate: {
     pickerFieldUpdate: (fieldName: string, fn: () => AlertSoundNames) => void;
@@ -40,6 +42,7 @@ function AlertInput(props: Props) {
     errors,
     touched,
     handleBlur,
+    handleFocus,
     field,
     onFieldUpdate,
     title,
@@ -82,6 +85,7 @@ function AlertInput(props: Props) {
             showErrorText
             isTouched={touchedValue ?? false}
             onBlur={handleBlur(updateTextFieldString)}
+            onFocus={handleFocus}
           />
           {/* </ErrorInputWrapper> */}
         </View>

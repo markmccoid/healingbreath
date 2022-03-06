@@ -92,6 +92,9 @@ export const FilterIcon = ({ size, color = undefined, style = {} }: IconProps) =
 export const CloseIcon = ({ size, color = undefined, style = {} }: IconProps) => {
   return <AntDesign name="close" size={size} color={color} style={style} />;
 };
+export const SaveIcon = ({ size, color = undefined, style = {} }: IconProps) => {
+  return <MaterialIcons name="save" size={size} color={color} style={style} />;
+};
 
 export const DeleteIcon = ({ size = 25, color = "#b20a2c", style = {} }: IconProps) => {
   return <AntDesign name="delete" size={size} color={color} style={style} />;

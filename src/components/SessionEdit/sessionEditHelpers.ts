@@ -206,7 +206,10 @@ export const createRetentionFields = (
 };
 
 //***** prepareSubmit() *********************************** /
-export const prepareSubmit = (values: BreathSessionValues): StoredSession => {
+export const prepareSubmit = (
+  values: BreathSessionValues,
+  sessionId?: string
+): StoredSession => {
   // console.log("values", values);
   // Build retention hold times
   // console.log(arrayToObject(values.retentionHoldTimes));
@@ -216,21 +219,13 @@ export const prepareSubmit = (values: BreathSessionValues): StoredSession => {
   const { retentionHoldTimes, alerts, includeAlerts, ...restOfSessionValues } = holdSession;
 
   const inputValuesFormatted: StoredSession = {
-    id: uuid.v4() as string,
+    id: sessionId || (uuid.v4() as string),
     ...restOfSessionValues,
     name,
     breathRoundsDetail: arrayToObject<BreathRoundsDetail>(retentionHoldTimes),
     alertSettings: alerts,
   };
-  console.log("INPUTFORMATTEd", inputValuesFormatted);
-  //--------- ALERTS
-  // console.log("Alert settings", values.alerts);
-  // const newAlerts: AlertSettings = { ...values.alerts };
-  // newAlerts.ConsciousForcedBreathing.alertEveryXBreaths.value = parseInt(
-  //   newAlerts.ConsciousForcedBreathing?.alertEveryXBreaths?.value
-  // );
-  // console.log("NEW", newAlerts);
-  //----------------------------
+
   //! Not sure if I need to spread the defaultSessionSetting since I'm doing that when setting up session in formik
   const newSessionValues = { ...defaultSessionSettings, ...inputValuesFormatted };
   return newSessionValues;

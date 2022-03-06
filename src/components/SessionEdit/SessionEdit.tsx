@@ -11,6 +11,9 @@ import { sessionValidationSchema } from "./sessionValidationRules";
 import { createRetentionFields, prepareSubmit, initialValues } from "./sessionEditHelpers";
 import SessionEditAlerts from "./SessionEditAlerts";
 import SessionEditAdvanced from "./SessionEditAdvanced";
+import { SaveIcon } from "../common/Icons";
+import { convertKeyValsToString } from "../../utils/helpers";
+import _ from "lodash";
 
 const MotiBox = () => {
   return (
@@ -34,24 +37,46 @@ const MotiBox = () => {
 
 const SessionEdit = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
   const [tabIndex, setTabIndex] = React.useState(0);
-  const createNewSession = useStore((state) => state.createNewSession);
+  const [sessionSettings, setSessionSettings] = React.useState(initialValues);
+  const createUpdateSession = useStore((state) => state.createUpdateSession);
+  const getSessionFromId = useStore((state) => state.getSessionFromId);
+  const sessionId = route?.params?.sessionId;
 
+  console.log("sessionID", sessionId);
+  React.useEffect(() => {
+    // If sessionId is not undefined, we are editing a session
+    if (sessionId) {
+      // Since editing, all times will be numbers, must convert to strings
+      const session = convertKeyValsToString(getSessionFromId(sessionId), [], true);
+      // Must convert the breathRoundsDetail key to retentionHoldTimes and make an array of objects
+      // version an object with keys 1,2,3...
+      // also "rename" the alertSettings to alerts.  Yeah, I should have just named them the same, get over it!
+      const updatedSession = {
+        ...session,
+        retentionHoldTimes: _.map(session.breathRoundsDetail),
+        alerts: session.alertSettings,
+      };
+      // update teh sessionSettings state value, causing a rerender, which will
+      // cause Formik to use the fields from session we are editing.
+      setSessionSettings(updatedSession);
+    }
+  }, [sessionId]);
   return (
     <View style={styles.container}>
+      <View
+        style={{
+          borderTopRightRadius: 5,
+          borderTopLeftRadius: 5,
+          backgroundColor: "#4a5568",
+          paddingVertical: 8,
+          paddingHorizontal: 35,
+        }}
+      >
+        <Text style={{ textAlign: "center", fontSize: 20, color: "white", fontWeight: "600" }}>
+          Create Session
+        </Text>
+      </View>
       <View style={styles.menubox}>
-        <View
-          style={{
-            borderTopRightRadius: 5,
-            borderTopLeftRadius: 5,
-            backgroundColor: "#4a5568",
-            paddingVertical: 4,
-            paddingHorizontal: 35,
-          }}
-        >
-          <Text style={{ fontSize: 20, color: "white", fontWeight: "600" }}>
-            Create Session
-          </Text>
-        </View>
         <SegmentedControl
           containerMargin={16}
           segments={["Settings", "Alerts", "Advanced"]}
@@ -64,11 +89,12 @@ const SessionEdit = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
       </View>
       <View style={{ flexGrow: 1 }}>
         <Formik
-          initialValues={initialValues}
+          initialValues={sessionSettings}
+          enableReinitialize
           validationSchema={sessionValidationSchema}
           onSubmit={(values) => {
-            const newSession = prepareSubmit(values);
-            createNewSession(newSession);
+            const newSession = prepareSubmit(values, sessionId);
+            createUpdateSession(newSession);
             navigation.goBack();
           }}
         >
@@ -87,6 +113,7 @@ const SessionEdit = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
                 props.values.retentionHoldTimes
               );
             }
+
             return (
               <View style={{ flexGrow: 1 }}>
                 <View
@@ -105,13 +132,15 @@ const SessionEdit = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
                     style={{
                       marginTop: 10,
                       paddingVertical: 8,
-                      paddingHorizontal: 15,
+                      paddingHorizontal: 10,
                       borderWidth: StyleSheet.hairlineWidth,
                       backgroundColor: "#fff",
                       borderRadius: 10,
+                      flexDirection: "row",
                     }}
                   >
                     <Text style={{ fontSize: 18 }}>Save</Text>
+                    <SaveIcon size={20} style={{ marginLeft: 4 }} />
                   </TouchableOpacity>
                 </View>
                 <AnimatePresence exitBeforeEnter>

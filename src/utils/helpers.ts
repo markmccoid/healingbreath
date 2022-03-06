@@ -51,6 +51,8 @@ function convertSecondsToMinutes(secondsIn: number, padMinutes: boolean = false)
 // Function to determine if parameter is object or not
 const isObject = (obj: any): boolean => typeof obj === "object" && !Array.isArray(obj);
 
+//****** Recursive functions below */
+// Used in findKeyValuesInObject() function
 function recurseObjForKey(obj: any, keyToFind: string, result: any[]): any[] {
   // Loop through each key of obj passed.
   // if the key contains an object recurse passing the value at the key
@@ -74,7 +76,7 @@ function recurseObjForKey(obj: any, keyToFind: string, result: any[]): any[] {
 }
 
 // Pass in an object and a key whose values you want returned.
-// You wil get an array back with the values.
+// You will get an array back with the values.
 export function findKeyValuesInObject(
   obj: any,
   keyValuesToReturn: string,
@@ -142,6 +144,7 @@ export function convertKeyValsToNumberRecurse(
   });
 }
 
+// Function to call to convert keys to number
 export function convertKeyValsToNumber(
   obj: any,
   keysToChange: string[],
@@ -149,5 +152,51 @@ export function convertKeyValsToNumber(
 ) {
   const newObj = cloneDeep(obj);
   convertKeyValsToNumberRecurse(newObj, keysToChange, convertAll);
+  return newObj;
+}
+
+//-----------------------------
+//-- Take an Object and Keys array, option convertAll flag
+//-- Recurse through object and change all matching
+//-- keys and their values to a string, if NaN returned,
+//-- the leave the value unchanged, otherwise, we assume number and toString() it
+//-- pass empty array and convertAll flag = true to convert
+//-- Will also work for an array of objects (since an array is an object with key 0,1...)
+//------------------------------
+function convertKeyValsToStringRecurse(
+  obj: any,
+  keysToChange: string[],
+  convertAll: boolean = false
+) {
+  // Loop through each key of obj passed.
+  // if the key contains an object recurse passing the value at the key
+  // the keyToFind and the result.
+  Object.keys(obj).forEach((key) => {
+    // Deal with an Array
+    if (Array.isArray(obj[key])) {
+      for (let i = 0; obj[key].length > i; i++) {
+        convertKeyValsToStringRecurse(obj[key][i], keysToChange, convertAll);
+      }
+      return;
+    }
+    // If not an array, check if an object
+    if (isObject(obj[key])) {
+      return convertKeyValsToStringRecurse(obj[key], keysToChange, convertAll);
+    } else if (keysToChange.includes(key) || convertAll) {
+      // If we find a key we are looking for
+      // Try to convert to float, if fails don't change
+      obj[key] = isNaN(parseFloat(obj[key])) ? obj[key] : obj[key].toString();
+      return obj[key];
+    }
+  });
+}
+
+export function convertKeyValsToString(
+  obj: any,
+  keysToChange: string[],
+  convertAll: boolean = false
+) {
+  const newObj = cloneDeep(obj);
+  convertKeyValsToStringRecurse(newObj, keysToChange, convertAll);
   return newObj;
 }

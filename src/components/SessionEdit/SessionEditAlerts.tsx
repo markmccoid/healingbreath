@@ -68,6 +68,9 @@ function SessionEditAlerts({ values, errors, touched, handleBlur, handleChange }
     setPickerStates({ ...defaultPickerStates, [pickerKey]: isOpen });
   };
 
+  const closeAllPickers = () => {
+    setPickerStates({ ...defaultPickerStates });
+  };
   const onFieldUpdate = (fieldName: string, fn: () => AlertSoundNames) => {
     const newValue = fn();
     handleChange(fieldName)(newValue);
@@ -78,7 +81,7 @@ function SessionEditAlerts({ values, errors, touched, handleBlur, handleChange }
     // <View style={styles.alertContainer}>
     <ScrollView
       style={{ marginHorizontal: 10, flex: 1, marginBottom: 15, paddingTop: 50 }}
-      contentContainerStyle={{ paddingBottom: 150 }}
+      contentContainerStyle={{ paddingBottom: 250 }}
     >
       {/*-----------------------1-----
         - Conscious Forced Breathing -
@@ -94,6 +97,7 @@ function SessionEditAlerts({ values, errors, touched, handleBlur, handleChange }
             errors={errors}
             touched={touched}
             handleBlur={handleBlur}
+            handleFocus={closeAllPickers}
             field="ConsciousForcedBreathing.alertEveryXBreaths"
             onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
             pickerStateInfo={{
@@ -113,6 +117,7 @@ function SessionEditAlerts({ values, errors, touched, handleBlur, handleChange }
             handleBlur={handleBlur}
             field="ConsciousForcedBreathing.alertXBreathsBeforeEnd"
             onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
+            handleFocus={closeAllPickers}
             pickerStateInfo={{
               pickerStates,
               updatePickerStates,
@@ -137,6 +142,7 @@ function SessionEditAlerts({ values, errors, touched, handleBlur, handleChange }
             errors={errors}
             touched={touched}
             handleBlur={handleBlur}
+            handleFocus={closeAllPickers}
             field="BreathRetention.alertEveryXSeconds"
             onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
             pickerStateInfo={{
@@ -154,6 +160,7 @@ function SessionEditAlerts({ values, errors, touched, handleBlur, handleChange }
             errors={errors}
             touched={touched}
             handleBlur={handleBlur}
+            handleFocus={closeAllPickers}
             field="BreathRetention.alertXSecondsBeforeEnd"
             onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
             pickerStateInfo={{
@@ -180,6 +187,7 @@ function SessionEditAlerts({ values, errors, touched, handleBlur, handleChange }
             errors={errors}
             touched={touched}
             handleBlur={handleBlur}
+            handleFocus={closeAllPickers}
             field="RecoveryBreath.alertEveryXSeconds"
             onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
             pickerStateInfo={{
@@ -197,6 +205,7 @@ function SessionEditAlerts({ values, errors, touched, handleBlur, handleChange }
             errors={errors}
             touched={touched}
             handleBlur={handleBlur}
+            handleFocus={closeAllPickers}
             field="RecoveryBreath.alertXSecondsBeforeEnd"
             onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
             pickerStateInfo={{

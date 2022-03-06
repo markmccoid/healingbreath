@@ -16,12 +16,19 @@ const SessionList = ({ navigation, route }: RootStackProps<"SessionList">) => {
   //   "sessions",
   //   sessions.map((el) => el)
   // );
+  const navigateToEditSession = (sessionId: string) => {
+    navigation.navigate("SessionEdit", { sessionId });
+  };
   return (
     <View style={{ flex: 1 }}>
       <ScrollView style={{ paddingTop: 10 }}>
         {sessions.map((session) => (
           <View key={session.id} style={{ marginBottom: 10 }}>
-            <SessionItem session={session} deleteSession={deleteSession} />
+            <SessionItem
+              session={session}
+              deleteSession={deleteSession}
+              handleEditSession={navigateToEditSession}
+            />
           </View>
         ))}
       </ScrollView>

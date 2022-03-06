@@ -7,6 +7,7 @@ import { AlertSoundNames } from "../../utils/sounds/soundTypes";
 import { NumberInput, NumberInputWError } from "./Inputs";
 import { styles } from "./styles";
 import ErrorInputWrapper from "./ErrorInputWrapper";
+import { colors } from "../../theme";
 
 type Props = {
   values: BreathSessionValues;
@@ -24,8 +25,8 @@ function SessionEditAdvanced({ values, errors, touched, handleBlur, handleChange
   };
 
   return (
-    <View>
-      <View style={{ flexDirection: "row" }}>
+    <View style={{ marginTop: 50 }}>
+      <View style={styles.rowContainer}>
         <View style={styles.field}>
           <Text>Inhale Time</Text>
           <NumberInputWError
@@ -52,7 +53,7 @@ function SessionEditAdvanced({ values, errors, touched, handleBlur, handleChange
         </View>
       </View>
 
-      <View style={{ flexDirection: "row" }}>
+      <View style={styles.rowContainer}>
         <View style={styles.field}>
           <Text>Recovery Inhale </Text>
 

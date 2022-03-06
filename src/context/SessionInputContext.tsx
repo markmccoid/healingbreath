@@ -242,7 +242,7 @@ const initialInputs = {
   },
 };
 
-const saveSessionPrep = (displayValues: DisplayValues, createNewSession) => {
+const saveSessionPrep = (displayValues: DisplayValues, createUpdateSession) => {
   const id = uuid.v4() as string;
 
   //--- Create the breathRoundsDetail object merging defaults with defined
@@ -283,7 +283,7 @@ const saveSessionPrep = (displayValues: DisplayValues, createNewSession) => {
     breathRoundsDetail: finalBreathRoundsDetail,
   };
   // console.log("final Values", finalValues);
-  createNewSession(finalValues);
+  createUpdateSession(finalValues);
 };
 
 type Setters = {
@@ -298,7 +298,7 @@ export const SessionInputContext = createContext({} as SessionInputContextType);
 //*- SessionInputProvider
 //************************
 export const SessionInputProvider = ({ children }: { children: any }) => {
-  const { createNewSession } = useStore();
+  const { createUpdateSession } = useStore();
   const [state, dispatch] = useReducer<FormReducer>(formReducer, initialInputs);
   const actionCreators: Setters = {
     setBreathRounds,
@@ -311,7 +311,7 @@ export const SessionInputProvider = ({ children }: { children: any }) => {
   const setters = bindActionCreators(actionCreators, dispatch);
 
   // const alertSettings = useStore((state) => state.getActiveAlertSettings());
-  const saveSession = () => saveSessionPrep(state.displayValues, createNewSession);
+  const saveSession = () => saveSessionPrep(state.displayValues, createUpdateSession);
   return (
     <SessionInputContext.Provider
       value={{

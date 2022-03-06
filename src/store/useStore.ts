@@ -18,10 +18,12 @@ export type BreathState = {
   storedSessions: StoredSession[];
   activeSession: StoredSession | undefined;
   setActiveSession: (sessionId: string) => void;
-  createNewSession: (sessionData: StoredSession) => void;
+  createUpdateSession: (sessionData: StoredSession) => void;
+  updateSession: (sessionData: StoredSession) => void;
   deleteSession: (sessionId: string) => void;
+  getSessionFromId: (sessionId: string) => StoredSession | undefined;
   getActiveSessionSettings: () => SessionSettingsType | undefined;
-  getActiveAlertSettings: () => [AlertSettings, Partial<AlertSoundNames>[]];
+  getActiveAlertSettings: () => [AlertSettings, Partial<AlertSoundNames>[]] | [];
 };
 
 //-- Configure zustand persist
@@ -39,13 +41,20 @@ const storeFunction = (
   activeSession: undefined,
   // --SETTERS
   setActiveSession: (sessionId) =>
-    set((state) => ({ activeSession: getSessionFromId(state.storedSessions, sessionId) })),
-  createNewSession: (sessionData) =>
+    set((state) => ({
+      activeSession: retrieveSessionFromId(state.storedSessions, sessionId),
+    })),
+  createUpdateSession: (sessionData) =>
     set((state) => {
       if (!sessionData.id || !sessionData.name) {
         return { storedSessions: state.storedSessions };
       }
-      return { storedSessions: [sessionData, ...state.storedSessions] };
+      const { id } = sessionData;
+      const currSessions = state.storedSessions.filter((el) => el.id !== id);
+
+      return {
+        storedSessions: [sessionData, ...currSessions],
+      };
     }),
   deleteSession: (sessionId) => {
     set((state) => {
@@ -53,6 +62,9 @@ const storeFunction = (
     });
   },
   // --GETTERS
+  getSessionFromId: (sessionId) => {
+    return retrieveSessionFromId(get().storedSessions, sessionId);
+  },
   getActiveSessionSettings: () => {
     const activeSession = get().activeSession;
     // If not session is active, return undefined
@@ -65,7 +77,7 @@ const storeFunction = (
   getActiveAlertSettings: () => {
     const activeSession = get().activeSession;
     // If no session is active, return undefined
-    if (!activeSession) return undefined;
+    if (!activeSession) return [];
     // Separate the alertSettings from all the other settings in the session
     let { alertSettings, ...otherSettings } = activeSession;
     // If not alert settings, then use defaultAlertSettings
@@ -96,7 +108,9 @@ export const useStore = create<
 
 //**** Utils */
 //-- Extract used Alert Sounds from session's alertSettings
-function getAlertSoundNames(alertSettings: AlertSettings) {
+function getAlertSoundNames(
+  alertSettings: AlertSettings
+): Partial<AlertSoundNames>[] | undefined {
   // Use helper function to return unique values in "sound" and "countDownSound" keys
   // Need to take the result and make it unique (get rid of dups)
   const uniqSounds = [
@@ -105,7 +119,9 @@ function getAlertSoundNames(alertSettings: AlertSettings) {
   ];
   const uniqSoundsSet = new Set(uniqSounds);
   // console.log("GET UNIQUE", Array.from(uniqSoundsSet));
-  return Array.from(uniqSoundsSet).filter((el) => el);
+  return Array.from(uniqSoundsSet).filter((el) => el) as
+    | Partial<AlertSoundNames>[]
+    | undefined;
 }
 
 //----------------------------
@@ -146,7 +162,7 @@ function convertSecondsToMS(settings: SessionSettingsType): SessionSettingsType 
 //----------------------------
 //-- get session from Id
 //----------------------------
-function getSessionFromId(
+function retrieveSessionFromId(
   storedSessions: StoredSession[],
   sessionId: string
 ): StoredSession | undefined {
