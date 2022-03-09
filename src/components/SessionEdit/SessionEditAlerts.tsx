@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, KeyboardAvoidingView } from "react-native";
 import { FormikErrors, FormikHandlers, FormikTouched } from "formik";
 import { BreathSessionValues } from "./sessionEditHelpers";
 import { alertSoundNames } from "../../hooks/useAlertSounds";
@@ -23,42 +23,71 @@ const pickerAlertSounds = alertSoundNames.map((sound) => ({
   value: sound,
 }));
 
-export type PickerStates = {
-  [key: string]: boolean;
-};
-
 export type AlertFields = {
-  cfbEveryXBreaths: string;
-  cfbXBreathsBeforeEnd: string;
-  brEveryXSeconds: string;
-  brXSecondsBeforeEnd: string;
-  rbEveryXSeconds: string;
-  rbXSecondsBeforeEnd: string;
-  rbAlertBreathInPause: string;
-  rbAlertBreathOutPause: string;
+  cfbEveryXBreaths: boolean;
+  cfbXBreathsBeforeEnd: boolean;
+  cfbSoundOnFirstBreath: boolean;
+  cfbSoundOnLastBreath: boolean;
+  brEveryXSeconds: boolean;
+  brXSecondsBeforeEnd: boolean;
+  rbEveryXSeconds: boolean;
+  rbXSecondsBeforeEnd: boolean;
+  rbAlertBreathInPause: boolean;
+  rbAlertBreathOutPause: boolean;
+};
+// export type AlertFields = {
+//   cfbEveryXBreaths: string;
+//   cfbXBreathsBeforeEnd: string;
+//   cfbSoundOnFirstBreath: string;
+//   cfbSoundOnLastBreath: string;
+//   brEveryXSeconds: string;
+//   brXSecondsBeforeEnd: string;
+//   rbEveryXSeconds: string;
+//   rbXSecondsBeforeEnd: string;
+//   rbAlertBreathInPause: string;
+//   rbAlertBreathOutPause: string;
+// };
+
+type SoundPickerStates = {
+  [Property in keyof AlertFields]: boolean;
 };
 
 // Used as a unique key in the dropdown component.  Need one for each sound
 // used so that when on picker opens, others close.
 const alertFields: AlertFields = {
-  cfbEveryXBreaths: "ConsciousForcedBreathing.alertEveryXBreaths",
-  cfbXBreathsBeforeEnd: "ConsciousForcedBreathing.alertXBreathsBeforeEnd",
-  brEveryXSeconds: "BreathRetention.alertEveryXSeconds",
-  brXSecondsBeforeEnd: "BreathRetention.alertXSecondsBeforeEnd",
-  rbEveryXSeconds: "RecoveryBreath.alertEveryXSeconds",
-  rbXSecondsBeforeEnd: "RecoveryBreath.alertXSecondsBeforeEnd",
-  rbAlertBreathInPause: "RecoveryBreath.alertBreathInPause",
-  rbAlertBreathOutPause: "RecoveryBreath.alertBreathOutPause",
+  cfbEveryXBreaths: false,
+  cfbXBreathsBeforeEnd: false,
+  cfbSoundOnFirstBreath: false,
+  cfbSoundOnLastBreath: false,
+  brEveryXSeconds: false,
+  brXSecondsBeforeEnd: false,
+  rbEveryXSeconds: false,
+  rbXSecondsBeforeEnd: false,
+  rbAlertBreathInPause: false,
+  rbAlertBreathOutPause: false,
 };
+// const alertFields: AlertFields = {
+//   cfbEveryXBreaths: "ConsciousForcedBreathing.alertEveryXBreaths",
+//   cfbXBreathsBeforeEnd: "ConsciousForcedBreathing.alertXBreathsBeforeEnd",
+//   cfbSoundOnFirstBreath: "ConsciousForcedBreathing.alertSoundOnFirstBreath",
+//   cfbSoundOnLastBreath: "ConsciousForcedBreathing.alertSoundOnLastBreath",
+//   brEveryXSeconds: "BreathRetention.alertEveryXSeconds",
+//   brXSecondsBeforeEnd: "BreathRetention.alertXSecondsBeforeEnd",
+//   rbEveryXSeconds: "RecoveryBreath.alertEveryXSeconds",
+//   rbXSecondsBeforeEnd: "RecoveryBreath.alertXSecondsBeforeEnd",
+//   rbAlertBreathInPause: "RecoveryBreath.alertBreathInPause",
+//   rbAlertBreathOutPause: "RecoveryBreath.alertBreathOutPause",
+// };
 
 const defaultPickerStates = Object.entries(alertFields).reduce(
   (final, [key, val]) => ({ ...final, [key]: false }),
   {}
-);
+) as SoundPickerStates;
 
 function SessionEditAlerts({ values, errors, touched, handleBlur, handleChange }: Props) {
   const [items, setItems] = useState(pickerAlertSounds);
-  const [pickerStates, setPickerStates] = React.useState(defaultPickerStates);
+  const [pickerStates, setPickerStates] = React.useState<AlertFields>(alertFields);
+  // const [pickerStates, setPickerStates] = React.useState<SoundPickerStates>(defaultPickerStates);
 
   const updatePickerStates = (pickerKey: string, isOpen: boolean) => {
     // update whatever picker is calling this to passed state,
@@ -79,185 +108,267 @@ function SessionEditAlerts({ values, errors, touched, handleBlur, handleChange }
 
   return (
     // <View style={styles.alertContainer}>
-    <ScrollView
-      style={{ marginHorizontal: 10, flex: 1, marginBottom: 15, paddingTop: 50 }}
-      contentContainerStyle={{ paddingBottom: 250 }}
+    <KeyboardAvoidingView
+      style={{
+        flexGrow: 1,
+      }}
+      behavior="padding"
+      enabled
+      keyboardVerticalOffset={150}
     >
-      {/*-----------------------1-----
+      <ScrollView
+        style={{ marginHorizontal: 10, flex: 1, marginBottom: 15, paddingTop: 50 }}
+        contentContainerStyle={{ paddingBottom: 250 }}
+      >
+        {/*-----------------------1-----
         - Conscious Forced Breathing -
         ------------------------------- */}
-      <View style={{ zIndex: 6000 }}>
-        <View style={styles.alertTitleView}>
-          <Text style={styles.alertTitleText}>Conscious Forced Breathing</Text>
+        <View style={{ zIndex: 600, flexGrow: 1 }}>
+          <View style={styles.alertTitleView}>
+            <Text style={styles.alertTitleText}>Conscious Forced Breathing</Text>
+          </View>
+          <View
+            style={[
+              styles.individualAlertContainer,
+              {
+                zIndex:
+                  pickerStates.cfbSoundOnFirstBreath || pickerStates.cfbSoundOnLastBreath
+                    ? 600
+                    : 100,
+                flexDirection: "row",
+              },
+            ]}
+          >
+            <View style={{ justifyContent: "flex-start", flex: 1, marginRight: 5 }}>
+              <AlertSoundPicker
+                pickerItems={items}
+                values={values}
+                errors={errors}
+                field="ConsciousForcedBreathing.soundOnFirstBreath"
+                onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
+                pickerStateInfo={{
+                  pickerStates,
+                  updatePickerStates,
+                  pickerKey: "cfbSoundOnFirstBreath",
+                }}
+                title="First Breath Sound"
+              />
+            </View>
+            <View style={{ justifyContent: "flex-start", flex: 1, marginLeft: 5 }}>
+              <AlertSoundPicker
+                pickerItems={items}
+                values={values}
+                errors={errors}
+                field="ConsciousForcedBreathing.soundOnLastBreath"
+                onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
+                pickerStateInfo={{
+                  pickerStates,
+                  updatePickerStates,
+                  pickerKey: "cfbSoundOnLastBreath",
+                  // pickerKey: alertFields.cfbSoundOnLastBreath,
+                }}
+                title="Last Breath Sound"
+              />
+            </View>
+          </View>
+          <View style={{ zIndex: pickerStates.cfbEveryXBreaths ? 600 : 100 }}>
+            <AlertInput
+              pickerItems={items}
+              values={values}
+              errors={errors}
+              touched={touched}
+              handleBlur={handleBlur}
+              handleFocus={closeAllPickers}
+              field="ConsciousForcedBreathing.alertEveryXBreaths"
+              onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
+              pickerStateInfo={{
+                pickerStates,
+                updatePickerStates,
+                pickerKey: "cfbEveryXBreaths",
+                // pickerKey: alertFields.cfbEveryXBreaths,
+              }}
+              title="Alert Every X Breaths"
+            />
+          </View>
+          <View style={{ zIndex: 550 }}>
+            <AlertInput
+              pickerItems={items}
+              values={values}
+              errors={errors}
+              touched={touched}
+              handleBlur={handleBlur}
+              field="ConsciousForcedBreathing.alertXBreathsBeforeEnd"
+              onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
+              handleFocus={closeAllPickers}
+              pickerStateInfo={{
+                pickerStates,
+                updatePickerStates,
+                pickerKey: "cfbXBreathsBeforeEnd",
+              }}
+              title="Alert X Breaths Before End"
+            />
+          </View>
         </View>
-        <View style={{ zIndex: 6000 }}>
-          <AlertInput
-            pickerItems={items}
-            values={values}
-            errors={errors}
-            touched={touched}
-            handleBlur={handleBlur}
-            handleFocus={closeAllPickers}
-            field="ConsciousForcedBreathing.alertEveryXBreaths"
-            onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
-            pickerStateInfo={{
-              pickerStates,
-              updatePickerStates,
-              pickerKey: alertFields.cfbEveryXBreaths,
-            }}
-            title="Alert Every X Breaths"
-          />
-        </View>
-        <View style={{ zIndex: 5500 }}>
-          <AlertInput
-            pickerItems={items}
-            values={values}
-            errors={errors}
-            touched={touched}
-            handleBlur={handleBlur}
-            field="ConsciousForcedBreathing.alertXBreathsBeforeEnd"
-            onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
-            handleFocus={closeAllPickers}
-            pickerStateInfo={{
-              pickerStates,
-              updatePickerStates,
-              pickerKey: alertFields.cfbXBreathsBeforeEnd,
-            }}
-            title="Alert X Breaths Before End"
-          />
-        </View>
-      </View>
 
-      {/*----------------------------
+        {/*----------------------------
         - Breath Retention            -
         ------------------------------- */}
-      <View style={{ zIndex: 5000 }}>
-        <View style={styles.alertTitleView}>
-          <Text style={styles.alertTitleText}>Breath Retention</Text>
+        <View style={{ zIndex: 500 }}>
+          <View style={styles.alertTitleView}>
+            <Text style={styles.alertTitleText}>Breath Retention</Text>
+          </View>
+          <View style={{ zIndex: 500 }}>
+            <AlertInput
+              pickerItems={items}
+              values={values}
+              errors={errors}
+              touched={touched}
+              handleBlur={handleBlur}
+              handleFocus={closeAllPickers}
+              field="BreathRetention.alertEveryXSeconds"
+              onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
+              pickerStateInfo={{
+                pickerStates,
+                updatePickerStates,
+                pickerKey: "brEveryXSeconds",
+              }}
+              title="Alert Every X Seconds"
+            />
+          </View>
+          <View style={{ zIndex: 450 }}>
+            <AlertInput
+              pickerItems={items}
+              values={values}
+              errors={errors}
+              touched={touched}
+              handleBlur={handleBlur}
+              handleFocus={closeAllPickers}
+              field="BreathRetention.alertXSecondsBeforeEnd"
+              onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
+              pickerStateInfo={{
+                pickerStates,
+                updatePickerStates,
+                pickerKey: "brXSecondsBeforeEnd",
+              }}
+              title="Alert X Seconds Before End"
+            />
+          </View>
         </View>
-        <View style={{ zIndex: 5000 }}>
-          <AlertInput
-            pickerItems={items}
-            values={values}
-            errors={errors}
-            touched={touched}
-            handleBlur={handleBlur}
-            handleFocus={closeAllPickers}
-            field="BreathRetention.alertEveryXSeconds"
-            onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
-            pickerStateInfo={{
-              pickerStates,
-              updatePickerStates,
-              pickerKey: alertFields.brEveryXSeconds,
-            }}
-            title="Alert Every X Seconds"
-          />
-        </View>
-        <View style={{ zIndex: 4500 }}>
-          <AlertInput
-            pickerItems={items}
-            values={values}
-            errors={errors}
-            touched={touched}
-            handleBlur={handleBlur}
-            handleFocus={closeAllPickers}
-            field="BreathRetention.alertXSecondsBeforeEnd"
-            onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
-            pickerStateInfo={{
-              pickerStates,
-              updatePickerStates,
-              pickerKey: alertFields.brXSecondsBeforeEnd,
-            }}
-            title="Alert X Seconds Before End"
-          />
-        </View>
-      </View>
 
-      {/*----------------------------
+        {/*----------------------------
         - Breath Retention            -
         ------------------------------- */}
-      <View style={{ zIndex: 4000 }}>
-        <View style={styles.alertTitleView}>
-          <Text style={styles.alertTitleText}>Recovery Breath</Text>
+        <View style={{ zIndex: 400 }}>
+          <View style={styles.alertTitleView}>
+            <Text style={styles.alertTitleText}>Recovery Breath</Text>
+          </View>
+
+          <View
+            style={[
+              styles.individualAlertContainer,
+              {
+                zIndex:
+                  pickerStates.rbAlertBreathInPause || pickerStates.rbAlertBreathOutPause
+                    ? 600
+                    : 100,
+                flexDirection: "column",
+              },
+            ]}
+          >
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 10,
+                zIndex: pickerStates.rbAlertBreathInPause ? 600 : 100,
+              }}
+            >
+              <Text style={[styles.inputLabel, { width: 85 }]}>In Breath</Text>
+              <View style={{ flex: 1 }}>
+                <AlertSoundPicker
+                  pickerItems={items}
+                  values={values}
+                  errors={errors}
+                  field="RecoveryBreath.alertBreathInPause"
+                  onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
+                  pickerStateInfo={{
+                    pickerStates,
+                    updatePickerStates,
+                    pickerKey: "rbAlertBreathInPause",
+                  }}
+                  title="Recovery Breath In Sound"
+                  labelStyle={{ display: "none" }}
+                />
+              </View>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                zIndex: pickerStates.rbAlertBreathOutPause ? 600 : 100,
+              }}
+            >
+              <Text style={[styles.inputLabel, { width: 85 }]}>Out Breath</Text>
+              <View style={{ flex: 1 }}>
+                <AlertSoundPicker
+                  pickerItems={items}
+                  values={values}
+                  errors={errors}
+                  field="RecoveryBreath.alertBreathOutPause"
+                  onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
+                  pickerStateInfo={{
+                    pickerStates,
+                    updatePickerStates,
+                    pickerKey: "rbAlertBreathOutPause",
+                  }}
+                  title="Recovery Breath Out Sound"
+                  labelStyle={{ display: "none" }}
+                />
+              </View>
+            </View>
+          </View>
+
+          <View style={{ zIndex: 350 }}>
+            <AlertInput
+              pickerItems={items}
+              values={values}
+              errors={errors}
+              touched={touched}
+              handleBlur={handleBlur}
+              handleFocus={closeAllPickers}
+              field="RecoveryBreath.alertEveryXSeconds"
+              onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
+              pickerStateInfo={{
+                pickerStates,
+                updatePickerStates,
+                pickerKey: "rbEveryXSeconds",
+              }}
+              title="Alert Every X Seconds"
+            />
+          </View>
+          <View style={{ zIndex: 300 }}>
+            <AlertInput
+              pickerItems={items}
+              values={values}
+              errors={errors}
+              touched={touched}
+              handleBlur={handleBlur}
+              handleFocus={closeAllPickers}
+              field="RecoveryBreath.alertXSecondsBeforeEnd"
+              onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
+              pickerStateInfo={{
+                pickerStates,
+                updatePickerStates,
+                pickerKey: "rbXSecondsBeforeEnd",
+              }}
+              title="Alert X Seconds Before End"
+            />
+          </View>
         </View>
-        <View style={{ zIndex: 3500 }}>
-          <AlertInput
-            pickerItems={items}
-            values={values}
-            errors={errors}
-            touched={touched}
-            handleBlur={handleBlur}
-            handleFocus={closeAllPickers}
-            field="RecoveryBreath.alertEveryXSeconds"
-            onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
-            pickerStateInfo={{
-              pickerStates,
-              updatePickerStates,
-              pickerKey: alertFields.rbEveryXSeconds,
-            }}
-            title="Alert Every X Seconds"
-          />
-        </View>
-        <View style={{ zIndex: 3000 }}>
-          <AlertInput
-            pickerItems={items}
-            values={values}
-            errors={errors}
-            touched={touched}
-            handleBlur={handleBlur}
-            handleFocus={closeAllPickers}
-            field="RecoveryBreath.alertXSecondsBeforeEnd"
-            onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
-            pickerStateInfo={{
-              pickerStates,
-              updatePickerStates,
-              pickerKey: alertFields.rbXSecondsBeforeEnd,
-            }}
-            title="Alert X Seconds Before End"
-          />
-        </View>
-      </View>
-      <View style={{ zIndex: 3000 }}>
-        <View style={styles.alertTitleView}>
-          <Text style={styles.alertTitleText}>Breath In Sound</Text>
-        </View>
-        <View style={styles.individualAlertContainer}>
-          <AlertSoundPicker
-            pickerItems={items}
-            values={values}
-            errors={errors}
-            field="RecoveryBreath.alertBreathInPause"
-            onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
-            pickerStateInfo={{
-              pickerStates,
-              updatePickerStates,
-              pickerKey: alertFields.rbAlertBreathInPause,
-            }}
-            title="Alert Breath In Sound"
-          />
-        </View>
-      </View>
-      <View style={{ zIndex: 2900 }}>
-        <View style={styles.alertTitleView}>
-          <Text style={styles.alertTitleText}>Breath Out Sound</Text>
-        </View>
-        <View style={styles.individualAlertContainer}>
-          <AlertSoundPicker
-            pickerItems={items}
-            values={values}
-            errors={errors}
-            field="RecoveryBreath.alertBreathOutPause"
-            onFieldUpdate={{ pickerFieldUpdate: onFieldUpdate, handleChange }}
-            pickerStateInfo={{
-              pickerStates,
-              updatePickerStates,
-              pickerKey: alertFields.rbAlertBreathOutPause,
-            }}
-            title="Alert Breath Out Sound"
-          />
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
     // </View>
   );
 }

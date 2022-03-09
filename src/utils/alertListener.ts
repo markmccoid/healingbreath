@@ -19,13 +19,15 @@ let prevBreathNum = 0;
 let soundToPlay: Audio.Sound;
 let playSound: PlaySound;
 
-let alertSettings: AlertSettings;
+let alertSettings: AlertSettings | undefined;
 
 export const configureAlertListener = async (
-  userAlertSettings: AlertSettings,
+  userAlertSettings: AlertSettings | undefined,
   playSoundFunction: PlaySound
 ) => {
   // console.log("Configuring Alert Listener");
+  // Setting the global alertSettings object and
+  // playSound function used to play sounds during session
   alertSettings = userAlertSettings;
   playSound = playSoundFunction;
 };
@@ -49,7 +51,26 @@ function breathAlerts(currentBreath: number, totalBreaths: number): BreathAlert 
     alertSettings?.ConsciousForcedBreathing?.alertEveryXBreaths || {};
   const { value: breathsBeforeEndValue, sound: breathsBeforeEndSound } =
     alertSettings?.ConsciousForcedBreathing?.alertXBreathsBeforeEnd || {};
+  const soundOnFirstBreath =
+    alertSettings?.ConsciousForcedBreathing?.soundOnFirstBreath?.sound;
+  const soundOnLastBreath = alertSettings?.ConsciousForcedBreathing?.soundOnLastBreath?.sound;
 
+  //-- Check for firstBreath
+  if (currentBreath === 1) {
+    return {
+      type: "breathing.firstBreath",
+      alertSound: soundOnFirstBreath,
+      breath: currentBreath,
+    };
+  }
+  //-- Check for lastBreath
+  if (currentBreath === totalBreaths) {
+    return {
+      type: "breathing.lastBreath",
+      alertSound: soundOnLastBreath,
+      breath: currentBreath,
+    };
+  }
   //-- alertEveryXBreaths alert check
   if (everyXValue && currentBreath % everyXValue === 0 && currentBreath !== 0) {
     return {
@@ -243,6 +264,7 @@ export const breathAlertListener = async (
   // Needed to make sure we don't execute twice for same elapsed time
   // Not sure why it was calling function multiple times for certain elapsed times, but this fixed.
   if (prevElapsed === state.context.elapsed) return;
+  //prevElapsed is a global var used to compare current elapsed with previous
   prevElapsed = state.context.elapsed;
 
   // state.value could be a string or an object (if state and sub states)

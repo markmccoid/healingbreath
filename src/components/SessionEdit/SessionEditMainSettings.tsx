@@ -70,11 +70,11 @@ const SessionEditMainSettings = ({
         }}
         behavior="padding"
         enabled
-        keyboardVerticalOffset={120}
+        keyboardVerticalOffset={150}
       >
         <ScrollView
           style={{ flex: 1, marginBottom: 15, paddingTop: 50 }}
-          contentContainerStyle={{ paddingBottom: 75 }}
+          contentContainerStyle={{ paddingBottom: 150 }}
           // contentContainerStyle={{ flexGrow: 1, borderWidth: 1, justifyContent: "flex-start" }}
         >
           <View style={styles.field}>
@@ -89,7 +89,7 @@ const SessionEditMainSettings = ({
               isTouched={props.touched.name ?? false}
             />
           </View>
-          <View style={styles.rowContainer}>
+          <View style={[styles.rowContainer, { justifyContent: "space-between" }]}>
             <View style={styles.field}>
               <Text style={styles.inputLabel}>Breath Rounds</Text>
               <NumberInputWError
@@ -119,24 +119,43 @@ const SessionEditMainSettings = ({
               />
             </View>
           </View>
-          <View style={styles.field}>
-            <Text style={styles.inputLabel}>Recovery Breath Hold Time</Text>
-            <NumberInputWError
-              placeholder="Recovery Breath Hold Time (seconds)"
-              onChangeText={props.handleChange("recoveryHoldTime")}
-              value={props.values.recoveryHoldTime}
-              includeDecimal={false}
-              maxLength={3}
-              onBlur={props.handleBlur("recoveryHoldTime")}
-              errorText={props.errors.recoveryHoldTime}
-              showErrorText
-              isTouched={props.touched.recoveryHoldTime ?? false}
-            />
+          <View style={[styles.rowContainer, { justifyContent: "flex-start" }]}>
+            <View style={[styles.field]}>
+              <Text style={styles.inputLabel}>Recovery Breath Hold Time</Text>
+              <NumberInputWError
+                placeholder="Recovery Breath Hold Time (seconds)"
+                onChangeText={props.handleChange("recoveryHoldTime")}
+                value={props.values.recoveryHoldTime}
+                includeDecimal={false}
+                maxLength={3}
+                onBlur={props.handleBlur("recoveryHoldTime")}
+                errorText={props.errors.recoveryHoldTime}
+                showErrorText
+                isTouched={props.touched.recoveryHoldTime ?? false}
+              />
+            </View>
           </View>
 
-          <View style={{ marginVertical: 10, marginHorizontal: 10 }}>
+          <View
+            style={[
+              styles.rowContainer,
+              {
+                marginVertical: 10,
+                marginHorizontal: 10,
+                flexDirection: "column",
+                alignItems: "flex-start",
+              },
+            ]}
+          >
             <Text style={styles.inputLabel}>Retention Hold Times</Text>
-            <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                justifyContent: "space-evenly",
+                alignSelf: "center",
+              }}
+            >
               {props.values.retentionHoldTimes.map((el, index) => {
                 return (
                   <View style={{ margin: 5, width: 70 }} key={index}>

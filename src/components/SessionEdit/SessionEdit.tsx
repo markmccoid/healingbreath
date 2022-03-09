@@ -14,6 +14,7 @@ import SessionEditAdvanced from "./SessionEditAdvanced";
 import { SaveIcon } from "../common/Icons";
 import { convertKeyValsToString } from "../../utils/helpers";
 import _ from "lodash";
+import { colors } from "../../theme";
 
 const MotiBox = () => {
   return (
@@ -73,7 +74,7 @@ const SessionEdit = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
         }}
       >
         <Text style={{ textAlign: "center", fontSize: 20, color: "white", fontWeight: "600" }}>
-          Create Session
+          {`${sessionId ? "Edit" : "Create"} Session`}
         </Text>
       </View>
       <View style={styles.menubox}>
@@ -134,7 +135,7 @@ const SessionEdit = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
                       paddingVertical: 8,
                       paddingHorizontal: 10,
                       borderWidth: StyleSheet.hairlineWidth,
-                      backgroundColor: "#fff",
+                      backgroundColor: colors.white,
                       borderRadius: 10,
                       flexDirection: "row",
                     }}

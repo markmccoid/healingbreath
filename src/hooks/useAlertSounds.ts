@@ -34,7 +34,9 @@ export const alertSoundNames = Object.keys(alertSounds);
 // Global var to hold sample sound played from "loadAndPlaySound" function
 const soundToPlay = new Audio.Sound();
 
-// load and play passed name
+//*================
+//* load and play passed name
+//*================
 export const loadAndPlaySound = async (soundName: AlertSoundNames) => {
   // first unload if other sound is loaded
   try {
@@ -54,7 +56,8 @@ export const loadAndPlaySound = async (soundName: AlertSoundNames) => {
 const unloadSounds = async (playableAlertSounds: Partial<AlertPlayableSounds>) => {
   return Promise.all(
     Object.keys(playableAlertSounds).map(async (key) => {
-      return await playableAlertSounds[key].unloadAsync();
+      const soundName = key as AlertSoundNames;
+      return await playableAlertSounds?.[soundName]?.unloadAsync();
     })
   );
 };
@@ -78,9 +81,12 @@ const loadAlertSounds = async (
   return playableAlertSounds;
 };
 
+//*================
+//* useAlertSounds
+//*================
 export type PlaySound = (name: AlertSoundNames) => Promise<void>;
 export const useAlertSounds = (
-  sounds: Partial<AlertSoundNames>[]
+  sounds: Partial<AlertSoundNames>[] | undefined
 ): { soundsLoaded: boolean; playSound: PlaySound } => {
   const [soundsLoaded, setSoundsLoaded] = useState(false);
   const [playableAlertSounds, setPlayableAlertSounds] =
@@ -100,13 +106,12 @@ export const useAlertSounds = (
   useEffect(() => {
     // Load the passed array of sounds
     const callAlertLoad = async () => {
-      console.log("inCallAlertLOad");
       const playableSounds = await loadAlertSounds(sounds);
       setPlayableAlertSounds(playableSounds);
       setSoundsLoaded(true);
     };
     // If no sounds / alerts return
-    if (sounds.length === 0 || !sounds) {
+    if (sounds?.length === 0 || !sounds) {
       console.log("Sound Length Zero, set soundsloaded to true");
       setSoundsLoaded(true);
     } else {

@@ -89,7 +89,7 @@ function AlertInput(props: Props) {
           />
           {/* </ErrorInputWrapper> */}
         </View>
-        <View style={{ justifyContent: "flex-start", flex: 1, marginHorizontal: 10 }}>
+        <View style={{ justifyContent: "flex-start", flex: 1, marginHorizontal: 5 }}>
           <AlertSoundPicker {...props} />
         </View>
       </View>

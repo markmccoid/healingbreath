@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View, Pressable } from "react-native";
+import { colors } from "../../theme";
 
 type Props = {
   onPress: () => void;
@@ -16,8 +17,8 @@ const styles = StyleSheet.create({
   actuibButton: {
     padding: 10,
     borderWidth: 1,
-    borderColor: "#4840D6",
-    backgroundColor: "#4840D6",
+    borderColor: colors.borderColor,
+    backgroundColor: colors.darkest,
     borderRadius: 15,
     margin: 5,
   },

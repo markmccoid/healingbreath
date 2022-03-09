@@ -13,6 +13,12 @@ export type AlertSettings = {
       countDown: boolean;
       countDownSound: AlertSoundNames | undefined;
     };
+    soundOnFirstBreath: {
+      sound: AlertSoundNames | undefined;
+    };
+    soundOnLastBreath: {
+      sound: AlertSoundNames | undefined;
+    };
   };
   BreathRetention?: {
     alertEveryXSeconds?: {
@@ -46,7 +52,11 @@ export type AlertSettings = {
   };
 };
 
-type BreathAlertNames = "breathing.everyXBreaths" | "breathing.breathsBeforeEnd";
+type BreathAlertNames =
+  | "breathing.everyXBreaths"
+  | "breathing.breathsBeforeEnd"
+  | "breathing.firstBreath"
+  | "breathing.lastBreath";
 type SecondsAlertNames =
   | "retention.everyXSeconds"
   | "retention.secondsBeforeEnd"

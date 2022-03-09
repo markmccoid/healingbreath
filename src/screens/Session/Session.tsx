@@ -13,10 +13,11 @@ const Session = ({ navigation, route }: RootStackProps<"Session">) => {
   useKeepAwake();
   // retrieve the active session
   const activeSession = useStore((state) => state.getActiveSessionSettings());
+  const [activeAlerts] = useStore((state) => state.getActiveAlertSettings());
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <BreathMachineProvider>
-        <BreathSession sessionSettings={activeSession} />
+        <BreathSession sessionSettings={activeSession} activeAlerts={activeAlerts} />
       </BreathMachineProvider>
     </SafeAreaView>
   );

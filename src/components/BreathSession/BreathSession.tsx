@@ -24,13 +24,31 @@ import Timer from "./Timer";
 import BreathAnimation from "./MotiAnimation";
 
 import { ActionButton } from "../../components/buttons/Buttons";
+import { AlertSettings } from "../../utils/alertTypes";
+import { useAlertSounds, loadAndPlaySound } from "../../hooks/useAlertSounds";
 
-const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsType }) => {
+type Props = {
+  sessionSettings: SessionSettingsType;
+  activeAlerts: AlertSettings | undefined;
+};
+
+const BreathSession = ({ sessionSettings, activeAlerts }: Props) => {
+  // const { soundsLoaded, playSound } = useAlertSounds(undefined);
   // console.log("Session", sessionSettings);
   // const breathStateServices = useBreathState();
-  const [{ context, alert, value: currStateValue, breathState }, send] =
-    useBreathMachineInfo();
-  const [currState, currStateDesc] = breathState;
+  // const [{ context, alert, value: currStateValue, breathState }, send] =
+  //   useBreathMachineInfo();
+  const [
+    {
+      context,
+      value: currStateValue,
+      tags,
+      // alert,
+      breathState: [breathState, breathStateString],
+    },
+    send,
+  ] = useBreathMachineInfo();
+  // const [breathState, breathStateString] = breathState;
   const breathEvents = useBreathEvents();
   const breathFlags = useBreathFlags();
   const navigation = useNavigation();
@@ -39,13 +57,13 @@ const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsTy
   // const breathState = useBreathState();
   // const [bdata, bsend] = useBreathMachineInfo();
   // console.log("CONTEXT", context.breathReps);
-  // console.log("BSTATE", currState);
+  // console.log("BSTATE", breathState);
 
   // console.log("BREATHSESSION BEFORE ", subscribe.toString());
   if (context.sessionComplete) {
     console.log("SESSION", context.sessionStats);
   }
-  // console.log("x", x);
+
   // useEffect(() => {
   //   console.log("alert has been alerted", alert);
   // }, [alert]);
@@ -55,16 +73,6 @@ const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsTy
     breathEvents.updateSessionSettings(sessionSettings);
 
     () => console.log("EXIT BreathSession.tsx");
-    // breathEvents.updateSessionBreathRounds({
-    //   1: {
-    //     holdTime: 10000,
-    //   },
-    //   2: {
-    //     holdTime: 20000,
-    //   },
-    // });
-    // breathStateServices.breathStateService.send("FINISHED");
-    // breathStateServices.breathStateService.stop();
   }, [sessionSettings]);
 
   return (
@@ -84,7 +92,7 @@ const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsTy
         >
           <Text>Round - {context.breathCurrRound}</Text>
 
-          {currState.includes("breathing") && <Text>Rep - {context.breathCurrRep}</Text>}
+          {breathState.includes("breathing") && <Text>Rep - {context.breathCurrRep}</Text>}
         </View>
       </View>
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
@@ -117,7 +125,9 @@ const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsTy
         <View style={{ width: 10 }} />
         {breathFlags.canExtend && (
           <ActionButton onPress={() => breathEvents.extendSession()}>
-            <Text style={{ fontSize: 20, color: "#fff" }}>Extend</Text>
+            <Text style={{ fontSize: 20, color: "#fff" }}>
+              {`${context.extend ? "Stop " : ""}Extend`}
+            </Text>
           </ActionButton>
         )}
 
@@ -132,7 +142,7 @@ const BreathSession = ({ sessionSettings }: { sessionSettings: SessionSettingsTy
         <Timer type="countdown" />
       </View>
       <View style={{ padding: 10, justifyContent: "center", alignItems: "center" }}>
-        <Text style={{ fontSize: 25, color: "#F1820A" }}> {currStateDesc}</Text>
+        <Text style={{ fontSize: 25, color: "#F1820A" }}> {breathStateString}</Text>
       </View>
 
       <BreathAnimation />

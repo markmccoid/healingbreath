@@ -6,7 +6,6 @@ import {
   SessionSettingsType,
 } from "../context/breathMachineContext";
 import { useTimer } from "./useBreathMachineHooks";
-import { pubSub } from "../utils/pubSub";
 
 // import { useCallback } from "react";
 import { useActor, useSelector } from "@xstate/react";
@@ -16,7 +15,6 @@ import { BreathContext, BreathEvent, BreathRoundsDetail } from "../machines/brea
 function checkBreathingRep(currentBreath: number, breathRef: React.MutableRefObject<number>) {
   if (currentBreath % 2 === 0 && breathRef.current !== currentBreath) {
     breathRef.current = currentBreath;
-    console.log("2 Breaths");
     return true;
   }
 }

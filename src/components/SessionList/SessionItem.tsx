@@ -4,6 +4,8 @@ import useBreathNavigation from "../../navigation/useBreathNavigation";
 import { StoredSession, BreathState } from "../../store/useStore";
 import { formattedRetentionTimes } from "../../utils/helpers";
 import { EditIcon, DeleteIcon } from "../common/Icons";
+import { colors } from "../../theme";
+import { color } from "react-native-reanimated";
 
 type Props = {
   session: StoredSession;
@@ -27,7 +29,8 @@ function SessionItem({ session, deleteSession, handleEditSession }: Props) {
           position: "absolute",
           zIndex: 10,
           left: -6,
-          padding: 3,
+          paddingVertical: 5,
+          paddingHorizontal: 8,
           borderWidth: 1,
           backgroundColor: "white",
           borderRadius: 10,
@@ -43,7 +46,8 @@ function SessionItem({ session, deleteSession, handleEditSession }: Props) {
           position: "absolute",
           zIndex: 10,
           right: -6,
-          padding: 3,
+          paddingVertical: 5,
+          paddingHorizontal: 8,
           borderWidth: 1,
           backgroundColor: "white",
           borderRadius: 10,
@@ -92,8 +96,8 @@ function SessionItem({ session, deleteSession, handleEditSession }: Props) {
             style={{
               borderTopWidth: 1,
               borderBottomWidth: 1,
-              borderColor: "#777",
-              backgroundColor: "#A1CDF4",
+              borderColor: colors.borderColor,
+              backgroundColor: colors.gray,
               paddingVertical: 4,
               marginBottom: 5,
             }}
@@ -116,11 +120,21 @@ function SessionItem({ session, deleteSession, handleEditSession }: Props) {
 const styles = StyleSheet.create({
   container: {
     borderWidth: 1,
+    borderColor: colors.borderColor,
     borderRadius: 10,
     marginBottom: 5,
     marginHorizontal: 15,
-    backgroundColor: "#A1CDF499",
+    backgroundColor: colors.dark,
     flex: 1,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
   },
   itemPressable: {
     flex: 1,
@@ -137,10 +151,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
-    borderBottomWidth: 1, //StyleSheet.hairlineWidth,
-    backgroundColor: "#A1CDF4aa",
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    backgroundColor: colors.darkest,
   },
-  itemTitle: { fontSize: 18, color: "black" },
+  itemTitle: { fontSize: 18, color: colors.white },
   // Info line 1
   infoLine1: {
     paddingHorizontal: 5,
@@ -155,7 +169,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     marginLeft: 2,
     marginRight: 5,
-    backgroundColor: "#ffffff77",
+    backgroundColor: colors.gray,
     paddingVertical: 3,
     paddingHorizontal: 10,
     borderWidth: StyleSheet.hairlineWidth,

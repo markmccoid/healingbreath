@@ -1,6 +1,6 @@
 import { FormikErrors } from "formik";
 import React from "react";
-import { View, Text, StyleSheet, TextInput } from "react-native";
+import { View, Text, StyleSheet, TextInput, TextStyle } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { getObjValueFromString } from "../../utils/helpers";
 import { AlertSoundNames } from "../../utils/sounds/soundTypes";
@@ -10,6 +10,7 @@ import { styles } from "./styles";
 type Props = {
   values: BreathSessionValues;
   errors: FormikErrors<BreathSessionValues>;
+  labelStyle?: TextStyle;
   field: string;
   onFieldUpdate: {
     pickerFieldUpdate: (fieldName: string, fn: () => AlertSoundNames) => void;
@@ -31,6 +32,7 @@ function AlertSoundPicker({
   values,
   errors,
   field,
+  labelStyle = {},
   onFieldUpdate,
   title,
   pickerStateInfo,
@@ -48,7 +50,10 @@ function AlertSoundPicker({
 
   return (
     <View>
-      <Text style={styles.inputLabel}> Select Alert Sound</Text>
+      <Text style={[styles.inputLabel, labelStyle]}>
+        {" "}
+        {`${title ? title : "Select Alert Sound"}`}
+      </Text>
       <DropDownPicker
         dropDownDirection="BOTTOM"
         zIndex={1000}
