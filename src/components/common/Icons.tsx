@@ -206,6 +206,22 @@ export const YouTubePlayIcon = ({ size, color = undefined, style = {} }: IconPro
   return <FontAwesome name="youtube-play" color={color} size={size} style={style} />;
 };
 
+export const PlayIcon = ({ size, color = undefined, style = {} }: IconProps) => {
+  return <FontAwesome name="play" color={color} size={size} style={style} />;
+};
+export const StopIcon = ({ size, color = undefined, style = {} }: IconProps) => {
+  return <FontAwesome name="stop" color={color} size={size} style={style} />;
+};
+export const PauseIcon = ({ size, color = undefined, style = {} }: IconProps) => {
+  return <MaterialCommunityIcons name="pause" color={color} size={size} style={style} />;
+};
+export const UnPauseIcon = ({ size, color = undefined, style = {} }: IconProps) => {
+  return <MaterialCommunityIcons name="play-pause" color={color} size={size} style={style} />;
+};
+export const NextIcon = ({ size, color = undefined, style = {} }: IconProps) => {
+  return <Entypo name="controller-next" color={color} size={size} style={style} />;
+};
+
 export const SyncIcon = ({ size, color = undefined, style = {} }: IconProps) => {
   // return <FontAwesome5 name="sync-alt" size={size} color={color} style={style} />;
   return <MaterialCommunityIcons name="cloud-sync" size={size} color={color} style={style} />;

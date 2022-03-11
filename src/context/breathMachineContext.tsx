@@ -64,7 +64,7 @@ export const BreathMachineProvider = ({
   //* Probably a better way to get Alert settings configured.
   //* maybe when get global state provider implemented
   React.useEffect(() => {
-    console.log("USEEFFECT Config Alert listener", soundsLoaded);
+    // console.log("USEEFFECT Config Alert listener", soundsLoaded);
     if (soundsLoaded) {
       configureAlertListener(alertSettings, playSound);
     }

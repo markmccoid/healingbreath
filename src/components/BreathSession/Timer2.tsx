@@ -30,7 +30,6 @@ const Timer = ({
   const timeLeft = state.context.timeLeft;
 
   // const [layoutSize, onLayout] = useComponentSize();
-  // console.log("layoutsize", timerWidth);
 
   // console.log("Time Left", timeLeft);
   // Need to know which round we are in for getting correct holdTime
@@ -41,6 +40,7 @@ const Timer = ({
   // alertTime: number // milliseconds, Time before timer ends to give a heads up
   // alertFunction: // function to call when alert happens.  Not sure if we need these two.
   //
+  let timeString = "0:00";
   const timeChanging = type === "countup" || timeLeft < 0 ? elapsed : timeLeft;
   const timeNegative = type === "countup" ? elapsed < 0 : timeLeft < 0;
   // const tensOfSecond = Math.abs(Math.trunc(((timeChanging / 1000) % 1) * 10)).toString();
@@ -52,32 +52,32 @@ const Timer = ({
     .padStart(2, " ");
   // const timeString = `${timeNegative ? "-" : ""}${minutes}:${seconds}.${tensOfSecond}`;
   // const timeString = `${timeNegative ? "-" : ""}${minutes}:${seconds}`;
-  const timeString = `${minutes} : ${seconds}`;
+  timeString = `${minutes} : ${seconds}`;
   // Need to use a callback + conditional call onLayout since
   // we are modifying the underlying view.
   const onLayout = React.useCallback((e) => {
-    // console.log("in on layout", e.nativeEvent.layout.width);
-    setTimerWidth(e.nativeEvent.layout.width + 10);
-    timerWidthPositioning?.setTimerWidth(e.nativeEvent.layout.width + 10);
+    console.log("in on layout", e.nativeEvent.layout.width);
+    setTimerWidth(e.nativeEvent.layout.width + 20);
+    timerWidthPositioning?.setTimerWidth(e.nativeEvent.layout.width + 20);
     // setTimerPosition((width - e.nativeEvent.layout.width) / 2);
   }, []);
 
   return (
     <View>
-      <View onLayout={timerWidth ? () => {} : onLayout}>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "flex-start",
-            width: timerWidth,
-            paddingLeft: 10,
-          }}
-        >
-          <Text style={{ fontFamily: "FiraSans_500Medium", fontSize: size, color }}>
-            {timeString}
-          </Text>
-        </View>
+      {/* <View onLayout={timerWidth ? () => {} : onLayout}> */}
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "flex-start",
+          // width: timerWidth,
+          // paddingHorizontal: 5,
+        }}
+      >
+        <Text style={{ fontFamily: "FiraSans_500Medium", fontSize: size, color }}>
+          {timeString}
+        </Text>
       </View>
+      {/* </View> */}
     </View>
   );
 };

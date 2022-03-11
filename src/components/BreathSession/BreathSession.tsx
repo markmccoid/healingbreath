@@ -26,6 +26,7 @@ import BreathAnimation from "./MotiAnimation";
 import { ActionButton } from "../../components/buttons/Buttons";
 import { AlertSettings } from "../../utils/alertTypes";
 import { useAlertSounds, loadAndPlaySound } from "../../hooks/useAlertSounds";
+import BreathInterface from "./breathInterface/BreathInterface";
 
 type Props = {
   sessionSettings: SessionSettingsType;
@@ -77,7 +78,7 @@ const BreathSession = ({ sessionSettings, activeAlerts }: Props) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <View style={{ flexDirection: "row", alignItems: "center", height: 40 }}>
         <TouchableOpacity onPress={() => navigation.navigate("SessionList")}>
           <AntDesign name="back" size={25} style={{ marginTop: -5 }} />
           {/* <Text style={{ fontSize: 20 }}>Back</Text> */}
@@ -95,7 +96,8 @@ const BreathSession = ({ sessionSettings, activeAlerts }: Props) => {
           {breathState.includes("breathing") && <Text>Rep - {context.breathCurrRep}</Text>}
         </View>
       </View>
-      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+      <BreathInterface />
+      {/* <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
         {breathFlags.canStart && (
           <>
             <ActionButton onPress={() => breathEvents.startSession()}>
@@ -143,7 +145,7 @@ const BreathSession = ({ sessionSettings, activeAlerts }: Props) => {
       </View>
       <View style={{ padding: 10, justifyContent: "center", alignItems: "center" }}>
         <Text style={{ fontSize: 25, color: "#F1820A" }}> {breathStateString}</Text>
-      </View>
+      </View> */}
 
       <BreathAnimation />
 

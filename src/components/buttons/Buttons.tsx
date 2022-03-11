@@ -1,25 +1,58 @@
 import React from "react";
-import { StyleSheet, Text, View, Pressable } from "react-native";
+import { StyleSheet, Text, View, Pressable, ViewStyle } from "react-native";
 import { colors } from "../../theme";
 
 type Props = {
   onPress: () => void;
+  style?: ViewStyle;
 };
-export const ActionButton: React.FC<Props> = ({ children, onPress }) => {
+export const ActionButton: React.FC<Props> = ({ children, onPress, style = {} }) => {
   return (
-    <Pressable style={styles.actuibButton} onPress={onPress}>
+    <Pressable style={[styles.actionButton, style]} onPress={onPress}>
+      {children}
+    </Pressable>
+  );
+};
+
+//**************************** */
+export const LeftCornerButton: React.FC<Props> = ({ children, onPress, style }) => {
+  return (
+    <Pressable style={[styles.leftCornerButton, style]} onPress={onPress}>
+      {children}
+    </Pressable>
+  );
+};
+//**************************** */
+export const RightCornerButton: React.FC<Props> = ({ children, onPress, style }) => {
+  return (
+    <Pressable style={[styles.rightCornerButton, style]} onPress={onPress}>
       {children}
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
-  actuibButton: {
+  actionButton: {
     padding: 10,
     borderWidth: 1,
     borderColor: colors.borderColor,
     backgroundColor: colors.darkest,
     borderRadius: 15,
-    margin: 5,
+  },
+  leftCornerButton: {
+    padding: 10,
+    // borderTopRightRadius: 40,
+    backgroundColor: colors.darkest,
+    borderBottomRightRadius: 30,
+    width: 80,
+    height: 60,
+  },
+  rightCornerButton: {
+    padding: 10,
+    backgroundColor: colors.darkest,
+    // borderTopRightRadius: 40,
+    borderBottomLeftRadius: 30,
+    width: 80,
+    height: 60,
   },
 });

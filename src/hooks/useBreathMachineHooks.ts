@@ -11,34 +11,33 @@ import { Alert } from "../utils/alertTypes";
 
 type BreathContextWOElapsed = Omit<BreathContext, "elapsed">;
 
-type BreathStates = [
-  (
-    | "idle"
-    | "breathing.inhale"
-    | "breathing.exhale"
-    | "breathing.hold"
-    | "breathing.paused"
-    | "holding.breathhold"
-    | "holding.pause"
-    | "intropause"
-    | "recoveryhold.breathhold"
-    | "recoveryhold.paused"
-    | "outropause"
-  ),
-  (
-    | "Idle"
-    | "Inhale"
-    | "Exhale"
-    | "Breathing Hold"
-    | "Breathing Paused"
-    | "Hold"
-    | "Hold Paused"
-    | "Intro Pause"
-    | "Recovery Hold"
-    | "Recovery Paused"
-    | "Outro Pause"
-  )
-];
+export type BreathStatesDetail =
+  | "idle"
+  | "breathing.inhale"
+  | "breathing.exhale"
+  | "breathing.hold"
+  | "breathing.paused"
+  | "holding.breathhold"
+  | "holding.paused"
+  | "intropause"
+  | "recoveryhold.breathhold"
+  | "recoveryhold.paused"
+  | "outropause";
+
+export type BreathStatesString =
+  | "Idle"
+  | "Inhale"
+  | "Exhale"
+  | "Breathing Hold"
+  | "Breathing Paused"
+  | "Hold"
+  | "Hold Paused"
+  | "Intro Pause"
+  | "Recovery Hold"
+  | "Recovery Paused"
+  | "Outro Pause";
+
+type BreathStates = [BreathStatesDetail, BreathStatesString];
 
 function getBreathState(
   state: State<
@@ -58,7 +57,7 @@ function getBreathState(
     "breathing.hold": "Breathing Hold",
     "breathing.paused": "Breathing Paused",
     "holding.breathhold": "Hold",
-    "holding.pause": "Hold Paused",
+    "holding.paused": "Hold Paused",
     intropause: "Intro Pause",
     "recoveryhold.breathhold": "Recovery Hold",
     "recoveryhold.paused": "Recovery Paused",
@@ -186,12 +185,16 @@ export const useBreathFlags = () => {
     state.can("STOP")
   );
   // - - - - - - - - - - - - - -
+  const canGoNext = useSelector(breathStateServices.breathStateService, (state) =>
+    state.can("NEXT")
+  );
+  // - - - - - - - - - - - - - -
   const isExtending = useSelector(
     breathStateServices.breathStateService,
     (state) => state.context.extend
   );
 
-  return { canPause, canUnPause, canExtend, canStart, canStop, isExtending };
+  return { canPause, canUnPause, canExtend, canStart, canStop, canGoNext, isExtending };
 };
 
 //------------------------------------
