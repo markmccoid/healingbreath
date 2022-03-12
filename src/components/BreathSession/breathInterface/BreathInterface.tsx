@@ -15,6 +15,9 @@ import { colors } from "../../../theme";
 import { StopIcon, PlayIcon, NextIcon, PauseIcon } from "../../common/Icons";
 import useComponentSize from "../../../hooks/useComponentSize";
 import BreathInterfaceTimer from "./BreathInterfaceTimer";
+import { AnimatePresence, MotiText, MotiView } from "moti";
+import { times } from "lodash";
+import { StartButtonAnimation, StopButtonAnimation } from "./BreathInterfaceAnimations";
 
 const { width, height } = Dimensions.get("window");
 
@@ -42,11 +45,11 @@ const BreathInterface = () => {
   const navigation = useNavigation();
   //************************ */
 
-  console.log("run anim", runAnimation);
   if (context.sessionComplete) {
     console.log("SESSION", context.sessionStats);
   }
 
+  // console.log("run lottie anim", runAnimation);
   const handleExtend = () => {
     breathEvents.extendSession();
     if (runAnimation) {
@@ -60,53 +63,57 @@ const BreathInterface = () => {
 
   return (
     <View style={{ zIndex: 1000 }}>
-      {/* Start / Stop Buttons */}
-      {breathFlags.canStart && (
-        <LeftCornerButton
-          style={{
-            // backgroundColor: colors.dark,
-            position: "absolute",
-            top: 0,
-            left: 0,
-          }}
-          onPress={() => breathEvents.startSession()}
-        >
-          {/* <Text style={{ color: colors.white, fontSize: 20 }}>Start</Text> */}
-          <View style={{ alignItems: "center" }}>
-            <PlayIcon size={35} color="white" />
-          </View>
-        </LeftCornerButton>
-      )}
-      {breathFlags.canStop && (
-        <LeftCornerButton
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-          }}
-          onPress={() => breathEvents.stopSession()}
-        >
-          <View style={{ alignItems: "center" }}>
-            <StopIcon size={35} color="white" />
-          </View>
-        </LeftCornerButton>
-      )}
+      {/* START Button */}
+      <AnimatePresence>
+        {breathFlags.canStart && (
+          <StartButtonAnimation
+            key="start"
+            breathEvents={breathEvents}
+            breathFlags={breathFlags}
+          />
+        )}
 
+        {/* STOP Button */}
+        {breathFlags.canStop && <StopButtonAnimation key="stop" breathEvents={breathEvents} />}
+      </AnimatePresence>
       {/* Next Button */}
-      {breathFlags.canGoNext && (
-        <RightCornerButton
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-          }}
-          onPress={() => breathEvents.goToNext()}
-        >
-          <View style={{ alignItems: "center" }}>
-            <NextIcon size={35} color="white" />
-          </View>
-        </RightCornerButton>
-      )}
+      <AnimatePresence exitBeforeEnter>
+        {breathFlags.canGoNext && (
+          <MotiView
+            key="next"
+            from={{
+              opacity: 0,
+            }}
+            animate={{
+              opacity: 1,
+            }}
+            exit={{
+              opacity: 0,
+            }}
+            exitTransition={{
+              type: "timing",
+              duration: 800,
+            }}
+            transition={{
+              type: "timing",
+              duration: 1000,
+            }}
+          >
+            <RightCornerButton
+              style={{
+                position: "absolute",
+                top: 0,
+                right: 0,
+              }}
+              onPress={() => breathEvents.goToNext()}
+            >
+              <View style={{ alignItems: "center" }}>
+                <NextIcon size={35} color="white" />
+              </View>
+            </RightCornerButton>
+          </MotiView>
+        )}
+      </AnimatePresence>
 
       {/* Timer top center of screen */}
       <BreathInterfaceTimer

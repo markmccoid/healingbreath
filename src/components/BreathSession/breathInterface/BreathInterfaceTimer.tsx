@@ -2,13 +2,17 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
 import Timer from "../Timer";
 import { PauseIcon, UnPauseIcon } from "../../common/Icons";
-import { BreathStatesDetail } from "../../../hooks/useBreathMachineHooks";
+import {
+  BreathEvents,
+  BreathFlags,
+  BreathStatesDetail,
+} from "../../../hooks/useBreathMachineHooks";
 import { AnimatePresence, MotiView } from "moti";
 import { colors } from "../../../theme";
 
 type Props = {
-  breathFlags: {};
-  breathEvents: {};
+  breathFlags: BreathFlags;
+  breathEvents: BreathEvents;
   breathState: BreathStatesDetail;
 };
 

@@ -44,8 +44,8 @@ const styles = StyleSheet.create({
     // borderTopRightRadius: 40,
     backgroundColor: colors.darkest,
     borderBottomRightRadius: 30,
-    width: 80,
-    height: 60,
+    // width: 80,
+    // height: 60,
   },
   rightCornerButton: {
     padding: 10,

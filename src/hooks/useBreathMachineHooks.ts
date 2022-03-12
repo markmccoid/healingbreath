@@ -161,6 +161,15 @@ export const useTimer = (): [number, number] => {
 // Useful flags helpful in indicating
 // state and thus events possible
 //------------------------------------
+export type BreathFlags = {
+  canPause: boolean;
+  canUnPause: boolean;
+  canExtend: boolean;
+  canStart: boolean;
+  canStop: boolean;
+  canGoNext: boolean;
+  isExtending: boolean;
+};
 export const useBreathFlags = () => {
   const breathStateServices = useBreathState();
   // - - - - - - - - - - - - - -
@@ -229,6 +238,19 @@ const updateSessionBreathRoundDetails =
 //------------------------------------
 // Hook the encapulates events for easy use.
 //------------------------------------
+export type BreathEvents = {
+  startSession: () => void;
+  stopSession: () => void;
+  pauseSession: () => void;
+  unpauseSession: () => void;
+  goToNext: () => void;
+  extendSession: () => void;
+  updateSessionSettings: (
+    sessionSettings: SessionSettingsType,
+    clearSessionStats?: boolean
+  ) => void; //(sessionSettings: SessionSettingsType) => send({ type: "UPDATE_DEFAULTS", sessionSettings }),
+  updateSessionBreathRounds: (breathRoundsDetail: BreathRoundsDetail) => void;
+};
 export const useBreathEvents = () => {
   const breathStateServices = useBreathState();
   const send = breathStateServices.breathStateService.send;
