@@ -40,9 +40,12 @@ export const StartButtonAnimation = ({ breathEvents, breathFlags }: StartButtonP
       <LeftCornerButton
         style={{
           flexGrow: 1,
+          zIndex: 1100,
           // backgroundColor: colors.dark,
         }}
-        onPress={() => breathEvents.startSession()}
+        onPress={() => {
+          breathEvents.startSession();
+        }}
       >
         {/* <Text style={{ color: colors.white, fontSize: 20 }}>Start</Text> */}
         <View

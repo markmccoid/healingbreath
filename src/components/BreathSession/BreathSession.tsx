@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { SessionSettingsType, useBreathState } from "../../context/breathMachineContext";
 import {
@@ -55,12 +55,6 @@ const BreathSession = ({ sessionSettings, activeAlerts }: Props) => {
   const navigation = useNavigation();
   //************************ */
 
-  // const breathState = useBreathState();
-  // const [bdata, bsend] = useBreathMachineInfo();
-  // console.log("CONTEXT", context.breathReps);
-  // console.log("BSTATE", breathState);
-
-  // console.log("BREATHSESSION BEFORE ", subscribe.toString());
   if (context.sessionComplete) {
     console.log("SESSION", context.sessionStats);
   }
@@ -69,8 +63,13 @@ const BreathSession = ({ sessionSettings, activeAlerts }: Props) => {
   //   console.log("alert has been alerted", alert);
   // }, [alert]);
 
+  //* ------------------------------
+  //* SETUP SESSION SETTINGS
+  //* This useEffect is where we send over the
+  //* the sessionSettings that are selected as
+  //* "activeSession" in the store.
+  //* ------------------------------
   useEffect(() => {
-    // console.log("sessionsettings", sessionSettings);
     breathEvents.updateSessionSettings(sessionSettings);
 
     () => console.log("EXIT BreathSession.tsx");
@@ -87,75 +86,43 @@ const BreathSession = ({ sessionSettings, activeAlerts }: Props) => {
           style={{
             marginLeft: 10,
             flexDirection: "row",
-            justifyContent: "space-evenly",
+            justifyContent: "flex-start",
             flex: 1,
           }}
         >
-          <Text>Round - {context.breathCurrRound}</Text>
-
-          {breathState.includes("breathing") && <Text>Rep - {context.breathCurrRep}</Text>}
+          <Text style={[styles.infoText, { fontWeight: "600" }]}>
+            Round - {context.breathCurrRound}
+          </Text>
+          <View style={styles.spacerSmall} />
+          {breathState.includes("breathing") && (
+            <Text style={styles.infoText}>Rep - {context.breathCurrRep}</Text>
+          )}
+          <View style={styles.spacerSmall} />
+          {breathState.includes("holding") && (
+            <View style={{ flexDirection: "row" }}>
+              <Text style={styles.infoText}>Hold Time</Text>
+              <Timer type="countdown" size={18} />
+            </View>
+          )}
         </View>
       </View>
+      {/* Buttons for Start/Stop/Next/Pause and Timer  */}
       <BreathInterface />
-      {/* <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-        {breathFlags.canStart && (
-          <>
-            <ActionButton onPress={() => breathEvents.startSession()}>
-              <Text style={{ fontSize: 20, color: "#fff" }}>Start</Text>
-            </ActionButton>
-            <View style={{ width: 10 }} />
-          </>
-        )}
-        {breathFlags.canStop && (
-          <>
-            <ActionButton onPress={() => breathEvents.stopSession()}>
-              <Text style={{ fontSize: 20, color: "#fff" }}>Stop</Text>
-            </ActionButton>
-            <View style={{ width: 10 }} />
-          </>
-        )}
-        {breathFlags.canPause && (
-          <ActionButton onPress={() => breathEvents.pauseSession()}>
-            <Text style={{ fontSize: 20, color: "#fff" }}>Pause</Text>
-          </ActionButton>
-        )}
-        {breathFlags.canUnPause && (
-          <ActionButton onPress={() => breathEvents.unpauseSession()}>
-            <Text style={{ fontSize: 20, color: "#fff" }}>Unpause</Text>
-          </ActionButton>
-        )}
-        <View style={{ width: 10 }} />
-        {breathFlags.canExtend && (
-          <ActionButton onPress={() => breathEvents.extendSession()}>
-            <Text style={{ fontSize: 20, color: "#fff" }}>
-              {`${context.extend ? "Stop " : ""}Extend`}
-            </Text>
-          </ActionButton>
-        )}
-
-        {breathFlags.canStop && (
-          <ActionButton onPress={() => breathEvents.goToNext()}>
-            <Text style={{ fontSize: 20, color: "#fff" }}>Next</Text>
-          </ActionButton>
-        )}
-      </View>
-      <View style={{ borderWidth: 1, padding: 10 }}>
-        <Timer type="countup" />
-        <Timer type="countdown" />
-      </View>
-      <View style={{ padding: 10, justifyContent: "center", alignItems: "center" }}>
-        <Text style={{ fontSize: 25, color: "#F1820A" }}> {breathStateString}</Text>
-      </View> */}
-
+      {/* Controls the animations for Breathing,holding and recovery breath */}
       <BreathAnimation />
-
-      {/* <View>
-        <Text>{`${context.breathCurrRound} - ${context.breathCurrRep} - ${breathState[0]}`}</Text>
-        <Text>{`${context.sessionStart} - ${context.sessionEnd}`}</Text>
-        <Text>{`${JSON.stringify(context.sessionStats)}`}</Text>
-      </View> */}
     </View>
   );
 };
 
+const styles = StyleSheet.create({
+  spacerSmall: {
+    width: 5,
+  },
+  spacerMed: {
+    width: 10,
+  },
+  infoText: {
+    fontSize: 18,
+  },
+});
 export default BreathSession;

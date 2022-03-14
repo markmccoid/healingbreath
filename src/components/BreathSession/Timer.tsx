@@ -8,7 +8,7 @@ type timerProps = {
   type?: "countdown" | "countup";
   size?: number;
   color?: string;
-  timerWidthPositioning: {
+  timerWidthPositioning?: {
     timerWidth: number;
     setTimerWidth: React.Dispatch<React.SetStateAction<number>>;
   };
