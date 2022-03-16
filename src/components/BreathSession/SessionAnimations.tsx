@@ -25,8 +25,9 @@ import { useBreathAlert, useBreathMachineInfo } from "../../hooks/useBreathMachi
 import RecoveryAnimation from "./RecoveryAnimation";
 import TextAnimation from "./TextAnimation";
 import BreathingAnimation from "./BreathingAnimation";
+import { LinearGradient } from "expo-linear-gradient";
 
-function BreathAnimation() {
+function SessionAnimations() {
   const [
     {
       context,
@@ -40,6 +41,7 @@ function BreathAnimation() {
   const forcedBreathAnim = useSharedValue(0);
   const breathTime = useSharedValue(context.inhaleTime);
   const progress = useSharedValue(0);
+  const bgColorProgress = useSharedValue(0);
   const myAlert = useBreathAlert();
 
   React.useEffect(() => {
@@ -52,6 +54,7 @@ function BreathAnimation() {
     }
     // console.log("Breath Animation Alert", myAlert);
   }, [myAlert]);
+
   // console.log("breathstatestring", breathStateString);
   const derived = useAnimatedReaction(
     () => {
@@ -83,132 +86,35 @@ function BreathAnimation() {
   );
 
   // Animated Styles
-  //* Inhale/Exhale
-  const animatedStyles = useAnimatedStyle(() => {
-    const scaleUp = interpolate(forcedBreathAnim.value, [0, 0.8, 1], [0.5, 1.2, 1.4]);
-    const scaleDown = interpolate(forcedBreathAnim.value, [0, 0.2, 1], [0.5, 0.6, 1.4]);
-    return {
-      // width: withTiming(offset.value, { duration: breathTime.value }),
-      transform: [
-        {
-          // scale: withTiming(viewScale.value, {
-          //   duration: breathTime.value,
-          // }),
-          scale:
-            breathStateString === "Exhale"
-              ? scaleDown
-              : breathStateString === "Inhale"
-              ? scaleUp
-              : 0.5, //interpolate(forcedBreathAnim.value, [0, 0.9, 1], [0.5, 1.3, 1.4]),
-        },
-      ],
-    };
-  });
-  //* TEXT
-  const textStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(
-      forcedBreathAnim.value,
-      [0, 0.1, 1],
-      [0, 0.8, 1],
-      Extrapolate.CLAMP
-    );
-    const scale = interpolate(forcedBreathAnim.value, [0, 1], [0.5, 2]);
-    return {
-      opacity,
-      transform: [
-        {
-          scale,
-        },
-      ],
-    };
-  });
 
-  // React.useEffect(() => {
-  //   switch (breathStateString) {
-  //     case "Idle":
-  //       animationState.transitionTo("other");
-  //       textAnimState.transitionTo("other");
-  //       break;
-  //     case "Inhale":
-  //       animationState.transitionTo("inhale");
-  //       textAnimState.transitionTo("inhale");
-  //       break;
-  //     case "Exhale":
-  //       animationState.transitionTo("exhale");
-  //       textAnimState.transitionTo("exhale");
-  //       break;
-  //     case "Breathing Paused":
-  //       animationState.transitionTo("paused");
-  //       textAnimState.transitionTo("paused");
-  //       break;
-  //     default:
-  //       animationState.transitionTo("other");
-  //       textAnimState.transitionTo("other");
-  //       break;
-  //   }
-  //   // if (breathStateString === "Inhale") {
-  //   //   animationState.transitionTo("inhale");
-  //   //   textAnimState.transitionTo("inhale");
-  //   // } else if (breathStateString === "Exhale") {
-  //   //   animationState.transitionTo("exhale");
-  //   //   textAnimState.transitionTo("exhale");
-  //   // }
-  // }, [breathStateString]);
-  //* Hold Test
-  // const animationState = useAnimationState({
-  //   from: { opacity: 0, scale: 0.5 },
-  //   // to: { opacity: 1 },
-  //   inhale: {
-  //     scale: 1.4,
-  //   },
-  //   exhale: {
-  //     scale: 0.5,
-  //   },
-  //   paused: {
-  //     scale: 2.5,
-  //   },
-  //   other: {
-  //     scale: 0.5,
-  //   },
-  // });
-  // const textAnimState = useAnimationState({
-  //   inhale: {
-  //     scale: 3,
-  //     opacity: 1,
-  //   },
-  //   exhale: {
-  //     scale: 1,
-  //     opacity: 0,
-  //   },
-  //   paused: {
-  //     // scale: 1,
-  //     // opacity: 0,
-  //   },
-  //   other: {
-  //     scale: 1,
-  //     opacity: 0,
-  //   },
-  // });
   // Need to move the breath state into separate component --> move to breath animation??
   // -- Try to have a hierarchy - BreathSession -> SessionAnimations -> BreathAnimation / HoldAnimation / etc
   // console.log("breathstate", breathState, breathStateString);
-  // const backView = useAnimatedStyle(
-  //   () => ({
-  //     backgroundColor: interpolateColor(progress.value, [0, 1], ["white", "red"]),
-  //   })
-  // );
+
+  //* Background Animation (color interpolate)
+  //* Can be used to animate the background NOTE: needs a useEffect to set the progress value
+  // const backgroundAnimated = useAnimatedStyle(() => {
+  //   const bgColor = interpolateColor(bgColorProgress.value, [0, 1], ["#7E91B2", "#E1F5FF"]);
+  //   return {
+  //     // width: withTiming(offset.value, { duration: breathTime.value }),
+  //     backgroundColor: bgColor,
+  //   };
+  // });
   console.log("breathStateString", breathStateString);
   return (
     <Animated.View
       style={[
-        // backView,
         {
-          backgroundColor: "#ccc",
           flexGrow: 1,
           // borderWidth: 1,
         },
       ]}
     >
+      <LinearGradient
+        // Background Linear Gradient
+        colors={["#B9C2DB", "#7E91B2dd"]}
+        style={StyleSheet.absoluteFill}
+      />
       <AnimatePresence exitBeforeEnter>
         {breathState.includes("breathing") && <BreathingAnimation key="breathing" />}
         {breathStateString === "Hold" && <HoldAnimation key="hold" />}
@@ -233,4 +139,4 @@ const styles = StyleSheet.create({
     backgroundColor: "purple",
   },
 });
-export default BreathAnimation;
+export default SessionAnimations;

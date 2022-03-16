@@ -87,7 +87,7 @@ const BreathingAnimation = () => {
   return (
     <View
       style={{
-        backgroundColor: "#777def",
+        // backgroundColor: "#777def",
         flexGrow: 1,
         justifyContent: "center",
         alignItems: "center",

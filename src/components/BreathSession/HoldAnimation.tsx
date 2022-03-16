@@ -46,8 +46,6 @@ function HoldAnimation() {
       style={{
         flexGrow: 1,
         justifyContent: "flex-end",
-        borderColor: "red",
-        borderWidth: 1,
       }}
       onLayout={animHeight ? undefined : onLayout}
     >
@@ -64,13 +62,16 @@ function HoldAnimation() {
           duration: 500,
         }}
         style={{
-          backgroundColor: "#ccc",
+          // backgroundColor: "#ccc",
           width,
-          justifyContent: "center",
+          justifyContent: "flex-start",
+
           // height: 100,
         }}
       >
-        <Timer type="countup" size={50} color="white" />
+        <View style={{ alignItems: "center" }}>
+          <Timer type="countup" size={50} color="white" />
+        </View>
       </MotiView>
     </View>
   );

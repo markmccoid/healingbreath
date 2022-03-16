@@ -21,7 +21,7 @@ import {
 } from "@expo/vector-icons";
 import Timer from "./Timer";
 // import BreathAnimation from "./BreathAnimation";
-import BreathAnimation from "./MotiAnimation";
+import SessionAnimations from "./SessionAnimations";
 
 import { ActionButton } from "../../components/buttons/Buttons";
 import { AlertSettings } from "../../utils/alertTypes";
@@ -77,7 +77,18 @@ const BreathSession = ({ sessionSettings, activeAlerts }: Props) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ flexDirection: "row", alignItems: "center", height: 40 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          height: 40,
+          backgroundColor: "#B9C2DB",
+          borderTopColor: "#4A5568",
+          borderBottomColor: "#4A5568",
+          borderTopWidth: StyleSheet.hairlineWidth,
+          borderBottomWidth: StyleSheet.hairlineWidth,
+        }}
+      >
         <TouchableOpacity onPress={() => navigation.navigate("SessionList")}>
           <AntDesign name="back" size={25} style={{ marginTop: -5 }} />
           {/* <Text style={{ fontSize: 20 }}>Back</Text> */}
@@ -109,7 +120,7 @@ const BreathSession = ({ sessionSettings, activeAlerts }: Props) => {
       {/* Buttons for Start/Stop/Next/Pause and Timer  */}
       <BreathInterface />
       {/* Controls the animations for Breathing,holding and recovery breath */}
-      <BreathAnimation />
+      <SessionAnimations />
     </View>
   );
 };

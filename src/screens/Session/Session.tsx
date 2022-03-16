@@ -11,15 +11,18 @@ import { useKeepAwake } from "expo-keep-awake";
 const Session = ({ navigation, route }: RootStackProps<"Session">) => {
   // Keeps the screen from sleeping during a session
   useKeepAwake();
+
   // retrieve the active session
   const activeSession = useStore((state) => state.getActiveSessionSettings());
   const [activeAlerts] = useStore((state) => state.getActiveAlertSettings());
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <BreathMachineProvider>
-        <BreathSession sessionSettings={activeSession} activeAlerts={activeAlerts} />
-      </BreathMachineProvider>
-    </SafeAreaView>
+    <View style={{ flex: 1, backgroundColor: "#B9C2DBaa" }}>
+      <SafeAreaView style={{ flex: 1 }} edges={["right", "top", "left"]}>
+        <BreathMachineProvider>
+          <BreathSession sessionSettings={activeSession} activeAlerts={activeAlerts} />
+        </BreathMachineProvider>
+      </SafeAreaView>
+    </View>
   );
 };
 

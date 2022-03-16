@@ -41,7 +41,7 @@ function TextAnimation({ text, type }: Props) {
     progress.value = withTiming(type === "out" ? 0 : 1, {
       duration: type === "in" ? context.actionPauseTimeIn : context.actionPauseTimeOut,
     });
-  });
+  }, []);
   //* TEXT
   const textStyle = useAnimatedStyle(() => {
     const opacity = interpolate(progress.value, [0, 0.75, 1], [1, 0.8, 0], Extrapolate.CLAMP);
@@ -52,15 +52,17 @@ function TextAnimation({ text, type }: Props) {
     };
   });
 
+  // Bug in reanimated 2.3.1 can cause an issue.  I have patched file, but any update to package.json undoes it
+  // https://github.com/software-mansion/react-native-reanimated/issues/2739
   const rStyle = useAnimatedStyle(() => {
-    const backgroundColor = interpolateColor(progress.value, [0, 1], ["purple", "#F8F8"]);
+    const bgColor = interpolateColor(progress.value, [0, 1], ["purple", "#F8F8"]);
     const opacity = interpolate(progress.value, [0, 1], [1, 0]);
 
     const scale = interpolate(progress.value, [0, 0.1, 1], [0, 1, 8]);
     const scaleOut = interpolate(progress.value, [0, 0.1, 1], [0, 1, 8]);
     return {
       opacity,
-      backgroundColor,
+      backgroundColor: bgColor,
       transform: [
         {
           scaleX: type === "in" ? scale : scaleOut,
@@ -71,7 +73,7 @@ function TextAnimation({ text, type }: Props) {
       ],
     };
   });
-  // console.log("breathstate", breathState, breathStateString);
+  // console.log("breathstate textanim", breathState, breathStateString);
 
   return (
     <MotiView
