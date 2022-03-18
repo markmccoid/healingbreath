@@ -8,7 +8,7 @@ import {
   BreathStatesDetail,
 } from "../../../hooks/useBreathMachineHooks";
 import { AnimatePresence, MotiView } from "moti";
-import { colors } from "../../../theme";
+import { colors, styleHelpers } from "../../../theme";
 
 type Props = {
   breathFlags: BreathFlags;
@@ -32,15 +32,18 @@ function BreathInterfaceTimer({ breathFlags, breathEvents, breathState }: Props)
           from={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          style={{
-            alignItems: "center",
-            position: "absolute",
-            left: (width - timerWidth) / 2 - 20,
-            borderBottomLeftRadius: 10,
-            borderBottomRightRadius: 10,
-            borderWidth: 1,
-            backgroundColor: colors.darkest,
-          }}
+          style={[
+            {
+              alignItems: "center",
+              position: "absolute",
+              left: (width - timerWidth) / 2 - 20,
+              borderBottomLeftRadius: 10,
+              borderBottomRightRadius: 10,
+              borderWidth: 1,
+              backgroundColor: colors.darkest,
+            },
+            styleHelpers.shadow,
+          ]}
         >
           <TouchableOpacity
             onPress={

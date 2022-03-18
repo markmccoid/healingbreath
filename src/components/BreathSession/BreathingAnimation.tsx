@@ -59,7 +59,7 @@ const BreathingAnimation = () => {
       scale: 0.5,
     },
     paused: {
-      scale: 2.5,
+      scale: 0.5,
     },
     other: {
       scale: 0.5,
@@ -75,8 +75,8 @@ const BreathingAnimation = () => {
       opacity: 0,
     },
     paused: {
-      // scale: 1,
-      // opacity: 0,
+      scale: 1,
+      opacity: 0.5,
     },
     other: {
       scale: 1,
@@ -96,8 +96,8 @@ const BreathingAnimation = () => {
       <MotiView
         key="breathing"
         state={animationState}
-        from={{ opacity: 0, scale: 0.5, translateY: 0, backgroundColor: "purple" }}
-        animate={{ opacity: 1, translateY: 0, backgroundColor: "red" }}
+        from={{ opacity: 0, scale: 0.5, translateY: 0, backgroundColor: "#4A5568" }}
+        animate={{ opacity: 1, translateY: 0 }}
         transition={{
           type: "timing",
           duration:
@@ -105,11 +105,20 @@ const BreathingAnimation = () => {
               ? context.inhaleTime
               : breathStateString === "Exhale"
               ? context.exhaleTime
-              : 1,
-          easing: Easing.ease,
+              : 1500,
+          easing:
+            breathStateString === "Inhale"
+              ? Easing.elastic(0.35)
+              : breathStateString === "Exhale"
+              ? Easing.elastic(0.75)
+              : Easing.elastic(0.35),
         }}
-        exit={{ opacity: 0, scale: 0.5, translateY: 500 }}
-        exitTransition={{ type: "timing", duration: 1500 }}
+        exit={{
+          opacity: 0,
+          scale: 0.5,
+          // , translateY: 500
+        }}
+        exitTransition={{ type: "timing", duration: 500 }}
         style={{
           justifyContent: "center",
           alignItems: "center",
@@ -129,7 +138,7 @@ const BreathingAnimation = () => {
               ? context.inhaleTime
               : breathStateString === "Exhale"
               ? context.exhaleTime
-              : 1,
+              : 1500,
         }}
         exit={{ opacity: 0, scale: 0.1 }}
         exitTransition={{ type: "timing", duration: 500 }}

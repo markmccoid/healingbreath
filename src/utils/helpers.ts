@@ -41,7 +41,7 @@ export const formattedRetentionTimes = (
  * @param padMinutes - determines if you want minutes padded with zero
  * @returns
  */
-function convertSecondsToMinutes(secondsIn: number, padMinutes: boolean = false) {
+export function convertSecondsToMinutes(secondsIn: number, padMinutes: boolean = false) {
   const seconds = (Math.trunc(secondsIn) % 60).toString();
   const minutes = Math.trunc(secondsIn / 60).toString();
   //

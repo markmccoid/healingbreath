@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View, Pressable, ViewStyle } from "react-native";
-import { colors } from "../../theme";
+import { colors, styleHelpers } from "../../theme";
 
 type Props = {
   onPress: () => void;
@@ -17,7 +17,7 @@ export const ActionButton: React.FC<Props> = ({ children, onPress, style = {} })
 //**************************** */
 export const LeftCornerButton: React.FC<Props> = ({ children, onPress, style }) => {
   return (
-    <Pressable style={[styles.leftCornerButton, style]} onPress={onPress}>
+    <Pressable style={[styles.leftCornerButton, styleHelpers.shadow, style]} onPress={onPress}>
       {children}
     </Pressable>
   );
@@ -25,7 +25,10 @@ export const LeftCornerButton: React.FC<Props> = ({ children, onPress, style }) 
 //**************************** */
 export const RightCornerButton: React.FC<Props> = ({ children, onPress, style }) => {
   return (
-    <Pressable style={[styles.rightCornerButton, style]} onPress={onPress}>
+    <Pressable
+      style={[styles.rightCornerButton, styleHelpers.shadow, style]}
+      onPress={onPress}
+    >
       {children}
     </Pressable>
   );

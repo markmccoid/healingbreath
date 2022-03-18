@@ -3,7 +3,8 @@ import React from "react";
 import { StyleSheet, Text, View, ViewStyle, Dimensions } from "react-native";
 // import { useTimer } from "../../hooks/useBreathMachineHooks";
 import { useBreathState } from "../../context/breathMachineContext";
-import useComponentSize from "../../hooks/useComponentSize";
+import { colors, styleHelpers } from "../../theme";
+
 type timerProps = {
   type?: "countdown" | "countup";
   size?: number;

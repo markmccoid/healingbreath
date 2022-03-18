@@ -344,7 +344,7 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
               // if pause on "exhale", we lose rest of exhale time
               const offset = meta.state?.matches("breathing.inhale")
                 ? ctx.inhaleTime + ctx.pauseTime + ctx.exhaleTime
-                : meta.state?.matches("breathing.pause")
+                : meta.state?.matches("breathing.pause") // This is the state of the pause between inhale and exhale
                 ? ctx.pauseTime + ctx.exhaleTime
                 : meta.state?.matches("breathing.exhale")
                 ? ctx.exhaleTime

@@ -68,7 +68,7 @@ export const BreathMachineProvider = ({
     if (soundsLoaded) {
       configureAlertListener(alertSettings, playSound);
     }
-    return () => console.log("exiting breath machine context");
+    // return () => console.log("exiting breath machine context");
   }, [soundsLoaded]);
 
   {

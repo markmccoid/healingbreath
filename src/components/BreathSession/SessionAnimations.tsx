@@ -100,7 +100,7 @@ function SessionAnimations() {
   //     backgroundColor: bgColor,
   //   };
   // });
-  console.log("breathStateString", breathStateString);
+  // console.log("breathStateString", breathStateString);
   return (
     <Animated.View
       style={[

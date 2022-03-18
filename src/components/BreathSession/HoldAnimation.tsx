@@ -6,10 +6,12 @@ import { useBreathMachineInfo } from "../../hooks/useBreathMachineHooks";
 import { useLayout } from "../../hooks/useLayout";
 import { getCurrentRoundHoldTime } from "../../utils/machineHelpers";
 import Timer from "./Timer";
+import LottieView, { AnimatedLottieViewProps } from "lottie-react-native";
 
 const { width, height } = Dimensions.get("window");
 
 function HoldAnimation() {
+  const lottieRef = React.useRef<AnimatedLottieViewProps>();
   const [
     {
       context,
@@ -51,27 +53,65 @@ function HoldAnimation() {
     >
       <MotiView
         key="hold"
-        from={{ opacity: 0, height: 50, backgroundColor: "purple" }}
-        animate={{
-          opacity: 1,
-          height: animHeight,
-        }}
-        transition={{
-          height: { type: "timing", duration: currHoldTime },
-          type: "timing",
-          duration: 500,
-        }}
+        from={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        // from={{ opacity: 0, height: 50, backgroundColor: "purple" }}
+        // animate={{
+        //   opacity: 1,
+        //   height: animHeight,
+        // }}
+        // transition={{
+        //   height: { type: "timing", duration: currHoldTime },
+        //   type: "timing",
+        //   duration: 500,
+        // }}
         style={{
           // backgroundColor: "#ccc",
+          flexGrow: 1,
           width,
-          justifyContent: "flex-start",
-
+          justifyContent: "center",
+          // justifyContent: "flex-start",
+          // borderWidth: 1,
           // height: 100,
         }}
       >
+        <LottieView
+          ref={lottieRef}
+          source={require("../../../assets/lottie_waves.json")}
+          style={{
+            // position: "absolute",
+            width,
+            // aspectRatio: 1.4,
+            // right: -4,
+            // top: (height - 100) / 2,
+            // right: 0,
+            // marginRight: -200,
+          }}
+          autoSize
+          autoPlay
+          resizeMode="cover"
+          // duration={3000}
+        />
         <View style={{ alignItems: "center" }}>
-          <Timer type="countup" size={50} color="white" />
+          <Timer type="countdown" size={50} color="#4A5568" />
         </View>
+        <LottieView
+          ref={lottieRef}
+          source={require("../../../assets/lottie_waves.json")}
+          style={{
+            // position: "absolute",
+            width,
+            // aspectRatio: 1.4,
+            // right: -4,
+            // top: (height - 100) / 2,
+            // right: 0,
+            // marginRight: -200,
+          }}
+          autoSize
+          autoPlay
+          resizeMode="cover"
+          // duration={3000}
+        />
       </MotiView>
     </View>
   );

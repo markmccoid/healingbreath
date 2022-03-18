@@ -11,13 +11,14 @@ import LottieView, { AnimatedLottieViewProps } from "lottie-react-native";
 import Timer from "../Timer";
 
 import { ActionButton, LeftCornerButton, RightCornerButton } from "../../buttons/Buttons";
-import { colors } from "../../../theme";
+import { colors, styleHelpers } from "../../../theme";
 import { StopIcon, PlayIcon, NextIcon, PauseIcon } from "../../common/Icons";
 import useComponentSize from "../../../hooks/useComponentSize";
 import BreathInterfaceTimer from "./BreathInterfaceTimer";
 import { AnimatePresence, MotiText, MotiView } from "moti";
 import { times } from "lodash";
 import { StartButtonAnimation, StopButtonAnimation } from "./BreathInterfaceAnimations";
+import ExtendAnimation from "./ExtendAnimation";
 
 const { width, height } = Dimensions.get("window");
 
@@ -49,17 +50,17 @@ const BreathInterface = () => {
     console.log("SESSION", context.sessionStats);
   }
 
-  // console.log("run lottie anim", runAnimation);
-  const handleExtend = () => {
-    breathEvents.extendSession();
-    if (runAnimation) {
-      lottieRef.current?.reset();
-      setRunAnimation(false);
-    } else {
-      lottieRef.current?.play();
-      setRunAnimation(true);
-    }
-  };
+  // // console.log("run lottie anim", runAnimation);
+  // const handleExtend = () => {
+  //   breathEvents.extendSession();
+  //   if (runAnimation) {
+  //     lottieRef.current?.reset();
+  //     setRunAnimation(false);
+  //   } else {
+  //     lottieRef.current?.play();
+  //     setRunAnimation(true);
+  //   }
+  // };
 
   return (
     <View style={{ zIndex: 1000 }}>
@@ -173,50 +174,69 @@ const BreathInterface = () => {
 
       {/* Extend Button */}
       {breathFlags.canExtend && (
-        <View style={{ position: "absolute", top: 200, right: 0, borderWidth: 1 }}>
-          <TouchableOpacity
-            onPress={handleExtend}
-            style={{
-              zIndex: 1000,
-              position: "absolute",
-              // top: (height - 100) / 2,
-              right: 0,
-              borderWidth: 1,
-              width: 80,
-              height: 70,
-              borderTopLeftRadius: 10,
-              borderBottomLeftRadius: 10,
-              // backgroundColor: "white",
-            }}
-          ></TouchableOpacity>
-          <View
-            style={{
-              position: "absolute",
-              right: 0,
-              width: 80,
-              height: 70,
-              borderTopLeftRadius: 10,
-              borderBottomLeftRadius: 10,
-              backgroundColor: "white",
-            }}
-          />
-          <LottieView
-            ref={lottieRef}
-            source={require("../../../../assets/extendlottie4.json")}
-            style={{
-              position: "absolute",
-              width: 100,
-              aspectRatio: 1.4,
-              right: -4,
-              // top: (height - 100) / 2,
-              // right: 0,
-              // marginRight: -200,
-            }}
-            // autoSize
-            resizeMode="cover"
-            duration={3000}
-          />
-        </View>
+        <ExtendAnimation
+          toggleExtendSession={breathEvents.extendSession}
+          isExtending={context.extend}
+          isPaused={breathState.includes(".paused")}
+        />
+        // <View
+        //   style={{
+        //     position: "absolute",
+
+        //     top: 200,
+        //     right: 0,
+        //     // borderWidth: 1,
+        //   }}
+        // >
+        //   <TouchableOpacity
+        //     onPress={handleExtend}
+        //     style={{
+        //       zIndex: 1000,
+        //       position: "absolute",
+        //       // top: (height - 100) / 2,
+        //       right: 0,
+        //       borderWidth: 1,
+        //       width: 100,
+        //       height: 70,
+        //       borderTopLeftRadius: 10,
+        //       borderBottomLeftRadius: 10,
+        //       // backgroundColor: "white",
+        //     }}
+        //   ></TouchableOpacity>
+        //   <View
+        //     style={{
+        //       // position: "absolute",
+        //       right: 0,
+        //       width: 100,
+        //       height: 70,
+        //       borderTopLeftRadius: 10,
+        //       borderBottomLeftRadius: 10,
+        //       backgroundColor: "white",
+        //     }}
+        //   >
+        //     <LottieView
+        //       ref={lottieRef}
+        //       source={require("../../../../assets/lottie_extendball.json")}
+        //       // source={require("../../../../assets/extendlottie4.json")}
+        //       style={{
+        //         // borderWidth: 1,
+        //         // zIndex: 1000,
+        //         // position: "relative",
+        //         width: 150,
+        //         height: 100,
+        //         // aspectRatio: 1.4,
+        //         // right: -20,
+        //         // top: -10,
+        //         // top: (height - 100) / 2,
+        //         // right: 0,
+        //         // marginRight: -200,
+        //       }}
+        //       // autoSize
+        //       // resizeMode="cover"
+        //       // duration={3000}
+        //     />
+        //   </View>
+        // </View>
       )}
     </View>
   );

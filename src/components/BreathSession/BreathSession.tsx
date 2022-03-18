@@ -46,6 +46,7 @@ const BreathSession = ({ sessionSettings, activeAlerts }: Props) => {
       tags,
       // alert,
       breathState: [breathState, breathStateString],
+      currBreathRoundHoldTime,
     },
     send,
   ] = useBreathMachineInfo();
@@ -71,8 +72,6 @@ const BreathSession = ({ sessionSettings, activeAlerts }: Props) => {
   //* ------------------------------
   useEffect(() => {
     breathEvents.updateSessionSettings(sessionSettings);
-
-    () => console.log("EXIT BreathSession.tsx");
   }, [sessionSettings]);
 
   return (
@@ -89,7 +88,13 @@ const BreathSession = ({ sessionSettings, activeAlerts }: Props) => {
           borderBottomWidth: StyleSheet.hairlineWidth,
         }}
       >
-        <TouchableOpacity onPress={() => navigation.navigate("SessionList")}>
+        <TouchableOpacity
+          onPress={() => {
+            //Stop the session before navigating away
+            breathEvents.stopSession();
+            navigation.navigate("SessionList");
+          }}
+        >
           <AntDesign name="back" size={25} style={{ marginTop: -5 }} />
           {/* <Text style={{ fontSize: 20 }}>Back</Text> */}
         </TouchableOpacity>
@@ -112,7 +117,10 @@ const BreathSession = ({ sessionSettings, activeAlerts }: Props) => {
           {breathState.includes("holding") && (
             <View style={{ flexDirection: "row" }}>
               <Text style={styles.infoText}>Hold Time</Text>
-              <Timer type="countdown" size={18} />
+              {/* <Timer type="countdown" size={18} /> */}
+              <Text style={[{ marginLeft: 5 }, styles.infoText]}>
+                {currBreathRoundHoldTime}
+              </Text>
             </View>
           )}
         </View>

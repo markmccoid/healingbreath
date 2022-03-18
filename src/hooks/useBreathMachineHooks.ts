@@ -8,6 +8,7 @@ import { useSelector } from "@xstate/react";
 import { Sender, State, StateValue } from "xstate";
 import { BreathContext, BreathEvent, BreathRoundsDetail } from "../machines/breathMachine";
 import { Alert } from "../utils/alertTypes";
+import { convertSecondsToMinutes } from "../utils/helpers";
 
 type BreathContextWOElapsed = Omit<BreathContext, "elapsed">;
 
@@ -80,6 +81,7 @@ type BreathData = {
   tags: Set<string> | undefined;
   // string version of current state value using
   breathState: BreathStates;
+  currBreathRoundHoldTime: string | undefined;
   alert: Alert | undefined;
 };
 // Selector that excludes elapsed from the context
@@ -104,6 +106,10 @@ const getContextSansElapsed = (
     value: state.value,
     tags: state.tags,
     breathState: getBreathState(state),
+    currBreathRoundHoldTime: convertSecondsToMinutes(
+      (context?.breathRoundsDetail?.[context.breathCurrRound]?.holdTime ||
+        context.defaultHoldTime) / 1000
+    ),
   } as BreathData;
   return newData;
 };
