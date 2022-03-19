@@ -64,6 +64,10 @@ const BreathSession = ({ sessionSettings, activeAlerts }: Props) => {
   //   console.log("alert has been alerted", alert);
   // }, [alert]);
 
+  // useEffect(() => {
+  //   console.log("Session Idle", context.sessionStats);
+  // }, [breathState.includes("idle")]);
+
   //* ------------------------------
   //* SETUP SESSION SETTINGS
   //* This useEffect is where we send over the

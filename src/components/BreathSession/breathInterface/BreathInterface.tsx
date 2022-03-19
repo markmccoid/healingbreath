@@ -50,18 +50,6 @@ const BreathInterface = () => {
     console.log("SESSION", context.sessionStats);
   }
 
-  // // console.log("run lottie anim", runAnimation);
-  // const handleExtend = () => {
-  //   breathEvents.extendSession();
-  //   if (runAnimation) {
-  //     lottieRef.current?.reset();
-  //     setRunAnimation(false);
-  //   } else {
-  //     lottieRef.current?.play();
-  //     setRunAnimation(true);
-  //   }
-  // };
-
   return (
     <View style={{ zIndex: 1000 }}>
       {/* START Button */}
@@ -122,55 +110,6 @@ const BreathInterface = () => {
         breathEvents={breathEvents}
         breathState={breathState}
       />
-      {/* <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-        {breathFlags.canStart && (
-          <>
-            <ActionButton onPress={() => breathEvents.startSession()}>
-              <Text style={{ fontSize: 20, color: "#fff" }}>Start</Text>
-            </ActionButton>
-            <View style={{ width: 10 }} />
-          </>
-        )}
-        {breathFlags.canStop && (
-          <>
-            <ActionButton onPress={() => breathEvents.stopSession()}>
-              <Text style={{ fontSize: 20, color: "#fff" }}>Stop</Text>
-            </ActionButton>
-            <View style={{ width: 10 }} />
-          </>
-        )}
-        {breathFlags.canPause && (
-          <ActionButton onPress={() => breathEvents.pauseSession()}>
-            <Text style={{ fontSize: 20, color: "#fff" }}>Pause</Text>
-          </ActionButton>
-        )}
-        {breathFlags.canUnPause && (
-          <ActionButton onPress={() => breathEvents.unpauseSession()}>
-            <Text style={{ fontSize: 20, color: "#fff" }}>Unpause</Text>
-          </ActionButton>
-        )}
-        <View style={{ width: 10 }} />
-        {breathFlags.canExtend && (
-          <ActionButton onPress={() => breathEvents.extendSession()}>
-            <Text style={{ fontSize: 20, color: "#fff" }}>
-              {`${context.extend ? "Stop " : ""}Extend`}
-            </Text>
-          </ActionButton>
-        )}
-
-        {breathFlags.canStop && (
-          <ActionButton onPress={() => breathEvents.goToNext()}>
-            <Text style={{ fontSize: 20, color: "#fff" }}>Next</Text>
-          </ActionButton>
-        )}
-      </View>
-      <View style={{ borderWidth: 1, padding: 10 }}>
-        <Timer type="countup" />
-        <Timer type="countdown" />
-      </View>
-      <View style={{ padding: 10, justifyContent: "center", alignItems: "center" }}>
-        <Text style={{ fontSize: 25, color: "#F1820A" }}> {breathStateString}</Text>
-      </View> */}
 
       {/* Extend Button */}
       {breathFlags.canExtend && (
@@ -179,64 +118,6 @@ const BreathInterface = () => {
           isExtending={context.extend}
           isPaused={breathState.includes(".paused")}
         />
-        // <View
-        //   style={{
-        //     position: "absolute",
-
-        //     top: 200,
-        //     right: 0,
-        //     // borderWidth: 1,
-        //   }}
-        // >
-        //   <TouchableOpacity
-        //     onPress={handleExtend}
-        //     style={{
-        //       zIndex: 1000,
-        //       position: "absolute",
-        //       // top: (height - 100) / 2,
-        //       right: 0,
-        //       borderWidth: 1,
-        //       width: 100,
-        //       height: 70,
-        //       borderTopLeftRadius: 10,
-        //       borderBottomLeftRadius: 10,
-        //       // backgroundColor: "white",
-        //     }}
-        //   ></TouchableOpacity>
-        //   <View
-        //     style={{
-        //       // position: "absolute",
-        //       right: 0,
-        //       width: 100,
-        //       height: 70,
-        //       borderTopLeftRadius: 10,
-        //       borderBottomLeftRadius: 10,
-        //       backgroundColor: "white",
-        //     }}
-        //   >
-        //     <LottieView
-        //       ref={lottieRef}
-        //       source={require("../../../../assets/lottie_extendball.json")}
-        //       // source={require("../../../../assets/extendlottie4.json")}
-        //       style={{
-        //         // borderWidth: 1,
-        //         // zIndex: 1000,
-        //         // position: "relative",
-        //         width: 150,
-        //         height: 100,
-        //         // aspectRatio: 1.4,
-        //         // right: -20,
-        //         // top: -10,
-        //         // top: (height - 100) / 2,
-        //         // right: 0,
-        //         // marginRight: -200,
-        //       }}
-        //       // autoSize
-        //       // resizeMode="cover"
-        //       // duration={3000}
-        //     />
-        //   </View>
-        // </View>
       )}
     </View>
   );
