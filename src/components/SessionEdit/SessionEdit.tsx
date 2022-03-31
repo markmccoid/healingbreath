@@ -14,7 +14,8 @@ import SessionEditAdvanced from "./SessionEditAdvanced";
 import { SaveIcon } from "../common/Icons";
 import { convertKeyValsToString } from "../../utils/helpers";
 import _ from "lodash";
-import { colors } from "../../theme";
+import { colors, Theme } from "../../theme";
+import { useTheme } from "../../context/themeContext";
 
 const MotiBox = () => {
   return (
@@ -42,8 +43,10 @@ const SessionEdit = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
   const createUpdateSession = useStore((state) => state.createUpdateSession);
   const getSessionFromId = useStore((state) => state.getSessionFromId);
   const sessionId = route?.params?.sessionId;
+  const { theme } = useTheme();
+  const styles = React.useMemo(() => createStyles(theme), [theme]);
 
-  console.log("sessionID", sessionId);
+  //console.log("sessionID", sessionId);
   React.useEffect(() => {
     // If sessionId is not undefined, we are editing a session
     if (sessionId) {
@@ -68,12 +71,19 @@ const SessionEdit = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
         style={{
           borderTopRightRadius: 5,
           borderTopLeftRadius: 5,
-          backgroundColor: "#4a5568",
+          backgroundColor: theme.colors.cardTitleBG,
           paddingVertical: 8,
           paddingHorizontal: 35,
         }}
       >
-        <Text style={{ textAlign: "center", fontSize: 20, color: "white", fontWeight: "600" }}>
+        <Text
+          style={{
+            textAlign: "center",
+            fontSize: 20,
+            color: theme.colors.cardTitleFG,
+            fontWeight: "600",
+          }}
+        >
           {`${sessionId ? "Edit" : "Create"} Session`}
         </Text>
       </View>
@@ -83,9 +93,10 @@ const SessionEdit = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
           segments={["Settings", "Alerts", "Advanced"]}
           onChange={(index) => setTabIndex(index)}
           currentIndex={tabIndex}
-          segmentedControlWrapper={{ backgroundColor: "#4a5568" }}
-          activeTextStyle={styles.customBlackColor}
-          inactiveTextStyle={styles.customWhiteColor}
+          segmentedControlWrapper={{ backgroundColor: theme.colors.menuInactiveBG }}
+          tileStyle={{ backgroundColor: theme.colors.menuActiveBG }}
+          activeTextStyle={{ color: theme.colors.menuActiveFG }}
+          inactiveTextStyle={{ color: theme.colors.menuInactiveFG }}
         />
       </View>
       <View style={{ flexGrow: 1 }}>
@@ -117,30 +128,13 @@ const SessionEdit = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
 
             return (
               <View style={{ flexGrow: 1 }}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-around",
-                    position: "absolute",
-                    top: 0,
-                    right: 50,
-                    zIndex: 1000,
-                  }}
-                >
+                <View style={styles.buttonPosition}>
                   <TouchableOpacity
                     disabled={props.isSubmitting}
                     onPress={props.submitForm}
-                    style={{
-                      marginTop: 10,
-                      paddingVertical: 8,
-                      paddingHorizontal: 10,
-                      borderWidth: StyleSheet.hairlineWidth,
-                      backgroundColor: colors.white,
-                      borderRadius: 10,
-                      flexDirection: "row",
-                    }}
+                    style={styles.button}
                   >
-                    <Text style={{ fontSize: 18 }}>Save</Text>
+                    <Text style={styles.buttonText}>Save</Text>
                     <SaveIcon size={20} style={{ marginLeft: 4 }} />
                   </TouchableOpacity>
                 </View>
@@ -206,38 +200,44 @@ const SessionEdit = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "column",
-    // justifyContent: "center",
-  },
-  menubox: {
-    // flex: 1,
-    alignItems: "center",
-    marginHorizontal: 16,
-    marginTop: 15,
-    // marginVertical: 16,
-  },
-
-  customBlackColor: {
-    color: "black",
-  },
-  customWhiteColor: {
-    color: "white",
-  },
-  customGreenColor: {
-    color: "#3f6212",
-  },
-  customBlueColor: {
-    backgroundColor: "#e0f2fe",
-  },
-  customBlueTextColor: {
-    color: "#0369a1",
-  },
-  customBadgeBlueColor: {
-    backgroundColor: "#38bdf8",
-  },
-});
+const createStyles = (theme: Theme) => {
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      flexDirection: "column",
+      // justifyContent: "center",
+    },
+    menubox: {
+      // flex: 1,
+      alignItems: "center",
+      marginHorizontal: 16,
+      marginTop: 15,
+      // marginVertical: 16,
+    },
+    button: {
+      marginTop: 10,
+      paddingVertical: 8,
+      paddingHorizontal: 10,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: theme.colors.buttonBorder,
+      backgroundColor: theme.colors.buttonBG,
+      borderRadius: 10,
+      flexDirection: "row",
+    },
+    buttonText: {
+      fontSize: 18,
+      color: theme.colors.buttonFG,
+    },
+    buttonPosition: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+      position: "absolute",
+      top: 0,
+      right: 50,
+      zIndex: 1000,
+    },
+  });
+  return styles;
+};
 
 export default SessionEdit;

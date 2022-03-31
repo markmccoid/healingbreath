@@ -77,23 +77,31 @@ const SessionEditMainSettings = ({
           contentContainerStyle={{ paddingBottom: 150 }}
           // contentContainerStyle={{ flexGrow: 1, borderWidth: 1, justifyContent: "flex-start" }}
         >
-          <View style={styles.field}>
-            <Text style={styles.inputLabel}>Session Name</Text>
-            <TextInputWError
-              placeholder="Session Name"
-              onChangeText={props.handleChange("name")}
-              value={props.values.name}
-              onBlur={props.handleBlur("name")}
-              errorText={props.errors.name}
-              showErrorText
-              isTouched={props.touched.name ?? false}
-            />
+          <View
+            style={[
+              styles.rowContainer,
+              { flexDirection: undefined, justifyContent: undefined },
+            ]}
+          >
+            <View style={styles.field}>
+              <Text style={styles.inputLabel}>Session Name</Text>
+              <TextInputWError
+                style={{ width: "100%" }}
+                placeholder="Session Name"
+                onChangeText={props.handleChange("name")}
+                value={props.values.name}
+                onBlur={props.handleBlur("name")}
+                errorText={props.errors.name}
+                showErrorText
+                isTouched={props.touched.name ?? false}
+              />
+            </View>
           </View>
           <View style={[styles.rowContainer, { justifyContent: "space-between" }]}>
             <View style={styles.field}>
               <Text style={styles.inputLabel}>Breath Rounds</Text>
               <NumberInputWError
-                placeholder="Breath Rounds"
+                // placeholder="Breath Rounds"
                 onChangeText={props.handleChange("breathRounds")}
                 value={props.values.breathRounds}
                 includeDecimal={false}
@@ -107,7 +115,7 @@ const SessionEditMainSettings = ({
             <View style={styles.field}>
               <Text style={styles.inputLabel}>Breath Reps Per Round</Text>
               <NumberInputWError
-                placeholder="Breath Reps Per Round"
+                // placeholder="Breath Reps Per Round"
                 onChangeText={props.handleChange("breathReps")}
                 value={props.values.breathReps}
                 includeDecimal={false}
@@ -123,7 +131,7 @@ const SessionEditMainSettings = ({
             <View style={[styles.field]}>
               <Text style={styles.inputLabel}>Recovery Breath Hold Time</Text>
               <NumberInputWError
-                placeholder="Recovery Breath Hold Time (seconds)"
+                // placeholder="Recovery Breath Hold Time (seconds)"
                 onChangeText={props.handleChange("recoveryHoldTime")}
                 value={props.values.recoveryHoldTime}
                 includeDecimal={false}

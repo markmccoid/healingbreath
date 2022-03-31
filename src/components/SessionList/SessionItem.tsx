@@ -4,8 +4,9 @@ import useBreathNavigation from "../../navigation/useBreathNavigation";
 import { StoredSession, BreathState } from "../../store/useStore";
 import { formattedRetentionTimes } from "../../utils/helpers";
 import { EditIcon, DeleteIcon } from "../common/Icons";
-import { colors } from "../../theme";
-import { color } from "react-native-reanimated";
+// import { colors } from "../../theme";
+import { useTheme, createStyles2 } from "../../context/themeContext";
+import { Theme } from "../../theme";
 
 type Props = {
   session: StoredSession;
@@ -14,12 +15,17 @@ type Props = {
 };
 
 function SessionItem({ session, deleteSession, handleEditSession }: Props) {
+  const { theme } = useTheme();
   const { navigateToSession } = useBreathNavigation();
   const retentionTimes = formattedRetentionTimes(
     session.breathRounds,
     session.defaultHoldTime,
     session.breathRoundsDetail
   );
+
+  console.log("theme SESSION ITEM", theme);
+  const styles = createStyles(theme);
+  // styles1({ b1: theme.colors.background });
 
   return (
     <View style={styles.container}>
@@ -32,13 +38,14 @@ function SessionItem({ session, deleteSession, handleEditSession }: Props) {
           paddingVertical: 5,
           paddingHorizontal: 8,
           borderWidth: 1,
-          backgroundColor: "white",
+          borderColor: theme.colors.iconBorder,
+          backgroundColor: theme.colors.iconBG,
           borderRadius: 10,
           top: -10,
         }}
         onPress={() => handleEditSession(session.id)}
       >
-        <EditIcon size={20} />
+        <EditIcon size={20} color={theme.colors.iconFG} />
       </TouchableOpacity>
       {/* Delete Button */}
       <TouchableOpacity
@@ -49,7 +56,8 @@ function SessionItem({ session, deleteSession, handleEditSession }: Props) {
           paddingVertical: 5,
           paddingHorizontal: 8,
           borderWidth: 1,
-          backgroundColor: "white",
+          borderColor: theme.colors.iconBorder,
+          backgroundColor: theme.colors.iconBG,
           borderRadius: 10,
           top: -10,
         }}
@@ -96,95 +104,177 @@ function SessionItem({ session, deleteSession, handleEditSession }: Props) {
             style={{
               borderTopWidth: 1,
               borderBottomWidth: 1,
-              borderColor: colors.borderColor,
-              backgroundColor: colors.gray,
+              borderColor: theme.colors.border,
+              backgroundColor: theme.colors.displayBG,
               paddingVertical: 4,
               marginBottom: 5,
             }}
           >
             <Text style={[styles.itemText, styles.retentionText]}>Retention Hold Times</Text>
-          </View>
-          <View style={{ flexDirection: "row", flexWrap: "wrap", marginLeft: 10 }}>
-            {retentionTimes?.map((time, idx) => (
-              <View key={idx} style={{ marginHorizontal: 5 }}>
-                <Text style={[styles.itemText, styles.retentionText]}>{time}</Text>
-              </View>
-            ))}
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                marginLeft: 10,
+              }}
+            >
+              {retentionTimes?.map((time, idx) => (
+                <View key={idx} style={{ marginHorizontal: 5 }}>
+                  <Text style={[styles.itemText, styles.retentionText]}>{time}</Text>
+                </View>
+              ))}
+            </View>
           </View>
         </View>
       </TouchableOpacity>
     </View>
   );
 }
+const createStyles = (theme: Theme) => {
+  return StyleSheet.create({
+    container: {
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      borderRadius: 10,
+      marginBottom: 5,
+      marginHorizontal: 15,
+      backgroundColor: theme.colors.cardBG,
+      flex: 1,
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
 
-const styles = StyleSheet.create({
-  container: {
-    borderWidth: 1,
-    borderColor: colors.borderColor,
-    borderRadius: 10,
-    marginBottom: 5,
-    marginHorizontal: 15,
-    backgroundColor: colors.dark,
-    flex: 1,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
+      elevation: 5,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    itemPressable: {
+      flex: 1,
+      flexDirection: "column",
+    },
+    itemText: {
+      fontFamily: "FiraSans_500Medium",
+    },
+    itemTitleContainer: {
+      flexDirection: "row",
+      justifyContent: "center",
+      marginBottom: 5,
+      paddingVertical: 5,
+      borderRadius: 10,
+      borderBottomLeftRadius: 0,
+      borderBottomRightRadius: 0,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      backgroundColor: theme.colors.cardTitleBG,
+    },
+    itemTitle: { fontSize: 18, color: theme.colors.cardTitleFG },
+    // Info line 1
+    infoLine1: {
+      paddingHorizontal: 5,
+      flexDirection: "row",
+      justifyContent: "flex-start",
+      marginBottom: 5,
+    },
+    infoLine1Text: {
+      fontSize: 16,
+      color: theme.colors.displayFG,
+    },
+    infoHighlight: {
+      flexGrow: 1,
+      marginLeft: 2,
+      marginRight: 5,
+      backgroundColor: theme.colors.displayBG,
+      paddingVertical: 3,
+      paddingHorizontal: 10,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderRadius: 6,
+    },
+    // Retention Line
+    retentionContainer: {
+      flexDirection: "column",
+      justifyContent: "flex-start",
+      marginTop: 4,
+      marginBottom: 5,
+    },
+    retentionText: {
+      fontSize: 17,
+      textAlign: "center",
+      color: theme.colors.displayFG,
+    },
+  });
+};
 
-    elevation: 5,
-  },
-  itemPressable: {
-    flex: 1,
-    flexDirection: "column",
-  },
-  itemText: {
-    fontFamily: "FiraSans_500Medium",
-  },
-  itemTitleContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginBottom: 5,
-    paddingVertical: 5,
-    borderRadius: 10,
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    backgroundColor: colors.darkest,
-  },
-  itemTitle: { fontSize: 18, color: colors.white },
-  // Info line 1
-  infoLine1: {
-    paddingHorizontal: 5,
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    marginBottom: 5,
-  },
-  infoLine1Text: {
-    fontSize: 16,
-  },
-  infoHighlight: {
-    flexGrow: 1,
-    marginLeft: 2,
-    marginRight: 5,
-    backgroundColor: colors.gray,
-    paddingVertical: 3,
-    paddingHorizontal: 10,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 6,
-  },
-  // Retention Line
-  retentionContainer: {
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    marginTop: 4,
-    marginBottom: 5,
-  },
-  retentionText: {
-    fontSize: 17,
-    textAlign: "center",
-  },
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     borderWidth: 1,
+//     borderColor: theme.colors.border,
+//     borderRadius: 10,
+//     marginBottom: 5,
+//     marginHorizontal: 15,
+//     backgroundColor: colors.dark,
+//     flex: 1,
+//     shadowColor: "#000",
+//     shadowOffset: {
+//       width: 0,
+//       height: 2,
+//     },
+//     shadowOpacity: 0.25,
+//     shadowRadius: 3.84,
+
+//     elevation: 5,
+//   },
+//   itemPressable: {
+//     flex: 1,
+//     flexDirection: "column",
+//   },
+//   itemText: {
+//     fontFamily: "FiraSans_500Medium",
+//   },
+//   itemTitleContainer: {
+//     flexDirection: "row",
+//     justifyContent: "center",
+//     marginBottom: 5,
+//     paddingVertical: 5,
+//     borderRadius: 10,
+//     borderBottomLeftRadius: 0,
+//     borderBottomRightRadius: 0,
+//     borderBottomWidth: StyleSheet.hairlineWidth,
+//     backgroundColor: colors.darkest,
+//   },
+//   itemTitle: { fontSize: 18, color: colors.white },
+//   // Info line 1
+//   infoLine1: {
+//     paddingHorizontal: 5,
+//     flexDirection: "row",
+//     justifyContent: "flex-start",
+//     marginBottom: 5,
+//   },
+//   infoLine1Text: {
+//     fontSize: 16,
+//   },
+//   infoHighlight: {
+//     flexGrow: 1,
+//     marginLeft: 2,
+//     marginRight: 5,
+//     backgroundColor: colors.gray,
+//     paddingVertical: 3,
+//     paddingHorizontal: 10,
+//     borderWidth: StyleSheet.hairlineWidth,
+//     borderRadius: 6,
+//   },
+//   // Retention Line
+//   retentionContainer: {
+//     flexDirection: "column",
+//     justifyContent: "flex-start",
+//     marginTop: 4,
+//     marginBottom: 5,
+//   },
+//   retentionText: {
+//     fontSize: 17,
+//     textAlign: "center",
+//   },
+// });
+
 export default SessionItem;

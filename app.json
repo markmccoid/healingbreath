@@ -16,11 +16,14 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "userInterfaceStyle": "automatic",
     "ios": {
+      "userInterfaceStyle": "automatic",
       "supportsTablet": true,
       "bundleIdentifier": "com.markmccoid.healingbreath"
     },
     "android": {
+      "userInterfaceStyle": "automatic",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"

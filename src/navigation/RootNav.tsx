@@ -1,5 +1,5 @@
 import * as React from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import SessionList from "../screens/SessionList";
@@ -10,11 +10,23 @@ import { RootStackParamList } from "../types/navTypes";
 // import SessionEditMain from "../components/SessionEdit/SessionEditMain";
 // import SessionEdit from "../components/SessionEdit/SessionEditFormik";
 import SessionEdit from "../components/SessionEdit/SessionEdit";
+import { useColorScheme } from "react-native";
+import { useTheme } from "../context/themeContext";
 
 const RootNav = () => {
+  const scheme = useColorScheme();
+  const { theme, changeTheme } = useTheme();
+  console.log("Default Theme", DefaultTheme.colors);
+
+  React.useEffect(() => {
+    console.log("scheme change Root Nav", scheme);
+    changeTheme(scheme);
+  }, [scheme]);
+
   const RootStack = createStackNavigator<RootStackParamList>();
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={theme}>
+      {/* <NavigationContainer theme={scheme === "dark" ? MyDarkTheme : MyTheme}> */}
       <RootStack.Navigator>
         <RootStack.Screen
           name="SessionList"

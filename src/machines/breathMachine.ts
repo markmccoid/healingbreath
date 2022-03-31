@@ -19,7 +19,7 @@ export type BreathEvent =
       sessionSettings: Partial<Omit<BreathContext, "extend" | "interval" | "elapsed">>;
     };
 
-export type sessionStats =
+export type SessionRoundInfo =
   | {
       breaths: number;
       holdTimeSeconds: number;
@@ -27,6 +27,7 @@ export type sessionStats =
     }
   | {};
 
+export type SessionStats = { [round: number]: SessionRoundInfo };
 export type BreathRoundsDetail = {
   [breathRound: number]: {
     holdTime: number;
@@ -58,7 +59,7 @@ export type BreathContext = {
   breathRounds: number; // Number of rounds (breathReps + Long Hold + )
   breathCurrRound: number; // Current round
   // -- session statistics
-  sessionStats: { [round: number]: sessionStats };
+  sessionStats: SessionStats;
   sessionStart: number; // stores unix timestamp (milliseconds) using Date.now()
   sessionEnd: number; // stores unix timestamp (milliseconds) using Date.now()
   sessionComplete: boolean;
