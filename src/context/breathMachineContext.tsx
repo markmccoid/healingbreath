@@ -9,7 +9,6 @@ import _, { isEqual } from "lodash";
 import { breathAlertListener, configureAlertListener } from "../utils/alertListener";
 import { BreathState, useStore } from "../store/useStore";
 import { Alert } from "../utils/alertTypes";
-// import { useAlertSounds } from "../utils/sounds/soundLibrary";
 import { useAlertSounds } from "../hooks/useAlertSounds";
 
 interface BreathMachineContextType {

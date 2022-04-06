@@ -217,10 +217,9 @@ export const prepareSubmit = (
   const holdSession = convertKeyValsToNumber(values, [], true);
 
   const { retentionHoldTimes, alerts, includeAlerts, ...restOfSessionValues } = holdSession;
-
   const inputValuesFormatted: StoredSession = {
-    id: sessionId || (uuid.v4() as string),
     ...restOfSessionValues,
+    id: sessionId || (uuid.v4() as string),
     name,
     breathRoundsDetail: arrayToObject<BreathRoundsDetail>(retentionHoldTimes),
     alertSettings: alerts,

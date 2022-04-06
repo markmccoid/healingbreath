@@ -5,7 +5,7 @@ import { StoredSession, BreathState } from "../../store/useStore";
 import { formattedRetentionTimes } from "../../utils/helpers";
 import { EditIcon, DeleteIcon } from "../common/Icons";
 // import { colors } from "../../theme";
-import { useTheme, createStyles2 } from "../../context/themeContext";
+import { useTheme } from "../../context/themeContext";
 import { Theme } from "../../theme";
 
 type Props = {
@@ -23,9 +23,8 @@ function SessionItem({ session, deleteSession, handleEditSession }: Props) {
     session.breathRoundsDetail
   );
 
-  console.log("theme SESSION ITEM", theme);
+  // generate styles object by passing in theme to function
   const styles = createStyles(theme);
-  // styles1({ b1: theme.colors.background });
 
   return (
     <View style={styles.container}>

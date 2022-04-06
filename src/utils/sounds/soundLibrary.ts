@@ -1,138 +1,259 @@
-import { AlertSoundNames, AlertSounds, AlertPlayableSounds } from "./soundTypes";
-import { Audio } from "expo-av";
-import React, { useState, useEffect } from "react";
+import { AlertSounds, SoundLibrary } from "./soundTypes";
 
-let alertPlayableSounds: AlertPlayableSounds;
+// export const soundsLib = require("../../../assets/sounds.json");
 
 export const alertSounds: AlertSounds = {
-  gong: require("../../../assets/sounds/gong01.wav"),
-  churchBell: require("../../../assets/sounds/ChurchBell001.mp3"),
-  breathInMark: require("../../../assets/sounds/BreathInMark.mp3"),
-  breathOutMark: require("../../../assets/sounds/BreathOutMark.mp3"),
-  airplaneDing: require("../../../assets/sounds/AirplaneDing.mp3"),
-  elevatorDing: require("../../../assets/sounds/ElevatorDing.mp3"),
-  tick: require("../../../assets/sounds/tick.mp3"),
-  ding: require("../../../assets/sounds/ding.mp3"),
+  bellding_001: require("../../../assets/sounds/bellding_001.mp3"),
+  bellding_002: require("../../../assets/sounds/bellding_002.mp3"),
+  bellding_003: require("../../../assets/sounds/bellding_003.mp3"),
+  bellding_004: require("../../../assets/sounds/bellding_004.mp3"),
+  bowlgong_001: require("../../../assets/sounds/bowlgong_001.mp3"),
+  bowlgong_002: require("../../../assets/sounds/bowlgong_002.mp3"),
+  bowlgong_003: require("../../../assets/sounds/bowlgong_003.mp3"),
+  bowlgong_004: require("../../../assets/sounds/bowlgong_004.mp3"),
+  bowlgong_005: require("../../../assets/sounds/bowlgong_005.mp3"),
+  bowlgong_006: require("../../../assets/sounds/bowlgong_006.mp3"),
+  bowlgong_long_001: require("../../../assets/sounds/bowlgong_long_001.mp3"),
+  bowlgong_long_002: require("../../../assets/sounds/bowlgong_long_002.mp3"),
+  bowlsinging_001: require("../../../assets/sounds/bowlsinging_001.mp3"),
+  bowlsinging_002: require("../../../assets/sounds/bowlsinging_002.mp3"),
+  bowlsinging_long_loop_001: require("../../../assets/sounds/bowlsinging_long_loop_001.mp3"),
+  ding_001: require("../../../assets/sounds/ding_001.mp3"),
+  ding_002: require("../../../assets/sounds/ding_002.mp3"),
+  metalclang_001: require("../../../assets/sounds/metalclang_001.mp3"),
+  metalgong_001: require("../../../assets/sounds/metalgong_001.mp3"),
+  metalgong_002: require("../../../assets/sounds/metalgong_002.mp3"),
+  metalgong_003: require("../../../assets/sounds/metalgong_003.mp3"),
+  speak_mm_breath_in_and_hold: require("../../../assets/sounds/speak_mm_breath_in_and_hold.mp3"),
+  speak_mm_breath_out: require("../../../assets/sounds/speak_mm_breath_out.mp3"),
+  tibentanbowl_001: require("../../../assets/sounds/tibentanbowl_001.mp3"),
+  tick_001: require("../../../assets/sounds/tick_001.mp3"),
 };
 
-export const loadSounds = async () => {
-  // Loads all alertSounds to the global object:
-  //-- alertPlayableSounds
-
-  const loadingSounds = Object.keys(alertSounds).map(async (key) => {
-    const assetName = key as AlertSoundNames;
-    alertPlayableSounds = { ...alertPlayableSounds, [assetName]: new Audio.Sound() };
-    // alertPlayableSounds[assetName] = new Audio.Sound();
-    await alertPlayableSounds[assetName].loadAsync(alertSounds[assetName]);
-  });
-  // console.log("loadingsounds", loadingSounds);
-  //return await Promise.all(loadingSounds);
-  // return Promise.all(loadingSounds);
-  await Promise.all(loadingSounds);
-  return alertPlayableSounds;
-};
-
-// Could call loadSounds from App.tsx, but using a hook is similar to how
-// expo loads fonts
-export const useLoadSounds = () => {
-  const [soundsLoaded, setSoundsLoaded] = React.useState(false);
-  React.useEffect(() => {
-    const effectLoadSounds = async () => {
-      try {
-        // console.log("loading sounds started");
-        // await loadSounds();
-        const results = await loadSounds();
-        console.log("loading sounds done");
-        setSoundsLoaded(true);
-      } catch (e) {
-        console.log("error loading sounds", e);
-      }
-    };
-    effectLoadSounds();
-    return () => console.log("useLoadSounds Unmounted");
-  }, []);
-  return [soundsLoaded];
-};
-
-// Will play the passed asset names sound
-export const playSound = async (name: AlertSoundNames) => {
-  console.log(`plaing sound --> ${name}`);
-  try {
-    if (alertPlayableSounds[name]) {
-      await alertPlayableSounds[name].replayAsync();
-    }
-  } catch (error) {
-    console.warn(error);
-  }
-};
-
-//***** LOAD SOUNDS FOR SESSION ******************** */
-//***** LOAD SOUNDS FOR SESSION ******************** */
-const unloadSounds = async (playableAlertSounds: Partial<AlertPlayableSounds>) => {
-  return Promise.all(
-    Object.keys(playableAlertSounds).map(async (key) => {
-      return await playableAlertSounds[key].unloadAsync();
-    })
-  );
-};
-
-const loadAlertSounds = async (
-  sounds: Partial<AlertSoundNames>[]
-): Promise<Partial<AlertPlayableSounds>> => {
-  // Loads all alertSounds to the local object:
-  let playableAlertSounds: Partial<AlertPlayableSounds> = {};
-  const loadingSounds = sounds.map(async (key) => {
-    const assetName = key as AlertSoundNames;
-    playableAlertSounds = { ...playableAlertSounds, [assetName]: new Audio.Sound() };
-    // playableAlertSounds[assetName] = new Audio.Sound();
-    await playableAlertSounds[assetName].loadAsync(alertSounds[assetName]);
-  });
-
-  //return await Promise.all(loadingSounds);
-  await Promise.all(loadingSounds);
-  return playableAlertSounds;
-};
-
-export const useAlertSounds = (sounds: Partial<AlertSoundNames>[]) => {
-  const [soundsLoaded, setSoundsLoaded] = useState(false);
-  const [playableAlertSounds, setPlayableAlertSounds] =
-    useState<Partial<AlertPlayableSounds>>();
-
-  if (sounds.length === 0 || !sounds) {
-    return;
-  }
-
-  const playSound = async (name: AlertSoundNames) => {
-    console.log(`plaing sound useAlert--> ${name}`);
-    try {
-      if (playableAlertSounds?.[name]) {
-        await playableAlertSounds[name].replayAsync();
-      }
-    } catch (error) {
-      console.warn(error);
-    }
-  };
-
-  useEffect(() => {
-    // Load the passed array of sounds
-
-    const callAlertLoad = async () => {
-      console.log("Awaiting sounds LOAD");
-      const playableSounds = await loadAlertSounds(sounds);
-      console.log("SOUNDS usealertsounds load");
-      playableSounds.gong?.replayAsync();
-      setPlayableAlertSounds(playableSounds);
-      setSoundsLoaded(true);
-    };
-    callAlertLoad();
-    // when exiting, unload the sounds
-    return () => {
-      console.log("useAlertSound UNMOUTNING");
-      if (playableAlertSounds) {
-        unloadSounds(playableAlertSounds);
-      }
-    };
-  }, []);
-
-  return { soundsLoaded, playSound };
-};
+export const soundLibrary: SoundLibrary[] = [
+  {
+    id: "bellding_001",
+    type: "alert",
+    category: "bell",
+    displayName: "Bell 1",
+    fileName: "bellding_001.mp3",
+    length: 2,
+    volume: 1,
+  },
+  {
+    id: "bellding_002",
+    type: "alert",
+    category: "bell",
+    displayName: "Bell 2",
+    fileName: "bellding_002.mp3",
+    length: 1,
+    volume: 1,
+  },
+  {
+    id: "bellding_003",
+    type: "alert",
+    category: "bell",
+    displayName: "Bell 3",
+    fileName: "bellding_003.mp3",
+    length: 2,
+    volume: 1,
+  },
+  {
+    id: "bellding_004",
+    type: "alert",
+    category: "bell",
+    displayName: "Bell 4",
+    fileName: "bellding_004.mp3",
+    length: 3,
+    volume: 1,
+  },
+  {
+    id: "bowlgong_001",
+    type: "alert",
+    category: "Bowl Gongs",
+    displayName: "Bowl Gong 1",
+    fileName: "bowlgong_001.mp3",
+    length: 2,
+    volume: 6,
+  },
+  {
+    id: "bowlgong_002",
+    type: "alert",
+    category: "Bowl Gongs",
+    displayName: "Bowl Gong 2",
+    fileName: "bowlgong_002.mp3",
+    length: 2,
+    volume: 5,
+  },
+  {
+    id: "bowlgong_003",
+    type: "alert",
+    category: "Bowl Gongs",
+    displayName: "Bowl Gong 3",
+    fileName: "bowlgong_003.mp3",
+    length: 2,
+    volume: 5,
+  },
+  {
+    id: "bowlgong_004",
+    type: "alert",
+    category: "Bowl Gongs",
+    displayName: "Bowl Gong 4",
+    fileName: "bowlgong_004.mp3",
+    length: 8,
+    volume: 1,
+  },
+  {
+    id: "bowlgong_005",
+    type: "alert",
+    category: "Bowl Gongs",
+    displayName: "Bowl Gong 5",
+    fileName: "bowlgong_005.mp3",
+    length: 4,
+    volume: 1,
+  },
+  {
+    id: "bowlgong_006",
+    type: "alert",
+    category: "Bowl Gongs",
+    displayName: "Bowl Gong 6",
+    fileName: "bowlgong_006.mp3",
+    length: 5,
+    volume: 1,
+  },
+  {
+    id: "bowlgong_long_001",
+    type: "alert",
+    category: "Bowl Gongs",
+    displayName: "Bowl Gong Long 1",
+    fileName: "bowlgong_long_001.mp3",
+    length: 19,
+    volume: 1,
+  },
+  {
+    id: "bowlgong_long_002",
+    type: "alert",
+    category: "Bowl Gongs",
+    displayName: "Bowl Gong Long 2",
+    fileName: "bowlgong_long_002.mp3",
+    length: 10,
+    volume: 1,
+  },
+  {
+    id: "bowlsinging_001",
+    type: "alert",
+    category: "Singing Bowls",
+    displayName: "Singing Bowl 1",
+    fileName: "bowlsinging_001.mp3",
+    length: 7,
+    volume: 1,
+  },
+  {
+    id: "bowlsinging_002",
+    type: "alert",
+    category: "Singing Bowls",
+    displayName: "Singing Bowl 2",
+    fileName: "bowlsinging_002.mp3",
+    length: 4,
+    volume: 1,
+  },
+  {
+    id: "bowlsinging_long_loop_001",
+    type: "alert",
+    category: "Singing Bowls",
+    displayName: "Singing Bowl Long 1",
+    fileName: "bowlsinging_long_loop_001.mp3",
+    length: 63,
+    volume: 1,
+  },
+  {
+    id: "ding_001",
+    type: "alert",
+    category: "Dings/Ticks",
+    displayName: "Ding 1",
+    fileName: "ding_001.mp3",
+    length: 2,
+    volume: 1,
+  },
+  {
+    id: "ding_002",
+    type: "alert",
+    category: "Dings/Ticks",
+    displayName: "Ding 2",
+    fileName: "ding_002.mp3",
+    length: 2,
+    volume: 1,
+  },
+  {
+    id: "tick_001",
+    type: "alert",
+    category: "Dings/Ticks",
+    displayName: "Tick 1",
+    fileName: "tick_001.mp3",
+    length: 1,
+    volume: 1,
+  },
+  {
+    id: "metalclang_001",
+    type: "alert",
+    category: "Metal Gongs",
+    displayName: "Metal Clang",
+    fileName: "metalclang_001.mp3",
+    length: 2,
+    volume: 1,
+  },
+  {
+    id: "metalgong_001",
+    type: "alert",
+    category: "Metal Gongs",
+    displayName: "Metal Gong 1",
+    fileName: "metalgong_001.mp3",
+    length: 2,
+    volume: 1,
+  },
+  {
+    id: "metalgong_002",
+    type: "alert",
+    category: "Metal Gongs",
+    displayName: "Metal Gong 2",
+    fileName: "metalgong_002.mp3",
+    length: 5,
+    volume: 1,
+  },
+  {
+    id: "metalgong_003",
+    type: "alert",
+    category: "Metal Gongs",
+    displayName: "Metal Gong 3",
+    fileName: "metalgong_003.mp3",
+    length: 3,
+    volume: 1,
+  },
+  {
+    id: "speak_mm_breath_in_and_hold",
+    type: "alert",
+    category: "Speaking",
+    displayName: "Breath In & Hold",
+    fileName: "speak_mm_breath_in_and_hold.mp3",
+    length: 2,
+    volume: 1,
+  },
+  {
+    id: "speak_mm_breath_out",
+    type: "alert",
+    category: "Speaking",
+    displayName: "Breath Out",
+    fileName: "speak_mm_breath_out.mp3",
+    length: 1,
+    volume: 1,
+  },
+  {
+    id: "tibentanbowl_001",
+    type: "alert",
+    category: "Singing Bowls",
+    displayName: "Tibetan Bowl 1",
+    fileName: "tibentanbowl_001.mp3",
+    length: 1,
+    volume: 1,
+  },
+];

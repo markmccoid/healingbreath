@@ -42,18 +42,3 @@ export const ThemeProvider = React.memo<Props>((props) => {
 });
 // Creating a custom context consumer hook for function components
 export const useTheme = () => React.useContext(Context);
-
-export const createStyles = (theme: Theme, styleObject: {}) => {
-  const styles = StyleSheet.create({ ...styleObject });
-  return styles;
-};
-// export const createStyles2 = (theme: Theme) => (styleObject: {}) => {
-//   const styles = StyleSheet.create({ ...styleObject });
-//   return styles;
-// };
-
-export const createStyles2 = (theme: Theme) => {
-  return (obj) => {
-    return StyleSheet.create(obj);
-  };
-};

@@ -6,6 +6,7 @@ import { alertSoundNames } from "../../hooks/useAlertSounds";
 import DropDownPicker from "react-native-dropdown-picker";
 import { loadAndPlaySound } from "../../hooks/useAlertSounds";
 import { AlertSoundNames } from "../../utils/sounds/soundTypes";
+import { soundLibrary } from "../../utils/sounds/soundLibrary";
 import AlertInput from "./AlertInput";
 import AlertSoundPicker from "./AlertSoundPicker";
 import { styles } from "./styles";
@@ -18,11 +19,15 @@ type Props = {
   handleBlur: FormikHandlers["handleBlur"];
 };
 
-const pickerAlertSounds = alertSoundNames.map((sound) => ({
+const pickerAlertSounds2 = alertSoundNames.map((sound) => ({
   label: sound,
   value: sound,
 }));
 
+const pickerAlertSounds = soundLibrary.map((soundObj) => ({
+  label: soundObj.displayName,
+  value: soundObj.id,
+}));
 export type AlertFields = {
   cfbEveryXBreaths: boolean;
   cfbXBreathsBeforeEnd: boolean;

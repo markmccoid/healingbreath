@@ -11,7 +11,6 @@ import LottieView, { AnimatedLottieViewProps } from "lottie-react-native";
 import Timer from "../Timer";
 
 import { ActionButton, LeftCornerButton, RightCornerButton } from "../../buttons/Buttons";
-import { colors, styleHelpers } from "../../../theme";
 import { StopIcon, PlayIcon, NextIcon, PauseIcon } from "../../common/Icons";
 import useComponentSize from "../../../hooks/useComponentSize";
 import BreathInterfaceTimer from "./BreathInterfaceTimer";
@@ -23,7 +22,6 @@ import ExtendAnimation from "./ExtendAnimation";
 const { width, height } = Dimensions.get("window");
 
 const BreathInterface = () => {
-  // const { soundsLoaded, playSound } = useAlertSounds(undefined);
   // const breathStateServices = useBreathState();
   // const [{ context, alert, value: currStateValue, breathState }, send] =
   //   useBreathMachineInfo();

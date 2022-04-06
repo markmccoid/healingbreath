@@ -6,7 +6,6 @@ import { Audio } from "expo-av";
 
 import { Alert, AlertSettings } from "./alertTypes";
 import { AlertSoundNames } from "../utils/sounds/soundTypes";
-// import { alertSounds, playSound } from "../utils/sounds/soundLibrary";
 
 // import { alertNoAlertSettings } from "../store/defaultSettings";
 // import { useStore } from "../store/useStore";
@@ -152,7 +151,7 @@ const BreathRetentionAlerts = (elapsed: number, currRoundHoldTime: number): Seco
   if (everyXValue) {
     // convert values to milliseconds
     const everyXMilliseconds = everyXValue * 1000;
-    if (elapsed % everyXMilliseconds === 0) {
+    if (elapsed % everyXMilliseconds === 0 && elapsed !== currRoundHoldTime) {
       return {
         type: "retention.everyXSeconds",
         alertSound: everyXSound,

@@ -105,7 +105,9 @@ const SessionEdit = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
           enableReinitialize
           validationSchema={sessionValidationSchema}
           onSubmit={(values) => {
+            console.log("session ID", sessionId);
             const newSession = prepareSubmit(values, sessionId);
+            // console.log("values", newSession);
             createUpdateSession(newSession);
             navigation.goBack();
           }}

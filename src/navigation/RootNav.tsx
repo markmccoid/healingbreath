@@ -16,7 +16,6 @@ import { useTheme } from "../context/themeContext";
 const RootNav = () => {
   const scheme = useColorScheme();
   const { theme, changeTheme } = useTheme();
-  console.log("Default Theme", DefaultTheme.colors);
 
   React.useEffect(() => {
     console.log("scheme change Root Nav", scheme);
@@ -25,7 +24,7 @@ const RootNav = () => {
 
   const RootStack = createStackNavigator<RootStackParamList>();
   return (
-    <NavigationContainer theme={theme}>
+    <NavigationContainer theme={{ colors: theme.colors, dark: scheme === "dark" }}>
       {/* <NavigationContainer theme={scheme === "dark" ? MyDarkTheme : MyTheme}> */}
       <RootStack.Navigator>
         <RootStack.Screen

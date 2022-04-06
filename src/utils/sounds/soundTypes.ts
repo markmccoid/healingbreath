@@ -35,3 +35,19 @@ export type AlertSounds = {
 export type AlertPlayableSounds = {
   [assetName in AlertSoundNames]: Audio.Sound;
 };
+
+export type SoundLibrary = {
+  // Will match to the AlertSoundNames type
+  id: string;
+  type: "alert" | "music";
+  // Optional category could be used in drop down list
+  category: string;
+  // Name to show to user
+  displayName: string;
+  // file name without path
+  fileName: string;
+  // length in seconds of clip
+  length: number;
+  // volume defaults to 1
+  volume: number;
+};

@@ -25,7 +25,6 @@ import SessionAnimations from "./SessionAnimations";
 
 import { ActionButton } from "../../components/buttons/Buttons";
 import { AlertSettings } from "../../utils/alertTypes";
-import { useAlertSounds, loadAndPlaySound } from "../../hooks/useAlertSounds";
 import BreathInterface from "./breathInterface/BreathInterface";
 
 type Props = {
@@ -34,7 +33,6 @@ type Props = {
 };
 
 const BreathSession = ({ sessionSettings, activeAlerts }: Props) => {
-  // const { soundsLoaded, playSound } = useAlertSounds(undefined);
   // console.log("Session", sessionSettings);
   // const breathStateServices = useBreathState();
   // const [{ context, alert, value: currStateValue, breathState }, send] =

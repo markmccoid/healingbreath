@@ -1,34 +1,10 @@
 import { AlertSoundNames, AlertSounds, AlertPlayableSounds } from "../utils/sounds/soundTypes";
 import { Audio } from "expo-av";
+import { Asset } from "expo-asset";
 import { useState, useEffect } from "react";
 
-export const alertSounds: AlertSounds = {
-  bellding_001: require("../../assets/sounds/bellding_001.mp3"),
-  bellding_002: require("../../assets/sounds/bellding_002.mp3"),
-  bellding_003: require("../../assets/sounds/bellding_003.mp3"),
-  bellding_004: require("../../assets/sounds/bellding_004.mp3"),
-  bowlgong_001: require("../../assets/sounds/bowlgong_001.mp3"),
-  bowlgong_002: require("../../assets/sounds/bowlgong_002.mp3"),
-  bowlgong_003: require("../../assets/sounds/bowlgong_003.mp3"),
-  bowlgong_004: require("../../assets/sounds/bowlgong_004.mp3"),
-  bowlgong_005: require("../../assets/sounds/bowlgong_005.mp3"),
-  bowlgong_006: require("../../assets/sounds/bowlgong_006.mp3"),
-  bowlgong_long_001: require("../../assets/sounds/bowlgong_long_001.mp3"),
-  bowlgong_long_002: require("../../assets/sounds/bowlgong_long_002.mp3"),
-  bowlsinging_001: require("../../assets/sounds/bowlsinging_001.mp3"),
-  bowlsinging_002: require("../../assets/sounds/bowlsinging_002.mp3"),
-  bowlsinging_long_loop_001: require("../../assets/sounds/bowlsinging_long_loop_001.mp3"),
-  ding_001: require("../../assets/sounds/ding_001.mp3"),
-  ding_002: require("../../assets/sounds/ding_002.mp3"),
-  metalclang_001: require("../../assets/sounds/metalclang_001.mp3"),
-  metalgong_001: require("../../assets/sounds/metalgong_001.mp3"),
-  metalgong_002: require("../../assets/sounds/metalgong_002.mp3"),
-  metalgong_003: require("../../assets/sounds/metalgong_003.mp3"),
-  speak_mm_breath_in_and_hold: require("../../assets/sounds/speak_mm_breath_in_and_hold.mp3"),
-  speak_mm_breath_out: require("../../assets/sounds/speak_mm_breath_out.mp3"),
-  tibentanbowl_001: require("../../assets/sounds/tibentanbowl_001.mp3"),
-  tick_001: require("../../assets/sounds/tick_001.mp3"),
-};
+import { alertSounds } from "../utils/sounds/soundLibrary";
+// A list of keys from the alertSounds object
 export const alertSoundNames = Object.keys(alertSounds);
 
 // Global var to hold sample sound played from "loadAndPlaySound" function
