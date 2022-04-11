@@ -55,7 +55,7 @@ const BreathSession = ({ sessionSettings, activeAlerts }: Props) => {
   //************************ */
 
   if (context.sessionComplete) {
-    console.log("SESSION", context.sessionStats);
+    console.log("SESSION COMPLETE", context.sessionComplete, context.sessionStats);
   }
 
   // useEffect(() => {

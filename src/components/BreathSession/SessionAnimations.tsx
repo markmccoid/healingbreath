@@ -44,6 +44,7 @@ function SessionAnimations() {
   const bgColorProgress = useSharedValue(0);
   const myAlert = useBreathAlert();
 
+  // console.log(breathState, breathStateString);
   React.useEffect(() => {
     if (myAlert) {
       progress.value = withRepeat(
@@ -117,8 +118,10 @@ function SessionAnimations() {
       />
       <AnimatePresence exitBeforeEnter>
         {breathState.includes("breathing") && <BreathingAnimation key="breathing" />}
-        {breathStateString === "Hold" && <HoldAnimation key="hold" />}
-        {breathStateString === "Recovery Hold" && <RecoveryAnimation key="recovery" />}
+        {/* {breathStateString === "Hold" && <HoldAnimation key="hold" />} */}
+        {breathState.includes("holding") && <HoldAnimation key="hold" />}
+        {/* {breathStateString === "Recovery Hold" && <RecoveryAnimation key="recovery" />} */}
+        {breathState.includes("recoveryhold") && <RecoveryAnimation key="recovery" />}
         {breathStateString === "Intro Pause" && (
           <TextAnimation key="intro" text="Breath In and Hold" type="in" />
         )}

@@ -119,12 +119,17 @@ export type Theme = {
   colors: Colors;
   padding: {};
   fonts: {};
+  dimensions: {
+    fullWidth: number;
+    fullHeight: number;
+  };
 };
 export const getTheme = (scheme: Schemes = "light"): Theme => {
   return {
     colors: scheme === "light" ? lightColors : darkColors,
     padding,
     fonts,
+    dimensions,
   };
 };
 

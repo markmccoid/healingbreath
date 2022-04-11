@@ -45,7 +45,7 @@ const BreathInterface = () => {
   //************************ */
 
   if (context.sessionComplete) {
-    console.log("SESSION", context.sessionStats);
+    console.log("SESSION", context.sessionComplete, context.sessionStats);
   }
 
   return (

@@ -38,7 +38,7 @@ export type AlertPlayableSounds = {
 
 export type SoundLibrary = {
   // Will match to the AlertSoundNames type
-  id: string;
+  id: AlertSoundNames;
   type: "alert" | "music";
   // Optional category could be used in drop down list
   category: string;
