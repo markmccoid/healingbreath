@@ -314,7 +314,10 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
         on: {
           START: {
             target: "breathing",
-            actions: assign({ sessionStart: (ctx, event) => Date.now() }),
+            actions: [
+              "resetSessionStats",
+              assign({ sessionStart: (ctx, event) => Date.now() }),
+            ],
           },
           UPDATE_DEFAULTS: {
             actions: ["updateSessionSettings"],
