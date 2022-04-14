@@ -1,6 +1,6 @@
 import { AnimatePresence, MotiText, MotiView, useAnimationState } from "moti";
 import React from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from "react-native";
 import Animated, {
   useSharedValue,
   withTiming,
@@ -8,13 +8,10 @@ import Animated, {
   withRepeat,
   Easing,
 } from "react-native-reanimated";
-import { useBreathMachineInfo } from "../../hooks/useBreathMachineHooks";
-import { useTheme } from "../../context/themeContext";
-import { Theme } from "../../theme";
+import { useTheme } from "../context/themeContext";
+import { Theme } from "../theme";
 import Svg, { Circle, G } from "react-native-svg";
 import { withPause } from "react-native-redash";
-
-import Timer from "./Timer";
 
 const { width, height } = Dimensions.get("window");
 
@@ -36,25 +33,19 @@ const INNER_DIAMETER = INNER_RADIUS * 2;
 const INNER_CIRCUMFERENCE = 2 * Math.PI * INNER_RADIUS; // 2PI * R
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
-function RecoveryAnimation() {
+function SVGTest() {
   const { theme } = useTheme();
-  const [
-    {
-      context,
-      value: currStateValue,
-      tags,
-      breathState: [breathState, breathStateString],
-    },
-    send,
-  ] = useBreathMachineInfo();
+
   const progress = useSharedValue(0);
   const constantProgress = useSharedValue(1);
   const isPaused = useSharedValue(false);
 
-  const breathTime = useSharedValue(context.inhaleTime);
-
+  const [step, setStep] = React.useState(0);
   const styles = React.useMemo(() => createStyles(theme), [theme]);
 
+  const moveForward = () => {
+    setStep((prev) => prev + 0.2);
+  };
   // console.log("breathstatestring", breathStateString);
 
   // Animated Styles
@@ -75,39 +66,26 @@ function RecoveryAnimation() {
 
   //-- Setup animation progress value with Pausing functionality
   React.useEffect(() => {
-    progress.value = withPause(
-      withTiming(1, { duration: context.recoveryHoldTime }),
-      isPaused
-    );
+    progress.value = withPause(withTiming(1, { duration: 15 }), isPaused);
   }, []);
 
   //-- Deal with paused state by setting the isPaused shared value
-  React.useEffect(() => {
-    if (breathState.includes("pause")) {
-      isPaused.value = true;
-    } else {
-      isPaused.value = false;
-    }
-  }, [breathState]);
+  React.useEffect(() => {}, []);
 
   React.useEffect(() => {
-    if (context.extend) {
+    if (true) {
       constantProgress.value = withPause(
-        withRepeat(
-          withTiming(-1, { duration: context.recoveryHoldTime, easing: Easing.linear }),
-          0
-        ),
+        withRepeat(withTiming(-1, { duration: 15, easing: Easing.linear }), 0),
         isPaused
       );
-    } else if (!context.extend) {
+    } else if (false) {
       console.log("inElse", constantProgress.value);
       constantProgress.value = withTiming(1, {
         duration: 1500,
         easing: Easing.linear,
       });
     }
-    console.log("constantPorgre", constantProgress.value);
-  }, [context.extend]);
+  }, []);
 
   //-- Set the animated stroke property
   const animatedProps = useAnimatedProps(() => ({
@@ -118,6 +96,8 @@ function RecoveryAnimation() {
     strokeDashoffset: INNER_CIRCUMFERENCE * constantProgress.value,
   }));
   // console.log("constantProgress", constantProgress.value);
+  const CIRCUMFERENCE = 400;
+  const R = CIRCUMFERENCE / (Math.PI * 2);
   return (
     <MotiView
       from={{ opacity: 0 }}
@@ -127,14 +107,35 @@ function RecoveryAnimation() {
     >
       {/* <Text style={{ position: "absolute", fontSize: 28, fontWeight: "600" }}>100</Text> */}
       <View style={{ position: "absolute" }}>
-        <Timer size={35} type="countdown" />
+        <Text>15</Text>
       </View>
       <Svg
-        width={MAIN_DIAMETER}
-        height={MAIN_DIAMETER}
-        viewBox={`0 0 ${MAIN_DIAMETER + STROKE_WIDTH * 2} ${MAIN_DIAMETER + STROKE_WIDTH * 2}`}
+        width={200}
+        height={200}
+        viewBox={`0 0 ${230} ${230}`}
+        style={{ borderWidth: 1 }}
+        // viewBox={`-50 -50 ${200} ${200}`}
+        // style={{ borderWidth: 1 }}
+        // width={MAIN_DIAMETER}
+        // height={MAIN_DIAMETER}
+        // viewBox={`0 0 ${MAIN_DIAMETER + STROKE_WIDTH * 2} ${MAIN_DIAMETER + STROKE_WIDTH * 2}`}
+        // style={{ borderWidth: 1 }}
       >
-        <G
+        {/* <G rotation="-90" origin={`${100 + 10}, ${100 + 10}`}> */}
+        <Circle
+          cx={"50%"}
+          cy={"50%"}
+          fill={"red"}
+          r={R}
+          stroke={"blue"}
+          strokeWidth={15}
+          strokeDasharray={CIRCUMFERENCE}
+          strokeDashoffset={CIRCUMFERENCE - 20} //{CIRCUMFERENCE * (1 - step)}
+          rotation="-90"
+          origin={`${100 + 15}, ${100 + 15}`}
+        />
+        {/* </G> */}
+        {/* <G
           rotation="-90"
           origin={`${MAIN_RADIUS + STROKE_WIDTH}, ${MAIN_RADIUS + STROKE_WIDTH}`}
         >
@@ -156,29 +157,41 @@ function RecoveryAnimation() {
             strokeLinecap={"round"}
             // strokeDashoffset={CIRCLE_LENGTH * 0.5}
           />
-          {context.extend && (
-            <AnimatedCircle
-              cx={"50%"}
-              cy={"50%"}
-              r={INNER_RADIUS}
-              stroke="green"
-              strokeWidth={20}
-              strokeDasharray={`100 ${INNER_CIRCUMFERENCE - 100}`}
-              // strokeDashoffset={}
-              // strokeDasharray={INNER_CIRCUMFERENCE}
-              // animatedProps={animatedInnerProps}
-              strokeDashoffset={50}
-              strokeLinecap={"round"}
-              // strokeDashoffset={CIRCLE_LENGTH * 0.5}
-            />
-          )}
-        </G>
+
+          <AnimatedCircle
+            cx={"50%"}
+            cy={"50%"}
+            r={INNER_RADIUS}
+            stroke="green"
+            strokeWidth={20}
+            strokeDasharray={`100 ${INNER_CIRCUMFERENCE - 100}`}
+            // strokeDashoffset={}
+            // strokeDasharray={INNER_CIRCUMFERENCE}
+            // animatedProps={animatedInnerProps}
+            strokeDashoffset={50}
+            strokeLinecap={"round"}
+            // strokeDashoffset={CIRCLE_LENGTH * 0.5}
+          />
+        </G> */}
       </Svg>
       {/* <Animated.View style={[styles.box, rStyle]} /> */}
       {/* {breathStateString === "Hold" && <HoldAnimation key="hold" />} */}
       {/* <TouchableOpacity onPress={() => (progress.value = withTiming(1, { duration: 15000 }))}>
         <Text>Change</Text>
       </TouchableOpacity> */}
+      <TouchableOpacity
+        style={{ borderWidth: 1, borderRadius: 5, padding: 5 }}
+        onPress={moveForward}
+      >
+        <Text>Increase</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{ borderWidth: 1, borderRadius: 5, padding: 5 }}
+        onPress={() => setStep(0)}
+      >
+        <Text>clear</Text>
+      </TouchableOpacity>
+      <Text style={{ fontSize: 20 }}>{1 - step}</Text>
     </MotiView>
   );
 }
@@ -194,4 +207,4 @@ const createStyles = (theme: Theme) => {
   });
   return styles;
 };
-export default RecoveryAnimation;
+export default SVGTest;

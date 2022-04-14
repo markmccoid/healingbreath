@@ -12,6 +12,7 @@ import { RootStackParamList } from "../types/navTypes";
 import SessionEdit from "../components/SessionEdit/SessionEdit";
 import { useColorScheme } from "react-native";
 import { useTheme } from "../context/themeContext";
+import SVGTest from "../components/SVGTest";
 
 const RootNav = () => {
   const scheme = useColorScheme();
@@ -51,6 +52,7 @@ const RootNav = () => {
             component={SessionEdit}
             options={{ headerShown: false }}
           />
+          <RootStack.Screen name="svgtest" component={SVGTest} />
         </RootStack.Group>
       </RootStack.Navigator>
     </NavigationContainer>

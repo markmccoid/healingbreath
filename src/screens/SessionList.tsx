@@ -36,7 +36,16 @@ const SessionList = ({ navigation, route }: RootStackProps<"SessionList">) => {
           </View>
         ))}
       </ScrollView>
-
+      <View style={{ position: "absolute", bottom: 50, left: 10 }}>
+        <TouchableOpacity
+          onPress={() => {
+            console.log("nav to svg");
+            navigation.navigate("svgtest");
+          }}
+        >
+          <Text style={{ fontSize: 28 }}>SVG</Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.addButton}>
         <TouchableOpacity onPress={() => navigation.navigate("SessionEdit")}>
           <AddIcon size={30} color={theme?.colors.primaryFG} />
