@@ -130,7 +130,7 @@ function SVGTest() {
           stroke={"blue"}
           strokeWidth={15}
           strokeDasharray={CIRCUMFERENCE}
-          strokeDashoffset={CIRCUMFERENCE - 20} //{CIRCUMFERENCE * (1 - step)}
+          strokeDashoffset={400} //{CIRCUMFERENCE * (1 - step)}
           rotation="-90"
           origin={`${100 + 15}, ${100 + 15}`}
         />
