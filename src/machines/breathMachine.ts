@@ -156,6 +156,11 @@ const resetSessionStats = assign<BreathContext, BreathEvent>({
   sessionStart: 0,
   sessionEnd: 0,
 });
+
+const resetExtendFlag = assign<BreathContext, BreathEvent>({
+  extend: false,
+});
+
 const incrementBreathRound = assign<BreathContext, BreathEvent>({
   breathCurrRound: (ctx, event) => ctx.breathCurrRound + 1,
 });
@@ -359,7 +364,7 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
           },
           NEXT: {
             target: "holding",
-            actions: ["incrementBreathRep"],
+            actions: ["incrementBreathRep", "resetExtendFlag"],
           },
           TICK: {
             actions: "updateElapsedTime",
@@ -445,6 +450,7 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
           PAUSE: ".paused",
           NEXT: {
             target: "intropause",
+            actions: "resetExtendFlag",
           },
           EXTEND_TOGGLE: {
             actions: "extendToggle",
@@ -500,6 +506,7 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
           PAUSE: ".paused",
           NEXT: {
             target: "outropause",
+            actions: "resetExtendFlag",
           },
           EXTEND_TOGGLE: {
             actions: "extendToggle",
@@ -558,6 +565,7 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
       resetBreathCurrRep,
       resetSessionStats,
       resetContext,
+      resetExtendFlag,
       updateSessionSettings,
       updateSessionBreathsStats,
       updateSessionLongHoldStats,

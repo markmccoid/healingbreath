@@ -110,13 +110,13 @@ const BreathInterface = () => {
       />
 
       {/* Extend Button */}
-      {breathFlags.canExtend && (
+      {/* {breathFlags.canExtend && (
         <ExtendAnimation
           toggleExtendSession={breathEvents.extendSession}
           isExtending={context.extend}
           isPaused={breathState.includes(".paused")}
         />
-      )}
+      )} */}
     </View>
   );
 };

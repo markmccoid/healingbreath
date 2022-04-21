@@ -58,8 +58,8 @@ const Timer = ({
   // we are modifying the underlying view.
   const onLayout = React.useCallback((e) => {
     // console.log("in on layout", e.nativeEvent.layout.width);
-    setTimerWidth(e.nativeEvent.layout.width + 10);
-    timerWidthPositioning?.setTimerWidth(e.nativeEvent.layout.width + 10);
+    setTimerWidth(e.nativeEvent.layout.width + 20);
+    timerWidthPositioning?.setTimerWidth(e.nativeEvent.layout.width + 20);
     // setTimerPosition((width - e.nativeEvent.layout.width) / 2);
   }, []);
 

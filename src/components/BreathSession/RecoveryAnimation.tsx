@@ -1,6 +1,6 @@
 import { AnimatePresence, MotiText, MotiView, useAnimationState } from "moti";
 import React from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from "react-native";
 import Animated, {
   useSharedValue,
   withTiming,
@@ -8,13 +8,14 @@ import Animated, {
   withRepeat,
   Easing,
 } from "react-native-reanimated";
-import { useBreathMachineInfo } from "../../hooks/useBreathMachineHooks";
+import { useBreathMachineInfo, useBreathEvents } from "../../hooks/useBreathMachineHooks";
 import { useTheme } from "../../context/themeContext";
 import { Theme } from "../../theme";
-import Svg, { Circle, G } from "react-native-svg";
+import Svg, { Circle, G, Path } from "react-native-svg";
 import { withPause } from "react-native-redash";
 
 import Timer from "./Timer";
+import ExtendIndicator from "./ExtendIndicator";
 
 const { width, height } = Dimensions.get("window");
 
@@ -36,6 +37,7 @@ const INNER_DIAMETER = INNER_RADIUS * 2;
 const INNER_CIRCUMFERENCE = 2 * Math.PI * INNER_RADIUS; // 2PI * R
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+const AnimatedPath = Animated.createAnimatedComponent(Path);
 function RecoveryAnimation() {
   const { theme } = useTheme();
   const [
@@ -47,8 +49,11 @@ function RecoveryAnimation() {
     },
     send,
   ] = useBreathMachineInfo();
+  const { extendSession } = useBreathEvents();
   const progress = useSharedValue(0);
-  const constantProgress = useSharedValue(1);
+  const constantProgress = useSharedValue(0);
+  const extendedAnimation = useSharedValue(0);
+  // const constantProgress = useSharedValue(1);
   const isPaused = useSharedValue(false);
 
   const breathTime = useSharedValue(context.inhaleTime);
@@ -92,21 +97,32 @@ function RecoveryAnimation() {
 
   React.useEffect(() => {
     if (context.extend) {
-      constantProgress.value = withPause(
-        withRepeat(
-          withTiming(-1, { duration: context.recoveryHoldTime, easing: Easing.linear }),
-          0
+      extendedAnimation.value = 0;
+      extendedAnimation.value = withRepeat(
+        withPause(
+          withTiming(1, { duration: context.recoveryHoldTime / 2, easing: Easing.linear }),
+          isPaused
         ),
-        isPaused
+        0
       );
+
+      console.log("starting constantProgress");
+      // constantProgress.value = withPause(
+      //   withRepeat(
+      //     withTiming(1, { duration: context.recoveryHoldTime / 2, easing: Easing.linear }),
+      //     0
+      //   ),
+      //   isPaused
+      // );
     } else if (!context.extend) {
-      console.log("inElse", constantProgress.value);
-      constantProgress.value = withTiming(1, {
+      // Issues with stopping extending and restarting
+      // Just stopping timing and setting back to zero
+      extendedAnimation.value = withTiming(0, {
         duration: 1500,
         easing: Easing.linear,
       });
     }
-    console.log("constantPorgre", constantProgress.value);
+    console.log("constantPrgress", constantProgress.value);
   }, [context.extend]);
 
   //-- Set the animated stroke property
@@ -115,7 +131,12 @@ function RecoveryAnimation() {
   }));
   //-- Set the animated Inner stroke property
   const animatedInnerProps = useAnimatedProps(() => ({
-    strokeDashoffset: INNER_CIRCUMFERENCE * constantProgress.value,
+    strokeDashoffset: INNER_CIRCUMFERENCE * (1 - extendedAnimation.value),
+    // strokeDashoffset: INNER_CIRCUMFERENCE * constantProgress.value,
+  }));
+  const animatedLineProps = useAnimatedProps(() => ({
+    strokeDashoffset: 400 * (1 - extendedAnimation.value),
+    // strokeDashoffset: INNER_CIRCUMFERENCE * constantProgress.value,
   }));
   // console.log("constantProgress", constantProgress.value);
   return (
@@ -129,6 +150,24 @@ function RecoveryAnimation() {
       <View style={{ position: "absolute" }}>
         <Timer size={35} type="countdown" />
       </View>
+
+      <ExtendIndicator isExtending={context.extend} isPaused={isPaused} />
+
+      <View style={{ position: "absolute", bottom: 100 }}>
+        <Text style={{ fontSize: 25 }}>{constantProgress.value}</Text>
+      </View>
+      {/* Mimic the Inner Circle for a touchable area that will toggle the extend session */}
+      <TouchableOpacity
+        onPress={() => extendSession()}
+        style={{
+          position: "absolute",
+          width: INNER_DIAMETER,
+          height: INNER_DIAMETER,
+          borderRadius: INNER_RADIUS,
+          zIndex: 1000,
+        }}
+      ></TouchableOpacity>
+
       <Svg
         width={MAIN_DIAMETER}
         height={MAIN_DIAMETER}
@@ -156,7 +195,7 @@ function RecoveryAnimation() {
             strokeLinecap={"round"}
             // strokeDashoffset={CIRCLE_LENGTH * 0.5}
           />
-          {context.extend && (
+          {/* {context.extend && (
             <AnimatedCircle
               cx={"50%"}
               cy={"50%"}
@@ -166,12 +205,12 @@ function RecoveryAnimation() {
               strokeDasharray={`100 ${INNER_CIRCUMFERENCE - 100}`}
               // strokeDashoffset={}
               // strokeDasharray={INNER_CIRCUMFERENCE}
-              // animatedProps={animatedInnerProps}
-              strokeDashoffset={50}
+              animatedProps={animatedInnerProps}
+              // strokeDashoffset={INNER_CIRCUMFERENCE * 0.95}
               strokeLinecap={"round"}
               // strokeDashoffset={CIRCLE_LENGTH * 0.5}
             />
-          )}
+          )} */}
         </G>
       </Svg>
       {/* <Animated.View style={[styles.box, rStyle]} /> */}

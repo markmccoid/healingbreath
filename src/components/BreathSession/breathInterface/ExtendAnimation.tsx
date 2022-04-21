@@ -60,9 +60,9 @@ const ExtendAnimation = ({ isExtending, isPaused, toggleExtendSession }: Props) 
             animStyle,
             styles.buttonSize,
             {
-              backgroundColor: "#B4CEFF",
+              backgroundColor: "green",
               position: "absolute",
-              right: 0,
+              left: 0,
               height: BUTTON_HEIGHT - 1,
               borderWidth: StyleSheet.hairlineWidth,
             },
@@ -87,7 +87,7 @@ const ExtendAnimation = ({ isExtending, isPaused, toggleExtendSession }: Props) 
 const styles = StyleSheet.create({
   buttonPlacement: {
     position: "absolute",
-    right: 0,
+    left: 0,
     top: height / 5,
   },
   buttonStyle: {
@@ -99,8 +99,8 @@ const styles = StyleSheet.create({
   },
   buttonSize: {
     height: BUTTON_HEIGHT,
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
   },
   buttonShadowDeep: {
     shadowColor: "#000",
