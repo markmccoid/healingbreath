@@ -16,6 +16,7 @@ import { convertKeyValsToString } from "../../utils/helpers";
 import _ from "lodash";
 import { colors, Theme } from "../../theme";
 import { useTheme } from "../../context/themeContext";
+import ModalHeader from "../ModalHeader";
 
 const MotiBox = () => {
   return (
@@ -67,26 +68,8 @@ const SessionEdit = ({ navigation, route }: RootStackProps<"SessionEdit">) => {
   }, [sessionId]);
   return (
     <View style={styles.container}>
-      <View
-        style={{
-          borderTopRightRadius: 5,
-          borderTopLeftRadius: 5,
-          backgroundColor: theme.colors.cardTitleBG,
-          paddingVertical: 8,
-          paddingHorizontal: 35,
-        }}
-      >
-        <Text
-          style={{
-            textAlign: "center",
-            fontSize: 20,
-            color: theme.colors.cardTitleFG,
-            fontWeight: "600",
-          }}
-        >
-          {`${sessionId ? "Edit" : "Create"} Session`}
-        </Text>
-      </View>
+      <ModalHeader headerText={`${sessionId ? "Edit" : "Create"} Session`} />
+
       <View style={styles.menubox}>
         <SegmentedControl
           containerMargin={16}

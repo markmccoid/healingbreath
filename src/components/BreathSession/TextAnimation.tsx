@@ -55,7 +55,7 @@ function TextAnimation({ text, type }: Props) {
   // Bug in reanimated 2.3.1 can cause an issue.  I have patched file, but any update to package.json undoes it
   // https://github.com/software-mansion/react-native-reanimated/issues/2739
   const rStyle = useAnimatedStyle(() => {
-    const bgColor = interpolateColor(progress.value, [0, 1], ["purple", "#F8F8"]);
+    const bgColor = interpolateColor(progress.value, [0, 1], ["purple", "#F8F"]);
     const opacity = interpolate(progress.value, [0, 1], [1, 0]);
 
     const scale = interpolate(progress.value, [0, 0.1, 1], [0, 1, 8]);

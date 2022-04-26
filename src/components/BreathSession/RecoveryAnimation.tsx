@@ -16,6 +16,7 @@ import { withPause } from "react-native-redash";
 
 import Timer from "./Timer";
 import ExtendIndicator from "./ExtendIndicator";
+import { useLayout } from "../../hooks/useLayout";
 
 const { width, height } = Dimensions.get("window");
 
@@ -57,6 +58,7 @@ function RecoveryAnimation() {
   const isPaused = useSharedValue(false);
 
   const breathTime = useSharedValue(context.inhaleTime);
+  const [{ height: containerHeight }, onLayoutContainer] = useLayout();
 
   const styles = React.useMemo(() => createStyles(theme), [theme]);
 
@@ -144,18 +146,54 @@ function RecoveryAnimation() {
       from={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      style={{ flexGrow: 1, justifyContent: "center", alignItems: "center", borderWidth: 2 }}
+      style={{ flexGrow: 1, justifyContent: "center", alignItems: "center", borderWidth: 0 }}
+      onLayout={containerHeight ? undefined : onLayoutContainer}
     >
       {/* <Text style={{ position: "absolute", fontSize: 28, fontWeight: "600" }}>100</Text> */}
       <View style={{ position: "absolute" }}>
         <Timer size={35} type="countdown" />
       </View>
 
-      <ExtendIndicator isExtending={context.extend} isPaused={isPaused} />
-
-      <View style={{ position: "absolute", bottom: 100 }}>
-        <Text style={{ fontSize: 25 }}>{constantProgress.value}</Text>
+      {/* <ExtendIndicator isExtending={context.extend} isPaused={isPaused} />
+       */}
+      {/* Top ExtendIndicator */}
+      <View
+        style={{
+          position: "absolute",
+          bottom: containerHeight / 2 + MAIN_RADIUS - 12,
+        }}
+      >
+        <ExtendIndicator
+          isExtending={context.extend}
+          isPaused={isPaused}
+          offsetExtra={250}
+          lengthMS={3500}
+        />
       </View>
+      {context.extend && (
+        <MotiView
+          from={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "timing", duration: 2500 }}
+          style={{
+            position: "absolute",
+            bottom: containerHeight / 2 + MAIN_RADIUS,
+            width: width,
+          }}
+        >
+          <Text
+            // animatedProps={animatedTextProps}
+            style={{ textAlign: "center", color: "#00000066", fontSize: 28 }}
+          >
+            Extending Hold
+          </Text>
+        </MotiView>
+      )}
+      {/* Bottom ExtendIndicator */}
+      <View style={{ position: "absolute", top: containerHeight / 2 + MAIN_RADIUS - 12 }}>
+        <ExtendIndicator isExtending={context.extend} isPaused={isPaused} />
+      </View>
+
       {/* Mimic the Inner Circle for a touchable area that will toggle the extend session */}
       <TouchableOpacity
         onPress={() => extendSession()}

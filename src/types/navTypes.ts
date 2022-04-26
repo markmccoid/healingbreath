@@ -1,6 +1,6 @@
 import { CompositeScreenProps, RouteProp } from "@react-navigation/native";
 import { StackScreenProps, StackNavigationProp } from "@react-navigation/stack";
-
+import { SessionStats } from "../machines/breathMachine";
 // ------------------------------------
 // -- Root Stack Navigator Params List
 // ------------------------------------
@@ -9,6 +9,7 @@ export type RootStackParamList = {
   Session: { name?: string } | undefined;
   "Main Modal": undefined;
   SessionEdit: { sessionId?: string } | undefined;
+  SessionFinished: { sessionStats?: SessionStats; sessionStart?: number; sessionEnd?: number };
 };
 
 // -- Root Stack Props

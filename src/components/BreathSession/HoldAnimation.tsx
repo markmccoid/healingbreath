@@ -72,7 +72,7 @@ function HoldAnimation() {
 
   React.useEffect(() => {
     if (context.extend) {
-      textAnim.value = withDelay(1750, withRepeat(withTiming(1, { duration: 1750 }), 0, true));
+      textAnim.value = withDelay(1000, withRepeat(withTiming(1, { duration: 4750 }), 0, true));
     } else {
       textAnim.value = withTiming(0, { duration: 300 });
     }
@@ -122,12 +122,16 @@ function HoldAnimation() {
         </View>
         {context.extend && (
           <MotiView
-            from={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ type: "timing", duration: 3500 }}
-            style={{ position: "absolute", bottom: animHeight, width: width }}
+            from={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "timing", duration: 2500 }}
+            style={{ position: "absolute", bottom: animHeight + 9, width: width }}
+            exit={{ opacity: 0, scale: 0 }}
           >
-            <AnimatedText animatedProps={animatedTextProps} style={{ textAlign: "center" }}>
+            <AnimatedText
+              // animatedProps={animatedTextProps}
+              style={{ textAlign: "center", color: "#00000066", fontSize: 28 }}
+            >
               Extending Hold
             </AnimatedText>
           </MotiView>

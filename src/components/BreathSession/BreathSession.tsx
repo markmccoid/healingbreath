@@ -26,6 +26,8 @@ import SessionAnimations from "./SessionAnimations";
 import { ActionButton } from "../../components/buttons/Buttons";
 import { AlertSettings } from "../../utils/alertTypes";
 import BreathInterface from "./breathInterface/BreathInterface";
+import { RootNavProps, RootStackProps } from "../../types/navTypes";
+import { convertSecondsToMinutes } from "../../utils/helpers";
 
 type Props = {
   sessionSettings: SessionSettingsType;
@@ -51,12 +53,21 @@ const BreathSession = ({ sessionSettings, activeAlerts }: Props) => {
   // const [breathState, breathStateString] = breathState;
   const breathEvents = useBreathEvents();
   const breathFlags = useBreathFlags();
-  const navigation = useNavigation();
+  const navigation = useNavigation<RootNavProps<"SessionFinished">>();
   //************************ */
 
-  if (context.sessionComplete) {
-    console.log("SESSION COMPLETE", context.sessionComplete, context.sessionStats);
-  }
+  useEffect(() => {
+    if (context.sessionComplete) {
+      // console.log("SESSION COMPLETE", context.sessionComplete, context.sessionStats);
+      // breathEvents.stopSession();
+
+      navigation.navigate("SessionFinished", {
+        sessionStats: context.sessionStats,
+        sessionStart: context.sessionStart,
+        sessionEnd: context.sessionEnd,
+      });
+    }
+  }, [context.sessionComplete]);
 
   // useEffect(() => {
   //   console.log("alert has been alerted", alert);

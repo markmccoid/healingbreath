@@ -340,7 +340,10 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
         initial: "inhale",
         always: {
           target: "idle",
-          actions: "setSessionComplete",
+          actions: assign<BreathContext, BreathEvent>({
+            sessionComplete: true,
+            sessionEnd: (ctx, event) => Date.now(),
+          }), //["setSessionComplete"],
           cond: (ctx) => ctx.breathCurrRound > ctx.breathRounds,
         },
         on: {

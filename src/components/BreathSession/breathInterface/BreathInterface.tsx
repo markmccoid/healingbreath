@@ -44,9 +44,9 @@ const BreathInterface = () => {
   const navigation = useNavigation();
   //************************ */
 
-  if (context.sessionComplete) {
-    console.log("SESSION", context.sessionComplete, context.sessionStats);
-  }
+  // if (context.sessionComplete) {
+  //   console.log("SESSION", context.sessionComplete, context.sessionStats);
+  // }
 
   return (
     <View style={{ zIndex: 1000 }}>
