@@ -32,6 +32,8 @@ const lightColors: Colors = {
   menuActiveFG: "#000000",
   menuInactiveBG: "#4a5568",
   menuInactiveFG: "#ffffff",
+  donutStrokeBG: "#303858",
+  donutStrokeFG: "#A6E1FA",
   primary: "#4a5568",
   card: "#e7eaf0", // React Navigation Header color
   notification: "rgb(255, 59, 48)", // React Navigation
@@ -63,6 +65,8 @@ const darkColors: Colors = {
   menuActiveFG: "#000000",
   menuInactiveBG: "#4a5568",
   menuInactiveFG: "#ffffff",
+  donutStrokeBG: "#A6E1FA",
+  donutStrokeFG: "#303858",
   primary: "#000000",
   card: "#382335", // React Navigation Header color
   notification: "rgb(255, 59, 48)", // React Navigation
@@ -110,6 +114,8 @@ export type Colors = {
   menuActiveFG: string;
   menuInactiveBG: string;
   menuInactiveFG: string;
+  donutStrokeBG: string;
+  donutStrokeFG: string;
   primary: string; // React Navigation Header color
   card: string; // React Navigation Header color
   notification: string; // React Navigation

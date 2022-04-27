@@ -118,6 +118,11 @@ const resetContext = assign<BreathContext, BreathEvent>({
   breathCurrRound: 0,
 });
 
+const endSession = assign<BreathContext, BreathEvent>({
+  sessionComplete: true,
+  sessionEnd: (ctx, event) => Date.now(),
+});
+
 const updateHoldingTimeLeft = (
   source: "holding" | "recoveryhold" | "breathing" | "intropause" | "outropause"
 ) =>
@@ -340,14 +345,14 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
         initial: "inhale",
         always: {
           target: "idle",
-          actions: assign<BreathContext, BreathEvent>({
-            sessionComplete: true,
-            sessionEnd: (ctx, event) => Date.now(),
-          }), //["setSessionComplete"],
+          actions: ["endSession"], //["setSessionComplete"],
           cond: (ctx) => ctx.breathCurrRound > ctx.breathRounds,
         },
         on: {
-          STOP: "idle",
+          STOP: {
+            target: "idle",
+            actions: ["endSession"],
+          },
           PAUSE: {
             target: ".paused",
             actions: assign((ctx, event, meta) => {
@@ -449,7 +454,10 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
         ],
         exit: ["updateSessionLongHoldStats"],
         on: {
-          STOP: "idle",
+          STOP: {
+            target: "idle",
+            actions: ["endSession"],
+          },
           PAUSE: ".paused",
           NEXT: {
             target: "intropause",
@@ -493,7 +501,10 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
           cond: isElapsedGreaterThan("actionPauseTimeIn"),
         },
         on: {
-          STOP: "idle",
+          STOP: {
+            target: "idle",
+            actions: ["endSession"],
+          },
           TICK: {
             actions: "updateElapsedTime",
           },
@@ -505,7 +516,10 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
         entry: ["resetElapsed", "resetTimeLeft", updateHoldingTimeLeft("recoveryhold")],
         exit: ["updateSessionRecoveryHoldStats", "resetBreathCurrRep"],
         on: {
-          STOP: "idle",
+          STOP: {
+            target: "idle",
+            actions: ["endSession"],
+          },
           PAUSE: ".paused",
           NEXT: {
             target: "outropause",
@@ -549,7 +563,10 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
           // actions: assign({ sessionEnd: (ctx, events) => Date.now() }),
         },
         on: {
-          STOP: "idle",
+          STOP: {
+            target: "idle",
+            actions: ["endSession"],
+          },
           TICK: {
             actions: "updateElapsedTime",
           },
@@ -579,6 +596,7 @@ export const breathMachine = createMachine<BreathContext, BreathEvent>(
       //      updateRecoveryHoldStats,
       extendToggle,
       setSessionComplete,
+      endSession,
     },
   }
 );

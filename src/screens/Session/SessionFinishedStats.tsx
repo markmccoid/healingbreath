@@ -46,7 +46,7 @@ const SessionFinishedStats = ({ navigation, route }: RootStackProps<"SessionFini
         </View>
         {sessionStatsArray.map((round) => {
           return (
-            <View style={styles.roundContainer}>
+            <View key={round.round} style={styles.roundContainer}>
               <View style={styles.roundHeader}>
                 <Text style={styles.roundHeaderText}>Round {round.round}</Text>
               </View>

@@ -20,7 +20,6 @@ const RootNav = () => {
   const { theme, changeTheme } = useTheme();
 
   React.useEffect(() => {
-    console.log("scheme change Root Nav", scheme);
     changeTheme(scheme);
   }, [scheme]);
 

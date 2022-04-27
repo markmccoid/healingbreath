@@ -70,7 +70,6 @@ function ExtendIndicator({
         )
       );
 
-      console.log("starting extendedAnimation");
       // constantProgress.value = withPause(
       //   withRepeat(
       //     withTiming(1, { duration: context.recoveryHoldTime / 2, easing: Easing.linear }),

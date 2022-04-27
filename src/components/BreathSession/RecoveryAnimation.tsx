@@ -22,8 +22,7 @@ const { width, height } = Dimensions.get("window");
 
 const MARGIN = 20;
 const BACKGROUND_COLOR = "#444B6F";
-const BACKGROUND_STROKE_COLOR = "#303858";
-const STROKE_COLOR = "#A6E1FA";
+
 const STROKE_WIDTH = 30;
 
 // Main Circle
@@ -62,6 +61,8 @@ function RecoveryAnimation() {
 
   const styles = React.useMemo(() => createStyles(theme), [theme]);
 
+  const BACKGROUND_STROKE_COLOR = theme.colors.donutStrokeBG;
+  const STROKE_COLOR = theme.colors.donutStrokeFG;
   // console.log("breathstatestring", breathStateString);
 
   // Animated Styles
@@ -108,7 +109,6 @@ function RecoveryAnimation() {
         0
       );
 
-      console.log("starting constantProgress");
       // constantProgress.value = withPause(
       //   withRepeat(
       //     withTiming(1, { duration: context.recoveryHoldTime / 2, easing: Easing.linear }),
@@ -124,7 +124,6 @@ function RecoveryAnimation() {
         easing: Easing.linear,
       });
     }
-    console.log("constantPrgress", constantProgress.value);
   }, [context.extend]);
 
   //-- Set the animated stroke property
