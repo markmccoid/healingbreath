@@ -8,6 +8,7 @@ import _, { isEqual } from "lodash";
 
 import { breathAlertListener, configureAlertListener } from "../utils/alertListener";
 import { BreathState, useStore } from "../store/useStore";
+import { shallow } from "zustand/shallow";
 import { Alert } from "../utils/alertTypes";
 import { useAlertSounds } from "../hooks/useAlertSounds";
 
@@ -46,9 +47,10 @@ export const BreathMachineProvider = ({
   children: any;
   sessionSettings?: SessionSettingsType | undefined;
 }) => {
-  const [alertSettings, alertSoundNames] = useStore(alertSettingGetter);
+  const [alertSettings, alertSoundNames] = useStore(alertSettingGetter, shallow);
 
   const [alert, setAlert] = useState<Alert>();
+
   const breathStateService = useInterpret(
     breathMachine,
     {
@@ -59,7 +61,6 @@ export const BreathMachineProvider = ({
   );
 
   const { soundsLoaded, playSound } = useAlertSounds(alertSoundNames);
-
   //* Probably a better way to get Alert settings configured.
   //* maybe when get global state provider implemented
   React.useEffect(() => {

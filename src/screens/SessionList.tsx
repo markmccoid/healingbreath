@@ -14,6 +14,7 @@ const SessionList = ({ navigation, route }: RootStackProps<"SessionList">) => {
   const deleteSession = useStore((state) => state.deleteSession);
   const { theme } = useTheme();
   const styles = React.useMemo(() => createStyles(theme), [theme]);
+
   // const activeSession = useStore((state) => state.activeSession);
   // const { navigateToSession } = useBreathNavigation();
   // console.log(

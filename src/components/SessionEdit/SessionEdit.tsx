@@ -1,7 +1,8 @@
 import React from "react";
 import { MotiView, Text } from "@motify/components";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
-import SegmentedControl from "rn-segmented-control";
+// import SegmentedControl from "rn-segmented-control";
+import SegmentedControl from "../../components/SegmentedControl";
 import { AnimatePresence } from "@motify/core";
 import { Formik, useFormik } from "formik";
 import SessionEditMainSettings from "./SessionEditMainSettings";

@@ -1,12 +1,15 @@
 import create, { GetState, SetState, StoreApi } from "zustand";
 import { defaultSessions, defaultAlertSettings } from "./defaultSettings";
-import { SessionSettingsType } from "../context/breathMachineContext";
-import { AlertSettings } from "../utils/alertTypes";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { configurePersist } from "zustand-persist";
-import { AlertSoundNames } from "../utils/sounds/soundTypes";
 import { flatMapDeep, flattenDeep, uniq } from "lodash";
 import { findKeyValuesInObject } from "../utils/helpers";
+// Types
+import { AlertSoundNames } from "../utils/sounds/soundTypes";
+import { SessionSettingsType } from "../context/breathMachineContext";
+import { SessionStats } from "../machines/breathMachine";
+import { AlertSettings } from "../utils/alertTypes";
+import { stateValuesEqual } from "xstate/lib/State";
 
 export type StoredSession = {
   id: string;
@@ -14,16 +17,42 @@ export type StoredSession = {
   alertSettings?: AlertSettings;
 } & SessionSettingsType;
 
+export type StoredSessionStats = {
+  statsId: string;
+  sessionName: string;
+  sessionDate: Date;
+  sessionLengthDisplay: string;
+  sessionLengthSeconds: number;
+  numberOfRounds: number;
+  SessionStats: SessionStats;
+};
 export type BreathState = {
+  // Array of all stored sessions
   storedSessions: StoredSession[];
+  // Current session that has be selected
   activeSession: StoredSession | undefined;
+  // sets the activeSession property to hold the session data based on the passed id
   setActiveSession: (sessionId: string) => void;
+  // Create or update a session
   createUpdateSession: (sessionData: StoredSession) => void;
-  updateSession: (sessionData: StoredSession) => void;
+  // Delete session from storesSessions
   deleteSession: (sessionId: string) => void;
+  // Returns session data from a session with the passed sessionId
   getSessionFromId: (sessionId: string) => StoredSession | undefined;
+  // The stored session contains all the information about a session
+  // But it is needed it two different areas.  One area is the session info
+  // the the breathMachine state machine needs, the other is the Alert settings
+  // that deal with when to play sounds during the session
+  // This getter returns the session Info (state machine needs)
   getActiveSessionSettings: () => SessionSettingsType | undefined;
+  // This getter returns alert information so app knows when and what sounds to play
   getActiveAlertSettings: () => [AlertSettings, Partial<AlertSoundNames>[]] | [];
+  //** Session Stats **//
+  // Array of stored/completed sessions sessions
+  storedSessionStats: StoredSessionStats[];
+  // Adds the passed session to the storedSessionStats array
+  addSessionStats: (newSession: StoredSessionStats) => void;
+  getSessionStats: () => StoredSessionStats[];
 };
 
 //-- Configure zustand persist
@@ -39,6 +68,7 @@ const storeFunction = (
 ): BreathState => ({
   storedSessions: defaultSessions,
   activeSession: undefined,
+  storedSessionStats: [],
   // --SETTERS
   setActiveSession: (sessionId) =>
     set((state) => ({
@@ -46,9 +76,15 @@ const storeFunction = (
     })),
   createUpdateSession: (sessionData) =>
     set((state) => {
+      // Must have an id or a name otherwise, do nothing
       if (!sessionData.id || !sessionData.name) {
         return { storedSessions: state.storedSessions };
       }
+
+      // get id from passed sessionData and search through stored sessions
+      // removing any sessions with the same id.
+      // If we are updating a session, this removes it from the currSessions variable
+      // Now we can add the new/updated session to the list and spread the currSessions
       const { id } = sessionData;
       const currSessions = state.storedSessions.filter((el) => el.id !== id);
 
@@ -88,6 +124,15 @@ const storeFunction = (
     const alertSoundNames = getAlertSoundNames(alertSettings);
     return [alertSettings, alertSoundNames];
   },
+  //
+  addSessionStats: (newSession) => {
+    set((state) => {
+      return { storedSessionStats: [newSession, ...state.storedSessionStats] };
+    });
+  },
+  getSessionStats: () => {
+    return get().storedSessionStats;
+  },
 });
 
 export const useStore = create<
@@ -99,7 +144,7 @@ export const useStore = create<
   persist(
     {
       key: "breath6", // required, child key of storage
-      allowlist: ["storedSessions"], // optional, will save everything if allowlist is undefined
+      allowlist: ["storedSessions", "storedSessionStats"], // optional, will save everything if allowlist is undefined
       denylist: [], // optional, if allowlist set, denylist will be ignored
     },
     storeFunction

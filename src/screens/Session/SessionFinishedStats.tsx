@@ -1,11 +1,13 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { RootNavProps, RootRouteProps, RootStackProps } from "../../types/navTypes";
 import _values from "lodash/values";
+import { useStore, StoredSessionStats } from "../../store/useStore";
 import { convertSecondsToMinutes } from "../../utils/helpers";
 import { useTheme } from "../../context/themeContext";
 import { Theme } from "../../theme";
 import ModalHeader from "../../components/ModalHeader";
+import uuid from "react-native-uuid";
 
 type Props = {
   navigation: RootNavProps<"SessionFinished">;
@@ -20,7 +22,12 @@ type SessionStatsArray = {
 };
 const SessionFinishedStats = ({ navigation, route }: RootStackProps<"SessionFinished">) => {
   const { theme } = useTheme();
-
+  const styles = React.useMemo(() => createStyles(theme), [theme]);
+  // Get save session function
+  const saveSessionStats = useStore((state) => state.addSessionStats);
+  const getSessionStats = useStore((state) => state.getSessionStats);
+  const activeSessionName = useStore((state) => state.activeSession?.name) || "Empty";
+  const statsId = uuid.v4() as string;
   const { sessionStats = {}, sessionStart = 0, sessionEnd = 0 } = route.params;
   const sessionStatsArray: SessionStatsArray[] = Object.keys(sessionStats).map((key) => ({
     round: key,
@@ -31,8 +38,16 @@ const SessionFinishedStats = ({ navigation, route }: RootStackProps<"SessionFini
   const sessionEndDate = new Date(sessionEnd);
   const seconds = (sessionEndDate.getTime() - sessionStartDate.getTime()) / 1000;
   const formattedSessionTime = convertSecondsToMinutes(seconds);
-
-  const styles = React.useMemo(() => createStyles(theme), [theme]);
+  const storedSessionStats: StoredSessionStats = {
+    statsId,
+    sessionName: activeSessionName,
+    sessionDate: new Date(),
+    numberOfRounds: sessionStatsArray.length,
+    sessionLengthDisplay: formattedSessionTime,
+    sessionLengthSeconds: seconds,
+    SessionStats: sessionStats,
+  };
+  // console.log("Session Stats", storedSessionStats);
 
   return (
     <View>
@@ -60,6 +75,24 @@ const SessionFinishedStats = ({ navigation, route }: RootStackProps<"SessionFini
             </View>
           );
         })}
+        <View style={{ flexDirection: "row" }}>
+          <TouchableOpacity
+            style={styles.saveButton}
+            onPress={() => saveSessionStats(storedSessionStats)}
+          >
+            <Text>Save Session</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.saveButton}
+            onPress={() => {
+              const stats = getSessionStats();
+              console.log("STATS", stats);
+            }}
+          >
+            <Text>Show Sessions</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -90,6 +123,12 @@ const createStyles = (theme: Theme) => {
     roundInfoContainer: {
       paddingHorizontal: 10,
       paddingVertical: 5,
+    },
+    saveButton: {
+      borderWidth: 1,
+      borderRadius: 5,
+      padding: 8,
+      backgroundColor: theme.colors.buttonBG,
     },
   });
   return styles;
