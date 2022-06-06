@@ -8,6 +8,10 @@ import RootNav from "./src/navigation/RootNav";
 import DropDownPicker from "react-native-dropdown-picker";
 import { ThemeProvider } from "./src/context/themeContext";
 
+LogBox.ignoreLogs([
+  "ViewPropTypes will be removed from React Native. Migrate to ViewPropTypes exported from 'deprecated-react-native-prop-types'.",
+]);
+
 export default function App() {
   const isLoadingComplete = useCachedResources();
   let [fontsLoaded] = useFonts({

@@ -279,3 +279,6 @@ export const DescOtherIcon = ({ size, color = undefined, style = {} }: IconProps
 export const InfinityIcon = ({ size, color = undefined, style = {} }: IconProps) => {
   return <Ionicons name="ios-infinite" size={size} color={color} style={style} />;
 };
+export const StatsIcon = ({ size, color = undefined, style = {} }: IconProps) => {
+  return <MaterialIcons name="graphic-eq" size={size} color={color} style={style} />;
+};

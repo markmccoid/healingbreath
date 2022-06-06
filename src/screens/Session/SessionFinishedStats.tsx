@@ -9,10 +9,10 @@ import { Theme } from "../../theme";
 import ModalHeader from "../../components/ModalHeader";
 import uuid from "react-native-uuid";
 
-type Props = {
-  navigation: RootNavProps<"SessionFinished">;
-  route: RootRouteProps<"SessionFinished">;
-};
+// type Props = {
+//   navigation: RootNavProps<"SessionFinished">;
+//   route: RootRouteProps<"SessionFinished">;
+// };
 
 type SessionStatsArray = {
   round: string;
@@ -41,7 +41,7 @@ const SessionFinishedStats = ({ navigation, route }: RootStackProps<"SessionFini
   const storedSessionStats: StoredSessionStats = {
     statsId,
     sessionName: activeSessionName,
-    sessionDate: new Date(),
+    sessionDate: sessionStartDate,
     numberOfRounds: sessionStatsArray.length,
     sessionLengthDisplay: formattedSessionTime,
     sessionLengthSeconds: seconds,
@@ -78,7 +78,10 @@ const SessionFinishedStats = ({ navigation, route }: RootStackProps<"SessionFini
         <View style={{ flexDirection: "row" }}>
           <TouchableOpacity
             style={styles.saveButton}
-            onPress={() => saveSessionStats(storedSessionStats)}
+            onPress={() => {
+              saveSessionStats(storedSessionStats);
+              navigation.goBack();
+            }}
           >
             <Text>Save Session</Text>
           </TouchableOpacity>
@@ -86,11 +89,12 @@ const SessionFinishedStats = ({ navigation, route }: RootStackProps<"SessionFini
           <TouchableOpacity
             style={styles.saveButton}
             onPress={() => {
-              const stats = getSessionStats();
-              console.log("STATS", stats);
+              navigation.goBack();
+              // const stats = getSessionStats();
+              // console.log("STATS", stats);
             }}
           >
-            <Text>Show Sessions</Text>
+            <Text>Done</Text>
           </TouchableOpacity>
         </View>
       </View>

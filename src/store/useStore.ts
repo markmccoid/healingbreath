@@ -26,6 +26,7 @@ export type StoredSessionStats = {
   numberOfRounds: number;
   SessionStats: SessionStats;
 };
+
 export type BreathState = {
   // Array of all stored sessions
   storedSessions: StoredSession[];
@@ -52,7 +53,9 @@ export type BreathState = {
   storedSessionStats: StoredSessionStats[];
   // Adds the passed session to the storedSessionStats array
   addSessionStats: (newSession: StoredSessionStats) => void;
+  // return sorted by sessionDate desc
   getSessionStats: () => StoredSessionStats[];
+  clearAllSessionStats: () => void;
 };
 
 //-- Configure zustand persist
@@ -126,13 +129,24 @@ const storeFunction = (
   },
   //
   addSessionStats: (newSession) => {
+    console.log("NEw SESSION", newSession);
     set((state) => {
       return { storedSessionStats: [newSession, ...state.storedSessionStats] };
     });
   },
   getSessionStats: () => {
+    // These should already be sorted by sessionDate desc given how we store them.
+    // Even with deletes, I don't think that would affect the order
     return get().storedSessionStats;
+    // if you need it sorted, you could use lodash
+    // _.reverse(_.sortBy(get().storedSessionStats, ['sessionDate']))
   },
+
+  clearAllSessionStats: () =>
+    set((state) => {
+      console.log("CLEARING STATS");
+      return { storedSessionStats: [] };
+    }),
 });
 
 export const useStore = create<

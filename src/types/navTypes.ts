@@ -9,6 +9,7 @@ export type RootStackParamList = {
   Session: { name?: string } | undefined;
   "Main Modal": undefined;
   SessionEdit: { sessionId?: string } | undefined;
+  SessionStats: undefined;
   SessionFinished: { sessionStats?: SessionStats; sessionStart?: number; sessionEnd?: number };
 };
 

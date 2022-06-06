@@ -5,7 +5,7 @@ import { RootStackProps } from "../types/navTypes";
 import { useStore } from "../store/useStore";
 import useBreathNavigation from "../navigation/useBreathNavigation";
 import SessionItem from "../components/SessionList/SessionItem";
-import { AddIcon } from "../components/common/Icons";
+import { AddIcon, StatsIcon } from "../components/common/Icons";
 import { useTheme } from "../context/themeContext";
 import { Theme } from "../theme";
 
@@ -48,6 +48,11 @@ const SessionList = ({ navigation, route }: RootStackProps<"SessionList">) => {
           <Text style={{ fontSize: 28 }}>SVG</Text>
         </TouchableOpacity>
       </View> */}
+      <View style={styles.statsButton}>
+        <TouchableOpacity onPress={() => navigation.navigate("SessionStats")}>
+          <StatsIcon size={30} color={theme?.colors.primaryFG} />
+        </TouchableOpacity>
+      </View>
       <View style={styles.addButton}>
         <TouchableOpacity onPress={() => navigation.navigate("SessionEdit")}>
           <AddIcon size={30} color={theme?.colors.primaryFG} />
@@ -64,6 +69,20 @@ const createStyles = (theme: Theme) => {
       backgroundColor: theme.colors.primaryBG,
       bottom: 30,
       right: 20,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      borderRadius: 30,
+      width: 60,
+      height: 60,
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 100,
+    },
+    statsButton: {
+      position: "absolute",
+      backgroundColor: theme.colors.primaryBG,
+      bottom: 30,
+      left: 20,
       borderWidth: 1,
       borderColor: theme.colors.border,
       borderRadius: 30,

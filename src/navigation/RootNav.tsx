@@ -4,6 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import SessionList from "../screens/SessionList";
 import Session from "../screens/Session/Session";
+import SessionStats from "../screens/SessionStats";
 
 // Types
 import { RootStackParamList } from "../types/navTypes";
@@ -52,7 +53,9 @@ const RootNav = () => {
             component={SessionEdit}
             options={{ headerShown: false }}
           />
-          <RootStack.Screen name="svgtest" component={SVGTest} />
+          {/* <RootStack.Screen name="svgtest" component={SVGTest} /> */}
+          <RootStack.Screen name="SessionStats" component={SessionStats} />
+
           <RootStack.Screen name="SessionFinished" component={SessionFinishedStats} />
         </RootStack.Group>
       </RootStack.Navigator>
