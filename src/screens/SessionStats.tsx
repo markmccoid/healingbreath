@@ -2,6 +2,8 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { RootNavProps, RootRouteProps, RootStackProps } from "../types/navTypes";
 import _values from "lodash/values";
+import _uniq from "lodash/uniq";
+
 import { useStore, StoredSessionStats } from "../store/useStore";
 import { convertSecondsToMinutes } from "../utils/helpers";
 import { useTheme } from "../context/themeContext";
@@ -9,6 +11,7 @@ import { Theme } from "../theme";
 import ModalHeader from "../components/ModalHeader";
 import uuid from "react-native-uuid";
 import SessionStatItem from "./SessionStatItem";
+import { ScrollView } from "react-native-gesture-handler";
 
 type SessionStatsArray = {
   round: string;
@@ -23,11 +26,14 @@ const SessionStats = ({ navigation, route }: RootStackProps<"SessionStats">) => 
   const getSessionStats = useStore((state) => state.getSessionStats);
   const clearSessionStats = useStore((state) => state.clearAllSessionStats);
   const sessionStats = React.useMemo(() => getSessionStats(), []);
-
-  console.log("Session Stats", sessionStats);
+  const sessionYears = React.useMemo(
+    () => _uniq(sessionStats.map((stat) => new Date(stat.sessionDate).getFullYear())),
+    []
+  );
+  // console.log("Session Stats", sessionYears);
 
   return (
-    <View>
+    <View style={{ flex: 1, flexDirection: "column" }}>
       <ModalHeader headerText="Saved Session Stats" />
 
       <View style={styles.container}>
@@ -36,12 +42,20 @@ const SessionStats = ({ navigation, route }: RootStackProps<"SessionStats">) => 
             List of Sessions
           </Text>
         </View>
-        <View>
-          {sessionStats.map((stat) => {
-            return <SessionStatItem key={stat.statsId} statInfo={stat} />;
+        <ScrollView>
+          {sessionYears.map((year) => {
+            return (
+              <View key={year}>
+                <Text>{year}</Text>
+                {sessionStats.map((stat) => {
+                  let date = new Date(stat.sessionDate);
+                  return <SessionStatItem key={stat.statsId} statInfo={stat} />;
+                })}
+              </View>
+            );
           })}
-        </View>
-        <View style={{ flexDirection: "row" }}>
+        </ScrollView>
+        <View style={{ flexDirection: "row", justifyContent: "center" }}>
           <TouchableOpacity
             style={styles.saveButton}
             onPress={() => {
@@ -52,6 +66,7 @@ const SessionStats = ({ navigation, route }: RootStackProps<"SessionStats">) => 
           >
             <Text>Done</Text>
           </TouchableOpacity>
+          <View style={{ margin: 10 }} />
           <TouchableOpacity
             style={styles.saveButton}
             onPress={() => {
@@ -71,7 +86,9 @@ const SessionStats = ({ navigation, route }: RootStackProps<"SessionStats">) => 
 const createStyles = (theme: Theme) => {
   const styles = StyleSheet.create({
     container: {
-      margin: 10,
+      flex: 1,
+      margin: 15,
+      marginBottom: 25,
     },
     roundContainer: {
       // padding: 5,

@@ -13,11 +13,19 @@ const SessionStatItem = ({ statInfo }: Props) => {
   // When the StoredSessionStats are persists to storage they
   // are serialized, this means that the Date comes back in as
   // a string.  Which means we need to convert the date in here.
+  const sessionDateWork = new Date(statInfo.sessionDate);
+  const isPM = sessionDateWork.getHours() > 12;
+  const sessionStartTime = `${
+    isPM ? sessionDateWork.getHours() - 12 : sessionDateWork.getHours()
+  }:${sessionDateWork.getMinutes()} ${isPM ? "PM" : "AM"}`;
+  const sessionDate = sessionDateWork.toLocaleDateString();
+
   return (
     <View style={styles.itemContainer}>
-      <Text>{`${statInfo.sessionDate.toLocaleDateString()} - ${statInfo.sessionName}`}</Text>
-      <Text>{new Date(statInfo.sessionDate).toTimeString()}</Text>
-      <Text>{statInfo.sessionLengthDisplay}</Text>
+      <Text>{`${statInfo.sessionName} at ${sessionStartTime} on ${sessionDate}`}</Text>
+      <Text>{`${sessionDate} - ${statInfo.sessionName}`}</Text>
+      <Text>{`Start Time - ${sessionStartTime}`}</Text>
+      <Text>{`Length - ${statInfo.sessionLengthDisplay}`}</Text>
     </View>
   );
 };
