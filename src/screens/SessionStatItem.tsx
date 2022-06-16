@@ -19,7 +19,6 @@ const SessionStatItem = ({ statInfo }: Props) => {
     isPM ? sessionDateWork.getHours() - 12 : sessionDateWork.getHours()
   }:${sessionDateWork.getMinutes()} ${isPM ? "PM" : "AM"}`;
   const sessionDate = sessionDateWork.toLocaleDateString();
-
   return (
     <View style={styles.itemContainer}>
       <Text>{`${statInfo.sessionName} at ${sessionStartTime} on ${sessionDate}`}</Text>

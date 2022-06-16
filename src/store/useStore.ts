@@ -11,6 +11,71 @@ import { SessionStats } from "../machines/breathMachine";
 import { AlertSettings } from "../utils/alertTypes";
 import { stateValuesEqual } from "xstate/lib/State";
 
+//! Delete this when no longer needed
+// const testStats = [
+//   {
+//     SessionStats: {
+//       "1": {
+//         breaths: 3,
+//         holdTimeSeconds: 3,
+//         recoveryHoldTimeSeconds: 1,
+//       },
+//       "2": {
+//         breaths: 3,
+//         holdTimeSeconds: 1.9,
+//         recoveryHoldTimeSeconds: 1,
+//       },
+//     },
+//     numberOfRounds: 2,
+//     sessionDate: "2021-06-07T03:26:54.559Z",
+//     sessionLengthDisplay: "10:31",
+//     sessionLengthSeconds: 131.645,
+//     sessionName: "Test Emtru",
+//     statsId: "1000",
+//   },
+//   {
+//     SessionStats: {
+//       "1": {
+//         breaths: 3,
+//         holdTimeSeconds: 3,
+//         recoveryHoldTimeSeconds: 1,
+//       },
+//       "2": {
+//         breaths: 3,
+//         holdTimeSeconds: 1.9,
+//         recoveryHoldTimeSeconds: 1,
+//       },
+//     },
+//     numberOfRounds: 4,
+//     sessionDate: "2021-05-07T03:26:54.559Z",
+//     sessionLengthDisplay: "10:31",
+//     sessionLengthSeconds: 131.645,
+//     sessionName: "Test 202105",
+//     statsId: "2000",
+//   },
+//   {
+//     SessionStats: {
+//       "1": {
+//         breaths: 3,
+//         holdTimeSeconds: 3,
+//         recoveryHoldTimeSeconds: 1,
+//       },
+//       "2": {
+//         breaths: 3,
+//         holdTimeSeconds: 1.9,
+//         recoveryHoldTimeSeconds: 1,
+//       },
+//     },
+//     numberOfRounds: 12,
+//     sessionDate: "2020-06-07T03:26:54.559Z",
+//     sessionLengthDisplay: "10:31",
+//     sessionLengthSeconds: 131.645,
+//     sessionName: "Test 12",
+//     statsId: "3000",
+//   },
+// ];
+//! Delete end
+
 export type StoredSession = {
   id: string;
   name: string;
@@ -20,7 +85,7 @@ export type StoredSession = {
 export type StoredSessionStats = {
   statsId: string;
   sessionName: string;
-  sessionDate: Date;
+  sessionDate: Date | string;
   sessionLengthDisplay: string;
   sessionLengthSeconds: number;
   numberOfRounds: number;

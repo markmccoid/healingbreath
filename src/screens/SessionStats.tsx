@@ -1,15 +1,13 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { RootNavProps, RootRouteProps, RootStackProps } from "../types/navTypes";
+import { RootStackProps } from "../types/navTypes";
 import _values from "lodash/values";
 import _uniq from "lodash/uniq";
 
-import { useStore, StoredSessionStats } from "../store/useStore";
-import { convertSecondsToMinutes } from "../utils/helpers";
+import { useStore } from "../store/useStore";
 import { useTheme } from "../context/themeContext";
 import { Theme } from "../theme";
 import ModalHeader from "../components/ModalHeader";
-import uuid from "react-native-uuid";
 import SessionStatItem from "./SessionStatItem";
 import { ScrollView } from "react-native-gesture-handler";
 
@@ -19,6 +17,7 @@ type SessionStatsArray = {
   holdTimeSeconds: number; // seconds
   recoveryHoldTimeSeconds: number;
 };
+
 const SessionStats = ({ navigation, route }: RootStackProps<"SessionStats">) => {
   const { theme } = useTheme();
   const styles = React.useMemo(() => createStyles(theme), [theme]);
@@ -38,17 +37,18 @@ const SessionStats = ({ navigation, route }: RootStackProps<"SessionStats">) => 
 
       <View style={styles.container}>
         <View style={{ marginBottom: 10 }}>
-          <Text style={{ paddingLeft: 10, fontSize: 18, fontWeight: "600" }}>
-            List of Sessions
-          </Text>
+          <Text style={{ fontSize: 18, fontWeight: "600" }}>List of Sessions</Text>
         </View>
         <ScrollView>
           {sessionYears.map((year) => {
             return (
-              <View key={year}>
-                <Text>{year}</Text>
+              <View key={year} style={styles.yearHeader}>
+                <Text style={styles.yearHeaderText}>{year}</Text>
                 {sessionStats.map((stat) => {
                   let date = new Date(stat.sessionDate);
+                  // If not the year we are working with, then bail
+                  if (date.getFullYear() !== year) return;
+
                   return <SessionStatItem key={stat.statsId} statInfo={stat} />;
                 })}
               </View>
@@ -90,22 +90,21 @@ const createStyles = (theme: Theme) => {
       margin: 15,
       marginBottom: 25,
     },
-    roundContainer: {
-      // padding: 5,
-      borderWidth: 1,
+    yearHeader: {
+      borderWidth: StyleSheet.hairlineWidth,
+      // borderTopRightRadius: 10,
+      // borderTopLeftRadius: 10,
       borderRadius: 10,
+      borderColor: theme.colors.border,
+      padding: 10,
+      paddingVertical: 5,
       marginBottom: 10,
+      backgroundColor: `${theme.colors.cardBG}aa`,
     },
-    roundHeader: {
-      borderBottomWidth: 1,
-      borderTopRightRadius: 10,
-      borderTopLeftRadius: 10,
-      padding: 0,
-      backgroundColor: theme.colors.cardBG,
-    },
-    roundHeaderText: {
+    yearHeaderText: {
       fontSize: 18,
-      textAlign: "center",
+      fontWeight: "600",
+      color: theme.colors.cardFG,
     },
     roundInfoContainer: {
       paddingHorizontal: 10,
@@ -120,4 +119,5 @@ const createStyles = (theme: Theme) => {
   });
   return styles;
 };
+
 export default SessionStats;
