@@ -14,6 +14,8 @@ type Props = {
   handleEditSession: (sessionId: string) => void;
 };
 
+const iconPlacement =
+  "absolute z-10 left-[-6] top-[-10] py-[5] px-2 bg-white border rounded-lg";
 function SessionItem({ session, deleteSession, handleEditSession }: Props) {
   const { theme } = useTheme();
   const { navigateToSession } = useBreathNavigation();
@@ -22,7 +24,6 @@ function SessionItem({ session, deleteSession, handleEditSession }: Props) {
     session.defaultHoldTime,
     session.breathRoundsDetail
   );
-
   // generate styles object by passing in theme to function
   const styles = createStyles(theme);
 
@@ -30,36 +31,39 @@ function SessionItem({ session, deleteSession, handleEditSession }: Props) {
     <View style={styles.container}>
       {/* Edit Button */}
       <TouchableOpacity
-        style={{
-          position: "absolute",
-          zIndex: 10,
-          left: -6,
-          paddingVertical: 5,
-          paddingHorizontal: 8,
-          borderWidth: 1,
-          borderColor: theme.colors.iconBorder,
-          backgroundColor: theme.colors.iconBG,
-          borderRadius: 10,
-          top: -10,
-        }}
+        // style={{
+        //   position: "absolute",
+        //   zIndex: 10,
+        //   left: -6,
+        //   paddingVertical: 5,
+        //   paddingHorizontal: 8,
+        //   borderWidth: 1,
+        //   borderColor: theme.colors.iconBorder,
+        //   backgroundColor: theme.colors.iconBG,
+        //   borderRadius: 10,
+        //   top: -10,
+        // }}
+        className="absolute z-10 left-[-6] top-[-10] 
+                   py-[5] px-2 bg-white border rounded-lg"
         onPress={() => handleEditSession(session.id)}
       >
         <EditIcon size={20} color={theme.colors.iconFG} />
       </TouchableOpacity>
       {/* Delete Button */}
       <TouchableOpacity
-        style={{
-          position: "absolute",
-          zIndex: 10,
-          right: -6,
-          paddingVertical: 5,
-          paddingHorizontal: 8,
-          borderWidth: 1,
-          borderColor: theme.colors.iconBorder,
-          backgroundColor: theme.colors.iconBG,
-          borderRadius: 10,
-          top: -10,
-        }}
+        // style={{
+        //   position: "absolute",
+        //   zIndex: 10,
+        //   right: -6,
+        //   paddingVertical: 5,
+        //   paddingHorizontal: 8,
+        //   borderWidth: 1,
+        //   borderColor: theme.colors.iconBorder,
+        //   backgroundColor: theme.colors.iconBG,
+        //   borderRadius: 10,
+        //   top: -10,
+        // }}
+        className="absolute z-10 right-[-6] py-[5] px-2 top-[-10] bg-white border rounded-lg"
         onPress={() => deleteSession(session.id)}
       >
         <DeleteIcon size={20} />
@@ -73,7 +77,10 @@ function SessionItem({ session, deleteSession, handleEditSession }: Props) {
         }}
       >
         <View style={styles.itemTitleContainer}>
-          <Text style={[styles.itemText, styles.itemTitle]}>{`${session.name}`}</Text>
+          <Text
+            className="text-white text-xl font-bold font-header"
+            // style={styles.itemText}
+          >{`${session.name}`}</Text>
         </View>
         {/* Line 1 of Information */}
         <View style={styles.infoLine1}>

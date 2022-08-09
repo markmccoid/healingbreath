@@ -17,7 +17,7 @@ const SessionStatItem = ({ statInfo }: Props) => {
   const isPM = sessionDateWork.getHours() > 12;
   const sessionStartTime = `${
     isPM ? sessionDateWork.getHours() - 12 : sessionDateWork.getHours()
-  }:${sessionDateWork.getMinutes()} ${isPM ? "PM" : "AM"}`;
+  }:${sessionDateWork.getMinutes().toString().padStart(2, "0")} ${isPM ? "PM" : "AM"}`;
   const sessionDate = sessionDateWork.toLocaleDateString();
   return (
     <View style={styles.itemContainer}>

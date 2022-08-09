@@ -12,68 +12,68 @@ import { AlertSettings } from "../utils/alertTypes";
 import { stateValuesEqual } from "xstate/lib/State";
 
 //! Delete this when no longer needed
-// const testStats = [
-//   {
-//     SessionStats: {
-//       "1": {
-//         breaths: 3,
-//         holdTimeSeconds: 3,
-//         recoveryHoldTimeSeconds: 1,
-//       },
-//       "2": {
-//         breaths: 3,
-//         holdTimeSeconds: 1.9,
-//         recoveryHoldTimeSeconds: 1,
-//       },
-//     },
-//     numberOfRounds: 2,
-//     sessionDate: "2021-06-07T03:26:54.559Z",
-//     sessionLengthDisplay: "10:31",
-//     sessionLengthSeconds: 131.645,
-//     sessionName: "Test Emtru",
-//     statsId: "1000",
-//   },
-//   {
-//     SessionStats: {
-//       "1": {
-//         breaths: 3,
-//         holdTimeSeconds: 3,
-//         recoveryHoldTimeSeconds: 1,
-//       },
-//       "2": {
-//         breaths: 3,
-//         holdTimeSeconds: 1.9,
-//         recoveryHoldTimeSeconds: 1,
-//       },
-//     },
-//     numberOfRounds: 4,
-//     sessionDate: "2021-05-07T03:26:54.559Z",
-//     sessionLengthDisplay: "10:31",
-//     sessionLengthSeconds: 131.645,
-//     sessionName: "Test 202105",
-//     statsId: "2000",
-//   },
-//   {
-//     SessionStats: {
-//       "1": {
-//         breaths: 3,
-//         holdTimeSeconds: 3,
-//         recoveryHoldTimeSeconds: 1,
-//       },
-//       "2": {
-//         breaths: 3,
-//         holdTimeSeconds: 1.9,
-//         recoveryHoldTimeSeconds: 1,
-//       },
-//     },
-//     numberOfRounds: 12,
-//     sessionDate: "2020-06-07T03:26:54.559Z",
-//     sessionLengthDisplay: "10:31",
-//     sessionLengthSeconds: 131.645,
-//     sessionName: "Test 12",
-//     statsId: "3000",
-//   },
-// ];
+const testStats = [
+  {
+    SessionStats: {
+      "1": {
+        breaths: 3,
+        holdTimeSeconds: 3,
+        recoveryHoldTimeSeconds: 1,
+      },
+      "2": {
+        breaths: 3,
+        holdTimeSeconds: 1.9,
+        recoveryHoldTimeSeconds: 1,
+      },
+    },
+    numberOfRounds: 2,
+    sessionDate: "2021-06-07T03:26:54.559Z",
+    sessionLengthDisplay: "10:31",
+    sessionLengthSeconds: 131.645,
+    sessionName: "Test Emtru",
+    statsId: "1000",
+  },
+  {
+    SessionStats: {
+      "1": {
+        breaths: 3,
+        holdTimeSeconds: 3,
+        recoveryHoldTimeSeconds: 1,
+      },
+      "2": {
+        breaths: 3,
+        holdTimeSeconds: 1.9,
+        recoveryHoldTimeSeconds: 1,
+      },
+    },
+    numberOfRounds: 4,
+    sessionDate: "2021-05-07T03:26:54.559Z",
+    sessionLengthDisplay: "10:31",
+    sessionLengthSeconds: 131.645,
+    sessionName: "Test 202105",
+    statsId: "2000",
+  },
+  {
+    SessionStats: {
+      "1": {
+        breaths: 3,
+        holdTimeSeconds: 3,
+        recoveryHoldTimeSeconds: 1,
+      },
+      "2": {
+        breaths: 3,
+        holdTimeSeconds: 1.9,
+        recoveryHoldTimeSeconds: 1,
+      },
+    },
+    numberOfRounds: 12,
+    sessionDate: "2020-06-07T03:06:54.559Z",
+    sessionLengthDisplay: "10:31",
+    sessionLengthSeconds: 131.645,
+    sessionName: "Test 12",
+    statsId: "300",
+  },
+];
 //! Delete end
 
 export type StoredSession = {
@@ -194,7 +194,7 @@ const storeFunction = (
   },
   //
   addSessionStats: (newSession) => {
-    console.log("NEw SESSION", newSession);
+    // console.log("NEw SESSION", newSession);
     set((state) => {
       return { storedSessionStats: [newSession, ...state.storedSessionStats] };
     });
@@ -209,7 +209,7 @@ const storeFunction = (
 
   clearAllSessionStats: () =>
     set((state) => {
-      console.log("CLEARING STATS");
+      // console.log("CLEARING STATS");
       return { storedSessionStats: [] };
     }),
 });

@@ -1,8 +1,10 @@
+/// <reference types="nativewind/types" />
+
 import * as React from "react";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useFonts, FiraSans_500Medium } from "@expo-google-fonts/fira-sans";
-import { LogBox, StyleSheet } from "react-native";
+import { LogBox, StyleSheet, Text } from "react-native";
 import useCachedResources from "./src/hooks/useCachedResources";
 import RootNav from "./src/navigation/RootNav";
 import DropDownPicker from "react-native-dropdown-picker";

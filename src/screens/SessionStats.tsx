@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { RootStackProps } from "../types/navTypes";
 import _values from "lodash/values";
 import _uniq from "lodash/uniq";
+import _sortBy from "lodash/sortBy";
+import _reverse from "lodash/reverse";
 
 import { useStore } from "../store/useStore";
 import { useTheme } from "../context/themeContext";
@@ -26,7 +28,10 @@ const SessionStats = ({ navigation, route }: RootStackProps<"SessionStats">) => 
   const clearSessionStats = useStore((state) => state.clearAllSessionStats);
   const sessionStats = React.useMemo(() => getSessionStats(), []);
   const sessionYears = React.useMemo(
-    () => _uniq(sessionStats.map((stat) => new Date(stat.sessionDate).getFullYear())),
+    () =>
+      _reverse(
+        _sortBy(_uniq(sessionStats.map((stat) => new Date(stat.sessionDate).getFullYear())))
+      ),
     []
   );
   // console.log("Session Stats", sessionYears);

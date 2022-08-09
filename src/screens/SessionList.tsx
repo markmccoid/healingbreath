@@ -1,6 +1,6 @@
 import * as React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import { RootStackProps } from "../types/navTypes";
 import { useStore } from "../store/useStore";
 import useBreathNavigation from "../navigation/useBreathNavigation";
@@ -25,10 +25,10 @@ const SessionList = ({ navigation, route }: RootStackProps<"SessionList">) => {
     navigation.navigate("SessionEdit", { sessionId });
   };
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView style={{ paddingTop: 10 }}>
+    <View className="flex-1">
+      <ScrollView className="pt-5">
         {sessions.map((session) => (
-          <View key={session.id} style={{ marginBottom: 10 }}>
+          <View key={session.id} className="mb-[10]">
             <SessionItem
               session={session}
               deleteSession={deleteSession}
