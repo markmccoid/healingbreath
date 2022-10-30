@@ -2,7 +2,7 @@
   "expo": {
     "name": "Healing Breath",
     "slug": "healingbreath",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -19,7 +19,7 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "userInterfaceStyle": "automatic",
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.markmccoid.healingbreath"
     },
     "android": {
